@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: atxtruth
+          POSTGRES_PASSWORD: atxtruth_dev  # pragma: allowlist secret  (CI-only throwaway database)
+          POSTGRES_DB: atxtruth
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U atxtruth" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install backend (hash-locked)
+        working-directory: backend
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install --require-hashes -r requirements-dev.lock.txt
+      - name: Install frontend and root tools (lockfiles)
+        run: |
+          npm ci
+          npm ci --prefix frontend
+      - name: Secret scan (AACF G2)
+        run: backend/.venv/bin/pre-commit run detect-secrets --all-files
+      - name: Environment, keys, migrations, test database
+        working-directory: backend
+        run: |
+          cp .env.example .env
+          .venv/bin/python scripts/generate_jwt_keys.py
+          .venv/bin/alembic upgrade head
+          .venv/bin/python scripts/create_test_db.py
+      - name: npm run check
+        run: npm run check -- --keep-going
