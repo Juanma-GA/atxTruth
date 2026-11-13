@@ -1,0 +1,23 @@
+# Local PostgreSQL 16 for development (Linux, macOS and Windows with Docker Desktop).
+#   docker compose up -d db
+# Credentials are development-only; backend/.env.example points at them.
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: atxtruth
+      POSTGRES_PASSWORD: atxtruth_dev  # pragma: allowlist secret  (local development only)
+      POSTGRES_DB: atxtruth
+    ports:
+      - "5432:5432"
+    volumes:
+      - atxtruth-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U atxtruth -d atxtruth"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  atxtruth-db:

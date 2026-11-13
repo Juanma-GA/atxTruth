@@ -1,0 +1,62 @@
+[project]
+name = "atxtruth-backend"
+version = "0.1.0"
+description = "atxTruth API: source of truth de Customer Services (ATEXIS/ALTEN)"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.32,<1",
+  "sqlalchemy[asyncio]>=2.0.36,<2.1",
+  "asyncpg>=0.30,<1",
+  "alembic>=1.14,<2",
+  "pydantic>=2.10,<3",
+  "pydantic-settings>=2.6,<3",
+  "email-validator>=2.2,<3",
+  "pyjwt[crypto]>=2.10,<3",
+  "bcrypt>=4.2,<6",
+  "python-dotenv>=1.0,<2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3,<9",
+  "pytest-asyncio>=0.24,<2",
+  "httpx>=0.28,<1",
+  "ruff>=0.8,<1",
+  "mypy>=1.13,<2",
+  "pre-commit>=4,<5",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+src = ["."]
+extend-exclude = [".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "ASYNC", "RUF", "PTH"]
+ignore = ["B008", "E501"]  # B008: FastAPI Depends() defaults; E501: the formatter owns line length
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "tests", "_bootstrap"]
+known-third-party = ["alembic"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106"]
+"scripts/**" = ["S105"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+packages = ["app"]
+
+[[tool.mypy.overrides]]
+module = ["asyncpg.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+testpaths = ["tests"]

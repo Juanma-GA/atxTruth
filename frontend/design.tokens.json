@@ -1,0 +1,577 @@
+{
+  "$description": "atxTruth design tokens (DTCG 2025.10). Values taken from sources/design/mockup_look_and_feel.html (decision D1). Compiled by style-dictionary.config.mjs.",
+  "color": {
+    "light": {
+      "bg": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.957,
+            0.0063,
+            255.48
+          ],
+          "hex": "#eef1f5"
+        },
+        "$description": "App background"
+      },
+      "panel": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            1.0,
+            0.0,
+            0
+          ],
+          "hex": "#ffffff"
+        },
+        "$description": "Surfaces: top bar, rail, cards"
+      },
+      "sunk": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.9785,
+            0.0045,
+            258.32
+          ],
+          "hex": "#f6f8fb"
+        },
+        "$description": "Inputs and table headers"
+      },
+      "ink": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.2455,
+            0.0368,
+            257.14
+          ],
+          "hex": "#152132"
+        },
+        "$description": "Main text"
+      },
+      "muted": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.4931,
+            0.034,
+            259.54
+          ],
+          "hex": "#566275"
+        },
+        "$description": "Secondary text"
+      },
+      "line": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.8925,
+            0.0139,
+            258.35
+          ],
+          "hex": "#d6dce5"
+        },
+        "$description": "Borders"
+      },
+      "line2": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.9357,
+            0.0092,
+            258.34
+          ],
+          "hex": "#e6eaf0"
+        },
+        "$description": "Subtle dividers"
+      },
+      "accent": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.3746,
+            0.1102,
+            258.43
+          ],
+          "hex": "#173f7a"
+        },
+        "$description": "Brand / primary action"
+      },
+      "accent-ink": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            1.0,
+            0.0,
+            0
+          ],
+          "hex": "#ffffff"
+        },
+        "$description": "Text on accent"
+      },
+      "accent-soft": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.9375,
+            0.0184,
+            258.35
+          ],
+          "hex": "#e3ebf7"
+        },
+        "$description": "Selected / current background"
+      },
+      "focus": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.5461,
+            0.2152,
+            262.88
+          ],
+          "hex": "#2563eb"
+        },
+        "$description": "Keyboard focus ring"
+      },
+      "ok": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.5137,
+            0.1181,
+            153.01
+          ],
+          "hex": "#1f7a45"
+        },
+        "$description": "Success"
+      },
+      "ok-soft": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.9458,
+            0.0223,
+            160.22
+          ],
+          "hex": "#e1f2e8"
+        },
+        "$description": "Success background"
+      },
+      "warn": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.5292,
+            0.1194,
+            64.32
+          ],
+          "hex": "#9a5a00"
+        },
+        "$description": "Warning"
+      },
+      "warn-soft": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.9591,
+            0.0345,
+            82.91
+          ],
+          "hex": "#fdf0d8"
+        },
+        "$description": "Warning background"
+      },
+      "bad": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.5003,
+            0.1821,
+            29.51
+          ],
+          "hex": "#b42318"
+        },
+        "$description": "Error / destructive"
+      },
+      "bad-soft": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.9451,
+            0.0243,
+            23.85
+          ],
+          "hex": "#fde7e5"
+        },
+        "$description": "Error background"
+      },
+      "overlay": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.1723,
+            0.023,
+            260.39
+          ],
+          "alpha": 0.45,
+          "hex": "#0a101a"
+        },
+        "$description": "Modal backdrop"
+      },
+      "shadow": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 0.3,
+          "hex": "#000000"
+        }
+      }
+    },
+    "dark": {
+      "bg": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.185,
+            0.0164,
+            256.83
+          ],
+          "hex": "#0e131a"
+        },
+        "$description": "App background"
+      },
+      "panel": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.2243,
+            0.0222,
+            257.29
+          ],
+          "hex": "#151c26"
+        },
+        "$description": "Surfaces: top bar, rail, cards"
+      },
+      "sunk": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.2064,
+            0.0209,
+            254.93
+          ],
+          "hex": "#111821"
+        },
+        "$description": "Inputs and table headers"
+      },
+      "ink": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.9322,
+            0.0109,
+            256.7
+          ],
+          "hex": "#e4e9f0"
+        },
+        "$description": "Main text"
+      },
+      "muted": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.7208,
+            0.027,
+            255.6
+          ],
+          "hex": "#9aa6b6"
+        },
+        "$description": "Secondary text"
+      },
+      "line": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.3255,
+            0.0307,
+            256.25
+          ],
+          "hex": "#2a3544"
+        },
+        "$description": "Borders"
+      },
+      "line2": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.2819,
+            0.0256,
+            255.73
+          ],
+          "hex": "#212a36"
+        },
+        "$description": "Subtle dividers"
+      },
+      "accent": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.7629,
+            0.1205,
+            265.41
+          ],
+          "hex": "#8db0ff"
+        },
+        "$description": "Brand / primary action"
+      },
+      "accent-ink": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.1831,
+            0.0309,
+            263.38
+          ],
+          "hex": "#0b1220"
+        },
+        "$description": "Text on accent"
+      },
+      "accent-soft": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.2844,
+            0.0445,
+            260.57
+          ],
+          "hex": "#1d2a40"
+        },
+        "$description": "Selected / current background"
+      },
+      "focus": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.7629,
+            0.1205,
+            265.41
+          ],
+          "hex": "#8db0ff"
+        },
+        "$description": "Keyboard focus ring"
+      },
+      "ok": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.7554,
+            0.1365,
+            155.68
+          ],
+          "hex": "#5cc98a"
+        },
+        "$description": "Success"
+      },
+      "ok-soft": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.2815,
+            0.0467,
+            155.23
+          ],
+          "hex": "#14301f"
+        },
+        "$description": "Success background"
+      },
+      "warn": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.8086,
+            0.1388,
+            79.19
+          ],
+          "hex": "#f0b54a"
+        },
+        "$description": "Warning"
+      },
+      "warn-soft": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.2806,
+            0.0417,
+            82.9
+          ],
+          "hex": "#33270f"
+        },
+        "$description": "Warning background"
+      },
+      "bad": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.759,
+            0.1439,
+            27.07
+          ],
+          "hex": "#ff8a7e"
+        },
+        "$description": "Error / destructive"
+      },
+      "bad-soft": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.2565,
+            0.0562,
+            26.71
+          ],
+          "hex": "#3a1714"
+        },
+        "$description": "Error background"
+      },
+      "overlay": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.1723,
+            0.023,
+            260.39
+          ],
+          "alpha": 0.45,
+          "hex": "#0a101a"
+        },
+        "$description": "Modal backdrop"
+      },
+      "shadow": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 0.5,
+          "hex": "#000000"
+        }
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "ui": {
+        "$type": "fontFamily",
+        "$value": [
+          "IBM Plex Sans",
+          "Segoe UI",
+          "system-ui",
+          "sans-serif"
+        ]
+      },
+      "head": {
+        "$type": "fontFamily",
+        "$value": [
+          "IBM Plex Sans Condensed",
+          "Arial Narrow",
+          "IBM Plex Sans",
+          "sans-serif"
+        ]
+      },
+      "mono": {
+        "$type": "fontFamily",
+        "$value": [
+          "IBM Plex Mono",
+          "ui-monospace",
+          "Consolas",
+          "monospace"
+        ]
+      }
+    }
+  },
+  "radius": {
+    "base": {
+      "$type": "dimension",
+      "$value": {
+        "value": 6,
+        "unit": "px"
+      }
+    },
+    "dialog": {
+      "$type": "dimension",
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      }
+    },
+    "small": {
+      "$type": "dimension",
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      }
+    }
+  },
+  "size": {
+    "rail": {
+      "$type": "dimension",
+      "$value": {
+        "value": 232,
+        "unit": "px"
+      },
+      "$description": "Left navigation rail width"
+    },
+    "control": {
+      "$type": "dimension",
+      "$value": {
+        "value": 34,
+        "unit": "px"
+      },
+      "$description": "Minimum control height"
+    }
+  }
+}

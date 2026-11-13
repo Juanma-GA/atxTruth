@@ -1,0 +1,62 @@
+---
+description: Security rules for all AI-assisted development
+globs: **/*
+alwaysApply: true
+---
+
+<!-- ═══ AACF VERSION CHECK — AGENTS READ FIRST ═══
+This file belongs to a downloaded snapshot of the ATEXIS AI Framework, version 2.0.0.
+Before relying on it, verify the snapshot is current:
+1. Call the aacf_fetch MCP tool (endpoint http://10.117.139.1:8200/mcp, streamable-http,
+   header 'Authorization: Bearer <key>' or 'X-Api-Key: <key>'):
+   aacf_fetch({"path": "VERSION"})
+2. If the returned version differs from 2.0.0, this snapshot is OUTDATED. Fetch ALL
+   framework files fresh via aacf_fetch (start with aacf_fetch({"path": "", "list_dir": true})
+   and walk the tree), or ask the user to re-download the framework ZIP from the IdAI
+   portal (/propose/framework). Do not mix files from different versions.
+3. If you CANNOT reach the aacf_fetch MCP, you MUST tell the user: you cannot reach the
+   AACF MCP and may be working with an outdated version of the framework. Then proceed
+   with this file as-is.
+Verify once per session, not per file.
+═══ -->
+
+
+# Security Rules
+
+## Authentication & Authorization
+- Use Keycloak OIDC for authentication
+- Verify JWT tokens on every request
+- Check role-based permissions before data access
+- Implement session timeout and token rotation
+- Never trust client-side role claims without server verification
+
+## Input Validation
+- Validate ALL inputs at system boundaries
+- Use schema validation (Pydantic, Zod, etc.)
+- Reject unexpected fields (strict mode)
+- Limit string lengths, numeric ranges
+- Sanitize file names and paths (prevent traversal)
+
+## SQL Injection Prevention
+- ALWAYS use parameterized queries or ORM
+- NEVER concatenate user input into SQL strings
+- Use allowlists for dynamic table/column names
+- Log suspicious query patterns
+
+## XSS Prevention
+- Use framework default escaping (React JSX)
+- Never use dangerouslySetInnerHTML without sanitization
+- Set Content-Security-Policy headers
+- Validate URLs before rendering links
+
+## SSRF Prevention
+- Validate all user-provided URLs
+- Block private IP ranges (10.x, 172.16-31.x, 192.168.x)
+- Use allowlists for external service URLs
+- Never follow redirects to internal addresses
+
+## Secrets Management
+- Environment variables for all secrets
+- Fernet encryption for secrets stored in DB
+- Rotate credentials on schedule
+- Never log or return secrets in API responses

@@ -1,0 +1,123 @@
+{
+  "app": { "tagline": "Customer Services source of truth" },
+  "common": {
+    "save": "Save", "cancel": "Cancel", "close": "Close", "confirm": "Confirm", "loading": "Loading…",
+    "retry": "Try again", "copy": "Copy", "copied": "Copied", "saving": "Saving…", "saved": "Saved",
+    "actions": "Actions", "previous": "Previous", "next": "Next", "pageOf": "Page {{page}} of {{pages}}",
+    "totalRows": "{{count}} rows", "none": "—", "on": "On", "off": "Off", "required": "Required"
+  },
+  "languages": {
+    "en": "English", "es": "Spanish", "fr": "French",
+    "short": { "en": "EN", "es": "ES", "fr": "FR" }
+  },
+  "theme": { "label": "Theme", "system": "System", "light": "Light", "dark": "Dark" },
+  "roles": { "admin": "Administrator", "editor": "Editor", "viewer": "Viewer" },
+  "shell": {
+    "breadcrumb": "Breadcrumb", "mainNav": "Main navigation", "language": "Interface language",
+    "userMenu": "User menu", "signOut": "Sign out", "changePassword": "Change password",
+    "skipToContent": "Skip to content", "logoAlt": "ALTEN", "signedInAs": "Signed in as",
+    "signedOut": "You have signed out.", "sessionExpired": "Your session has ended. Please sign in again."
+  },
+  "nav": { "home": "Home", "settings": "Settings" },
+  "login": {
+    "title": "Sign in", "subtitle": "Use your atxTruth account.", "email": "Email", "password": "Password",
+    "submit": "Sign in", "submitting": "Signing in…", "ssoNotice": "Sign-in is handled by your organisation's identity provider."
+  },
+  "changePassword": {
+    "title": "Change password", "forcedIntro": "You signed in with a temporary password. Choose a new one to continue.",
+    "intro": "Other sessions of this account will be signed out.",
+    "current": "Current password", "new": "New password", "confirm": "Repeat new password",
+    "submit": "Change password", "mismatch": "The two new passwords are different.",
+    "minLength": "At least {{min}} characters.", "success": "Password changed."
+  },
+  "home": {
+    "title": "Home", "description": "Service catalogue and project references of Customer Services, generated as slides, HTML, Markdown and Excel without AI.",
+    "welcome": "Welcome, {{name}}", "roleLine": "You are signed in as {{role}}.",
+    "statusTitle": "What is available", "statusBody": "This first version contains the base of the application: accounts and roles, settings, audit trail and the interface in English, Spanish and French. References and the catalogue arrive in the next deliveries.",
+    "accountTitle": "Your account", "openSettings": "Open settings"
+  },
+  "settings": {
+    "title": "Settings", "description": "Your account and, for administrators, the application configuration, users and audit trail.",
+    "tabs": { "account": "My account", "configuration": "Configuration", "users": "Users", "audit": "Audit trail" }
+  },
+  "account": {
+    "title": "My account", "description": "These preferences are stored with your account and follow you on any computer.",
+    "profile": "Profile", "displayName": "Display name", "email": "Email", "role": "Role",
+    "preferences": "Preferences", "language": "Interface language", "theme": "Theme", "saved": "Preference saved."
+  },
+  "config": {
+    "title": "Configuration", "description": "Functional settings of the application. Every change is applied at once and recorded in the audit trail.",
+    "categories": { "general": "General", "security": "Security", "interface": "Interface", "content": "Content" },
+    "restoreDefault": "Restore default", "defaultValue": "Default: {{value}}", "saved": "Setting saved.",
+    "infraTitle": "Infrastructure", "infraDescription": "Set by IT in the server environment. Read-only here; secrets are masked.",
+    "secret": "Secret",
+    "units": { "hours": "hours", "minutes": "minutes", "rows": "rows", "megabytes": "MB", "characters": "characters" },
+    "invalid": "Invalid value"
+  },
+  "users": {
+    "title": "Users", "description": "Accounts that can sign in. New users receive a temporary password and must change it when they first sign in.",
+    "create": "New user", "email": "Email", "displayName": "Name", "role": "Role", "status": "Status",
+    "active": "Active", "deactivated": "Deactivated", "pendingPassword": "Must change password",
+    "lastLogin": "Last sign-in", "never": "Never", "showDeactivated": "Show deactivated users",
+    "deactivate": "Deactivate", "restore": "Reactivate", "resetPassword": "Reset password",
+    "deletePermanently": "Delete permanently", "you": "you",
+    "createTitle": "New user", "createSubmit": "Create user",
+    "tempTitle": "Temporary password", "tempIntro": "Give this password to {{email}}. It is shown only once; the user must change it at first sign-in.",
+    "deleteTitle": "Delete user permanently", "deleteBody": "This removes {{email}} for good. The audit trail keeps the record of what this user did. Type the email to confirm.",
+    "typeEmail": "Email of the user", "deleted": "User deleted permanently.", "deactivatedToast": "User deactivated.",
+    "restoredToast": "User reactivated.", "roleChanged": "Role changed.", "created": "User created.", "empty": "No users."
+  },
+  "audit": {
+    "title": "Audit trail", "description": "Who did what and when. Passwords and tokens are never recorded.",
+    "when": "When", "who": "Who", "action": "Action", "target": "On", "changes": "Changes", "system": "System",
+    "filterLabel": "Show", "empty": "No events.",
+    "filter": { "all": "All events", "auth": "Sign-in and sessions", "user": "Users", "settings": "Settings", "account": "Account preferences" },
+    "actions": {
+      "auth": { "login": "Signed in", "login_failed": "Failed sign-in", "logout": "Signed out", "password_changed": "Changed password", "refresh_reuse_detected": "Reused session token: all sessions ended" },
+      "user": { "created": "Created user", "updated": "Updated user", "deactivated": "Deactivated user", "restored": "Reactivated user", "password_reset": "Reset password", "deleted_permanently": "Deleted user permanently" },
+      "settings": { "updated": "Changed setting", "reset": "Restored setting default" },
+      "account": { "updated": "Changed own preferences" }
+    },
+    "fields": { "value": "Value", "display_name": "Name", "preferred_language": "Language", "theme": "Theme", "role": "Role", "email": "Email", "deleted_at": "Deactivated" }
+  },
+  "translatable": {
+    "missing": "No {{lang}} translation", "master": "Master language (required)", "optional": "Optional",
+    "tabsLabel": "Languages", "required": "The English text is required.", "fieldInLanguage": "{{field}} ({{lang}})"
+  },
+  "errors": {
+    "network": "The server did not answer. Check your connection and try again.",
+    "unknown": "Something went wrong. Reference: {{ref}}",
+    "unexpected": "Something went wrong.",
+    "http": { "404": "Not found.", "405": "Operation not allowed.", "429": "Too many requests. Wait a moment." },
+    "server": { "internal": "Something went wrong on the server. Reference: {{ref}}" },
+    "validation": { "failed": "Some fields are not valid." },
+    "auth": {
+      "invalid_credentials": "Wrong email or password.",
+      "too_many_attempts": "Too many failed attempts. Try again in {{minutes}} minutes.",
+      "session_expired": "Your session has ended. Please sign in again.",
+      "not_authenticated": "Please sign in.",
+      "forbidden": "You do not have permission to do this.",
+      "password_change_required": "Change your temporary password first.",
+      "current_password_incorrect": "The current password is not correct.",
+      "password_too_short": "The new password needs at least {{min}} characters.",
+      "password_too_long": "The new password is too long (at most {{max_bytes}} bytes).",
+      "password_unchanged": "The new password must be different from the current one.",
+      "origin_not_allowed": "Request from a site that is not allowed."
+    },
+    "users": {
+      "not_found": "That user does not exist.", "email_taken": "There is already a user with that email.",
+      "last_admin": "There must be at least one active administrator.",
+      "cannot_change_own_role": "You cannot change your own role.",
+      "cannot_deactivate_self": "You cannot deactivate your own account.",
+      "inactive": "The user is deactivated.", "must_deactivate_first": "Deactivate the user before deleting it.",
+      "confirmation_mismatch": "The email you typed does not match."
+    },
+    "settings": {
+      "not_found": "That setting does not exist.", "invalid_type": "The value has the wrong type.",
+      "too_small": "Must be at least {{min}}.", "too_large": "Must be at most {{max}}.",
+      "too_short": "Must have at least {{min_length}} characters.", "too_long": "Must have at most {{max_length}} characters.",
+      "invalid_option": "Choose one of the options.", "unknown_field": "Unknown field.", "missing_field": "A field is missing.",
+      "unsupported_type": "Unsupported setting type."
+    }
+  }
+}
