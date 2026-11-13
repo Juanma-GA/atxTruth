@@ -9,8 +9,8 @@ Excel. Plan completo: [`docs/plan/00-plan-general.md`](docs/plan/00-plan-general
 - Este proyecto sigue el **ATEXIS AI-Assisted Coding Framework** copiado sin cambios en `aacf/` (versión `aacf/VERSION` = 2.0.0, de `Juanma-GA/aacf`, rama `claude/crear-carpetas-en-sp-e57wrh`). **Si el AACF y este fichero chocan, gana el AACF** y este fichero se corrige.
 - Antes de dar algo por terminado, autocomprobar **HR0–HR21** (`aacf/rules/atexis-hard-rules.md`). Las más relevantes aquí: HR0/HR8 (nada fijo en código; cada ajuste funcional tiene su sitio en Ajustes → Configuración), HR1 (nunca `localStorage`/`sessionStorage`), HR7 (nada de vueltas atrás silenciosas), HR9 (borrado lógico; el definitivo, confirmado y auditado), HR10 (mezcla profunda), HR15/HR21 (todo texto visible por i18n y humanizado), HR20 (UI optimista).
 - El MCP `aacf_fetch` solo está en la red corporativa: desde el entorno remoto no se alcanza, así que se usa la copia local y **hay que decirlo en el informe** (puede estar desactualizada). No mezclar ficheros de versiones distintas; `aacf/` no se toca.
-- Desviaciones decididas (D1–D5) y decisiones técnicas: [`docs/decisiones.md`](docs/decisiones.md). Una desviación nueva se anota ahí con fecha.
-- Revisión: el agente `aacf/agents/code-reviewer.agent.md` en contexto aislado revisa cada PR.
+- Desviaciones decididas (D1–D6) y decisiones técnicas: [`docs/decisiones.md`](docs/decisiones.md). Una desviación nueva se anota ahí con fecha.
+- Revisión: el agente `aacf/agents/code-reviewer.agent.md` en contexto aislado revisa los cambios de cada encargo antes del push.
 
 ## Cómo levantar el entorno
 
@@ -37,14 +37,14 @@ npm run dev:frontend                          # vite :5173, proxy /api → :8000
 
 ## Reglas de cierre de cada encargo
 
-1. Siempre `npm run check`.
+1. Siempre `npm run check`, y el orden es: **check en verde → commit → push a `main`** (sin ramas ni PR, desviación D6). Después del push, vigilar el CI y arreglarlo si falla.
 2. Navegador: el `verify-*` nuevo del encargo y, como mucho, los dos o tres que cubren las pantallas que cambia.
 3. Si un script antiguo falla, ejecútalo una vez sobre el commit anterior: si allí también falla, va al informe y no se arregla en el encargo; si allí pasaba, es una regresión y se arregla.
 4. **Informe**: qué se hizo, qué no y por qué, desviaciones del AACF nuevas (si las hay) y el resumen final de `check` tal cual. Sin repetir lo que ya cuentan los commits.
 5. Si el encargo va a pasar de dos partes grandes o el contexto se va a resumir a mitad, avisa al terminar la primera parte y entrega por partes.
 6. Una entrada en `docs/historial-cambios.md` (corta: qué, por qué, commit y tests).
 
-Trabajo en ramas `feature/...` con PR contra `main`; nunca push directo a `main` (AACF G5).
+Se trabaja directamente en `main` (desviación D6 de AACF G5): nunca se hace push sin `npm run check` en verde, y el CI corre en cada push.
 
 ## Convenciones del proyecto (se aplican desde E1)
 

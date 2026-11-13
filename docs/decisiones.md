@@ -1,7 +1,7 @@
 # Decisiones y desviaciones del AACF
 
 Registro de decisiones que se apartan del AACF (versión local 2.0.0) o que lo concretan, para que un
-revisor no las tome por fallos. Fecha de las decisiones D1–D5: **13/11/2026** (Juanma).
+revisor no las tome por fallos. Fecha de las decisiones D1–D6: **13/11/2026** (Juanma).
 
 ## Desviaciones decididas por Juanma
 
@@ -12,6 +12,7 @@ revisor no las tome por fallos. Fecha de las decisiones D1–D5: **13/11/2026** 
 | D3 | HR11 (LLM en vez de regex para decisiones semánticas) y HR6 (resumir con LLM) | No hay IA en la app hasta la fase MCP. Lo que el código pueda comprobar, lo comprueba el código. Nada se trunca: si algo no cabe, se avisa. |
 | D4 | Clasificación de datos y nivel del AACF | Los datos de desarrollo son **sintéticos**. La clasificación real, el nivel (tier) y los controles de datos confidenciales los resuelve IT al desplegar en su servidor con datos reales. |
 | D5 | Versión de la taxonomía | Las referencias se mapean al **Catálogo V0** (hoja `Lists` del Excel de referencias). El modelo admite varias ediciones, pero ahora solo se carga la V0. |
+| D6 | AACF G5 (los agentes no hacen push a `main`) | Decisión de Juanma: CC trabaja directamente en `main`. La protección pasa a ser `npm run check` en verde antes de cada push y el CI en cada push. |
 
 ## Decisiones técnicas de E0 (13/11/2026)
 
