@@ -6,7 +6,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 
 import { findForbidden } from './check-forbidden.mjs';
-import { BACKEND, FRONTEND } from './lib/paths.mjs';
+import { BACKEND, FRONTEND, ROOT } from './lib/paths.mjs';
 import { run } from './lib/proc.mjs';
 import { backendPython } from './lib/python.mjs';
 
@@ -28,6 +28,7 @@ const py = (args) => ({ cmd: python.cmd, args, cwd: BACKEND });
 
 const steps = [
   { name: 'forbidden patterns', fn: () => findForbidden() },
+  { name: 'secret scan (detect-secrets)', cmd: python.cmd, args: ['-m', 'pre_commit', 'run', 'detect-secrets', '--all-files'], cwd: ROOT },
   { name: 'design tokens', ...fe(['style-dictionary.config.mjs']) },
   { name: 'eslint', ...fe([bin('eslint', 'bin', 'eslint.js'), '.', '--max-warnings', '0']) },
   { name: 'ruff check', ...py(['-m', 'ruff', 'check', '.']) },
