@@ -1,0 +1,62 @@
+---
+description: Python coding standards
+globs: "**/*.py"
+alwaysApply: false
+---
+
+<!-- ═══ AACF VERSION CHECK — AGENTS READ FIRST ═══
+This file belongs to a downloaded snapshot of the ATEXIS AI Framework, version 2.0.0.
+Before relying on it, verify the snapshot is current:
+1. Call the aacf_fetch MCP tool (endpoint http://10.117.139.1:8200/mcp, streamable-http,
+   header 'Authorization: Bearer <key>' or 'X-Api-Key: <key>'):
+   aacf_fetch({"path": "VERSION"})
+2. If the returned version differs from 2.0.0, this snapshot is OUTDATED. Fetch ALL
+   framework files fresh via aacf_fetch (start with aacf_fetch({"path": "", "list_dir": true})
+   and walk the tree), or ask the user to re-download the framework ZIP from the IdAI
+   portal (/propose/framework). Do not mix files from different versions.
+3. If you CANNOT reach the aacf_fetch MCP, you MUST tell the user: you cannot reach the
+   AACF MCP and may be working with an outdated version of the framework. Then proceed
+   with this file as-is.
+Verify once per session, not per file.
+═══ -->
+
+
+# Python Rules
+
+## Style
+- Python 3.12+ features allowed
+- Type hints on all function signatures
+- Docstrings for public functions (Google style)
+- Use `async`/`await` for I/O operations
+- Prefer `pathlib` over `os.path`
+- Use f-strings over `.format()` or `%`
+
+## Dependencies
+- Use `pyproject.toml` for dependency management
+- Pin exact versions in production
+- Use `uv` or `pip-compile` for lock files
+- No requirements.txt (use pyproject.toml)
+
+## Error Handling
+- Specific exceptions, never bare `except:`
+- Custom exception classes for business errors
+- Use `logging` module, not `print()`
+- Structured logging with context (JSON)
+
+## Database
+- SQLAlchemy 2.0 async style
+- Alembic for migrations
+- Connection pooling with asyncpg
+- Never raw SQL in route handlers
+
+## Testing
+- pytest for all tests
+- pytest-asyncio for async tests
+- Fixtures for database setup/teardown
+- Mock external services, not internal logic
+
+## FastAPI Specifics
+- Pydantic models for request/response validation
+- Dependency injection for services
+- Background tasks for async operations
+- Status codes: 200 success, 201 created, 400 bad request, 401 unauthorized, 403 forbidden, 404 not found, 500 internal error

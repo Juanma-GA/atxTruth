@@ -1,0 +1,22 @@
+node_modules/
+dist/
+coverage/
+.vite/
+*.tsbuildinfo
+frontend/src/styles/generated/
+# Python
+__pycache__/
+*.pyc
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+# Secrets / local config
+.env
+.env.*
+!.env.example
+backend/keys/
+# Verification artefacts
+artifacts/
+test-results/
+playwright-report/

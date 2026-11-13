@@ -1,0 +1,123 @@
+{
+  "app": { "tagline": "Source de vérité de Customer Services" },
+  "common": {
+    "save": "Enregistrer", "cancel": "Annuler", "close": "Fermer", "confirm": "Confirmer", "loading": "Chargement…",
+    "retry": "Réessayer", "copy": "Copier", "copied": "Copié", "saving": "Enregistrement…", "saved": "Enregistré",
+    "actions": "Actions", "previous": "Précédent", "next": "Suivant", "pageOf": "Page {{page}} sur {{pages}}",
+    "totalRows": "{{count}} lignes", "none": "—", "on": "Oui", "off": "Non", "required": "Obligatoire"
+  },
+  "languages": {
+    "en": "Anglais", "es": "Espagnol", "fr": "Français",
+    "short": { "en": "EN", "es": "ES", "fr": "FR" }
+  },
+  "theme": { "label": "Thème", "system": "Système", "light": "Clair", "dark": "Sombre" },
+  "roles": { "admin": "Administrateur", "editor": "Éditeur", "viewer": "Lecteur" },
+  "shell": {
+    "breadcrumb": "Fil d'Ariane", "mainNav": "Navigation principale", "language": "Langue de l'interface",
+    "userMenu": "Menu utilisateur", "signOut": "Se déconnecter", "changePassword": "Changer le mot de passe",
+    "skipToContent": "Aller au contenu", "logoAlt": "ALTEN", "signedInAs": "Connecté en tant que",
+    "signedOut": "Vous êtes déconnecté.", "sessionExpired": "Votre session est terminée. Reconnectez-vous."
+  },
+  "nav": { "home": "Accueil", "settings": "Paramètres" },
+  "login": {
+    "title": "Connexion", "subtitle": "Utilisez votre compte atxTruth.", "email": "E-mail", "password": "Mot de passe",
+    "submit": "Se connecter", "submitting": "Connexion…", "ssoNotice": "La connexion est gérée par le fournisseur d'identité de votre organisation."
+  },
+  "changePassword": {
+    "title": "Changer le mot de passe", "forcedIntro": "Vous vous êtes connecté avec un mot de passe temporaire. Choisissez-en un nouveau pour continuer.",
+    "intro": "Les autres sessions de ce compte seront fermées.",
+    "current": "Mot de passe actuel", "new": "Nouveau mot de passe", "confirm": "Répétez le nouveau mot de passe",
+    "submit": "Changer le mot de passe", "mismatch": "Les deux nouveaux mots de passe sont différents.",
+    "minLength": "Au moins {{min}} caractères.", "success": "Mot de passe changé."
+  },
+  "home": {
+    "title": "Accueil", "description": "Catalogue de services et références de projet de Customer Services, générés en diapositives, HTML, Markdown et Excel sans IA.",
+    "welcome": "Bonjour, {{name}}", "roleLine": "Vous êtes connecté en tant que {{role}}.",
+    "statusTitle": "Ce qui est disponible", "statusBody": "Cette première version contient la base de l'application : comptes et rôles, paramètres, journal d'audit et interface en anglais, espagnol et français. Les références et le catalogue arrivent dans les prochaines livraisons.",
+    "accountTitle": "Votre compte", "openSettings": "Ouvrir les paramètres"
+  },
+  "settings": {
+    "title": "Paramètres", "description": "Votre compte et, pour les administrateurs, la configuration de l'application, les utilisateurs et le journal d'audit.",
+    "tabs": { "account": "Mon compte", "configuration": "Configuration", "users": "Utilisateurs", "audit": "Journal d'audit" }
+  },
+  "account": {
+    "title": "Mon compte", "description": "Ces préférences sont enregistrées avec votre compte et vous suivent sur n'importe quel ordinateur.",
+    "profile": "Profil", "displayName": "Nom affiché", "email": "E-mail", "role": "Rôle",
+    "preferences": "Préférences", "language": "Langue de l'interface", "theme": "Thème", "saved": "Préférence enregistrée."
+  },
+  "config": {
+    "title": "Configuration", "description": "Paramètres fonctionnels de l'application. Chaque changement s'applique immédiatement et est enregistré dans le journal d'audit.",
+    "categories": { "general": "Général", "security": "Sécurité", "interface": "Interface", "content": "Contenu" },
+    "restoreDefault": "Rétablir la valeur par défaut", "defaultValue": "Par défaut : {{value}}", "saved": "Paramètre enregistré.",
+    "infraTitle": "Infrastructure", "infraDescription": "Défini par l'IT dans l'environnement du serveur. En lecture seule ici ; les secrets sont masqués.",
+    "secret": "Secret",
+    "units": { "hours": "heures", "minutes": "minutes", "rows": "lignes", "megabytes": "Mo", "characters": "caractères" },
+    "invalid": "Valeur non valide"
+  },
+  "users": {
+    "title": "Utilisateurs", "description": "Comptes autorisés à se connecter. Les nouveaux utilisateurs reçoivent un mot de passe temporaire et doivent le changer à la première connexion.",
+    "create": "Nouvel utilisateur", "email": "E-mail", "displayName": "Nom", "role": "Rôle", "status": "Statut",
+    "active": "Actif", "deactivated": "Désactivé", "pendingPassword": "Doit changer son mot de passe",
+    "lastLogin": "Dernière connexion", "never": "Jamais", "showDeactivated": "Afficher les utilisateurs désactivés",
+    "deactivate": "Désactiver", "restore": "Réactiver", "resetPassword": "Réinitialiser le mot de passe",
+    "deletePermanently": "Supprimer définitivement", "you": "vous",
+    "createTitle": "Nouvel utilisateur", "createSubmit": "Créer l'utilisateur",
+    "tempTitle": "Mot de passe temporaire", "tempIntro": "Transmettez ce mot de passe à {{email}}. Il n'est affiché qu'une fois ; l'utilisateur devra le changer à la première connexion.",
+    "deleteTitle": "Supprimer définitivement l'utilisateur", "deleteBody": "Cela supprime {{email}} définitivement. Le journal d'audit conserve la trace de ses actions. Saisissez l'e-mail pour confirmer.",
+    "typeEmail": "E-mail de l'utilisateur", "deleted": "Utilisateur supprimé définitivement.", "deactivatedToast": "Utilisateur désactivé.",
+    "restoredToast": "Utilisateur réactivé.", "roleChanged": "Rôle modifié.", "created": "Utilisateur créé.", "empty": "Aucun utilisateur."
+  },
+  "audit": {
+    "title": "Journal d'audit", "description": "Qui a fait quoi et quand. Les mots de passe et les jetons ne sont jamais enregistrés.",
+    "when": "Quand", "who": "Qui", "action": "Action", "target": "Sur", "changes": "Modifications", "system": "Système",
+    "filterLabel": "Afficher", "empty": "Aucun événement.",
+    "filter": { "all": "Tous les événements", "auth": "Connexions et sessions", "user": "Utilisateurs", "settings": "Paramètres", "account": "Préférences du compte" },
+    "actions": {
+      "auth": { "login": "Connexion", "login_failed": "Échec de connexion", "logout": "Déconnexion", "password_changed": "Mot de passe changé", "refresh_reuse_detected": "Jeton de session réutilisé : toutes les sessions fermées" },
+      "user": { "created": "Utilisateur créé", "updated": "Utilisateur modifié", "deactivated": "Utilisateur désactivé", "restored": "Utilisateur réactivé", "password_reset": "Mot de passe réinitialisé", "deleted_permanently": "Utilisateur supprimé définitivement" },
+      "settings": { "updated": "Paramètre modifié", "reset": "Paramètre rétabli par défaut" },
+      "account": { "updated": "Préférences modifiées" }
+    },
+    "fields": { "value": "Valeur", "display_name": "Nom", "preferred_language": "Langue", "theme": "Thème", "role": "Rôle", "email": "E-mail", "deleted_at": "Désactivé" }
+  },
+  "translatable": {
+    "missing": "Pas de traduction {{lang}}", "master": "Langue maître (obligatoire)", "optional": "Facultatif",
+    "tabsLabel": "Langues", "required": "Le texte en anglais est obligatoire.", "fieldInLanguage": "{{field}} ({{lang}})"
+  },
+  "errors": {
+    "network": "Le serveur ne répond pas. Vérifiez la connexion et réessayez.",
+    "unknown": "Une erreur s'est produite. Référence : {{ref}}",
+    "unexpected": "Une erreur s'est produite.",
+    "http": { "404": "Introuvable.", "405": "Opération non autorisée.", "429": "Trop de requêtes. Patientez un instant." },
+    "server": { "internal": "Une erreur s'est produite sur le serveur. Référence : {{ref}}" },
+    "validation": { "failed": "Certains champs ne sont pas valides." },
+    "auth": {
+      "invalid_credentials": "E-mail ou mot de passe incorrect.",
+      "too_many_attempts": "Trop de tentatives échouées. Réessayez dans {{minutes}} minutes.",
+      "session_expired": "Votre session est terminée. Reconnectez-vous.",
+      "not_authenticated": "Veuillez vous connecter.",
+      "forbidden": "Vous n'avez pas l'autorisation de faire cela.",
+      "password_change_required": "Changez d'abord votre mot de passe temporaire.",
+      "current_password_incorrect": "Le mot de passe actuel est incorrect.",
+      "password_too_short": "Le nouveau mot de passe doit comporter au moins {{min}} caractères.",
+      "password_too_long": "Le nouveau mot de passe est trop long ({{max_bytes}} octets au maximum).",
+      "password_unchanged": "Le nouveau mot de passe doit être différent de l'actuel.",
+      "origin_not_allowed": "Requête provenant d'un site non autorisé."
+    },
+    "users": {
+      "not_found": "Cet utilisateur n'existe pas.", "email_taken": "Un utilisateur avec cet e-mail existe déjà.",
+      "last_admin": "Il doit rester au moins un administrateur actif.",
+      "cannot_change_own_role": "Vous ne pouvez pas changer votre propre rôle.",
+      "cannot_deactivate_self": "Vous ne pouvez pas désactiver votre propre compte.",
+      "inactive": "L'utilisateur est désactivé.", "must_deactivate_first": "Désactivez l'utilisateur avant de le supprimer.",
+      "confirmation_mismatch": "L'e-mail saisi ne correspond pas."
+    },
+    "settings": {
+      "not_found": "Ce paramètre n'existe pas.", "invalid_type": "La valeur n'est pas du bon type.",
+      "too_small": "Doit être au moins {{min}}.", "too_large": "Doit être au plus {{max}}.",
+      "too_short": "Doit comporter au moins {{min_length}} caractères.", "too_long": "Doit comporter au plus {{max_length}} caractères.",
+      "invalid_option": "Choisissez une des options.", "unknown_field": "Champ inconnu.", "missing_field": "Il manque un champ.",
+      "unsupported_type": "Type de paramètre non pris en charge."
+    }
+  }
+}

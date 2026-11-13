@@ -1,0 +1,123 @@
+{
+  "app": { "tagline": "Source of truth de Customer Services" },
+  "common": {
+    "save": "Guardar", "cancel": "Cancelar", "close": "Cerrar", "confirm": "Confirmar", "loading": "Cargando…",
+    "retry": "Reintentar", "copy": "Copiar", "copied": "Copiado", "saving": "Guardando…", "saved": "Guardado",
+    "actions": "Acciones", "previous": "Anterior", "next": "Siguiente", "pageOf": "Página {{page}} de {{pages}}",
+    "totalRows": "{{count}} filas", "none": "—", "on": "Sí", "off": "No", "required": "Obligatorio"
+  },
+  "languages": {
+    "en": "Inglés", "es": "Español", "fr": "Francés",
+    "short": { "en": "EN", "es": "ES", "fr": "FR" }
+  },
+  "theme": { "label": "Tema", "system": "Sistema", "light": "Claro", "dark": "Oscuro" },
+  "roles": { "admin": "Administrador", "editor": "Editor", "viewer": "Lector" },
+  "shell": {
+    "breadcrumb": "Migas de pan", "mainNav": "Navegación principal", "language": "Idioma de la interfaz",
+    "userMenu": "Menú de usuario", "signOut": "Cerrar sesión", "changePassword": "Cambiar contraseña",
+    "skipToContent": "Saltar al contenido", "logoAlt": "ALTEN", "signedInAs": "Has entrado como",
+    "signedOut": "Has cerrado la sesión.", "sessionExpired": "Tu sesión ha terminado. Vuelve a entrar."
+  },
+  "nav": { "home": "Inicio", "settings": "Ajustes" },
+  "login": {
+    "title": "Entrar", "subtitle": "Usa tu cuenta de atxTruth.", "email": "Email", "password": "Contraseña",
+    "submit": "Entrar", "submitting": "Entrando…", "ssoNotice": "El acceso lo gestiona el proveedor de identidad de tu organización."
+  },
+  "changePassword": {
+    "title": "Cambiar contraseña", "forcedIntro": "Has entrado con una contraseña temporal. Elige una nueva para continuar.",
+    "intro": "Se cerrarán las demás sesiones de esta cuenta.",
+    "current": "Contraseña actual", "new": "Contraseña nueva", "confirm": "Repite la contraseña nueva",
+    "submit": "Cambiar contraseña", "mismatch": "Las dos contraseñas nuevas no coinciden.",
+    "minLength": "Al menos {{min}} caracteres.", "success": "Contraseña cambiada."
+  },
+  "home": {
+    "title": "Inicio", "description": "Catálogo de servicios y referencias de proyecto de Customer Services, generados como slides, HTML, Markdown y Excel sin IA.",
+    "welcome": "Hola, {{name}}", "roleLine": "Has entrado como {{role}}.",
+    "statusTitle": "Qué hay disponible", "statusBody": "Esta primera versión contiene la base de la aplicación: cuentas y roles, ajustes, auditoría y la interfaz en inglés, español y francés. Las referencias y el catálogo llegan en las próximas entregas.",
+    "accountTitle": "Tu cuenta", "openSettings": "Abrir ajustes"
+  },
+  "settings": {
+    "title": "Ajustes", "description": "Tu cuenta y, para administradores, la configuración de la aplicación, los usuarios y la auditoría.",
+    "tabs": { "account": "Mi cuenta", "configuration": "Configuración", "users": "Usuarios", "audit": "Auditoría" }
+  },
+  "account": {
+    "title": "Mi cuenta", "description": "Estas preferencias se guardan en tu cuenta y te siguen en cualquier ordenador.",
+    "profile": "Perfil", "displayName": "Nombre visible", "email": "Email", "role": "Rol",
+    "preferences": "Preferencias", "language": "Idioma de la interfaz", "theme": "Tema", "saved": "Preferencia guardada."
+  },
+  "config": {
+    "title": "Configuración", "description": "Ajustes funcionales de la aplicación. Cada cambio se aplica al momento y queda en la auditoría.",
+    "categories": { "general": "General", "security": "Seguridad", "interface": "Interfaz", "content": "Contenido" },
+    "restoreDefault": "Restaurar valor por defecto", "defaultValue": "Por defecto: {{value}}", "saved": "Ajuste guardado.",
+    "infraTitle": "Infraestructura", "infraDescription": "Lo fija IT en el entorno del servidor. Aquí es solo lectura y los secretos van enmascarados.",
+    "secret": "Secreto",
+    "units": { "hours": "horas", "minutes": "minutos", "rows": "filas", "megabytes": "MB", "characters": "caracteres" },
+    "invalid": "Valor no válido"
+  },
+  "users": {
+    "title": "Usuarios", "description": "Cuentas que pueden entrar. Los usuarios nuevos reciben una contraseña temporal y deben cambiarla al entrar por primera vez.",
+    "create": "Nuevo usuario", "email": "Email", "displayName": "Nombre", "role": "Rol", "status": "Estado",
+    "active": "Activo", "deactivated": "Desactivado", "pendingPassword": "Debe cambiar la contraseña",
+    "lastLogin": "Último acceso", "never": "Nunca", "showDeactivated": "Mostrar usuarios desactivados",
+    "deactivate": "Desactivar", "restore": "Reactivar", "resetPassword": "Restablecer contraseña",
+    "deletePermanently": "Borrar definitivamente", "you": "tú",
+    "createTitle": "Nuevo usuario", "createSubmit": "Crear usuario",
+    "tempTitle": "Contraseña temporal", "tempIntro": "Da esta contraseña a {{email}}. Solo se muestra una vez; el usuario tendrá que cambiarla al entrar por primera vez.",
+    "deleteTitle": "Borrar usuario definitivamente", "deleteBody": "Esto elimina a {{email}} para siempre. La auditoría conserva el registro de lo que hizo. Escribe el email para confirmar.",
+    "typeEmail": "Email del usuario", "deleted": "Usuario borrado definitivamente.", "deactivatedToast": "Usuario desactivado.",
+    "restoredToast": "Usuario reactivado.", "roleChanged": "Rol cambiado.", "created": "Usuario creado.", "empty": "No hay usuarios."
+  },
+  "audit": {
+    "title": "Auditoría", "description": "Quién hizo qué y cuándo. Nunca se registran contraseñas ni tokens.",
+    "when": "Cuándo", "who": "Quién", "action": "Acción", "target": "Sobre", "changes": "Cambios", "system": "Sistema",
+    "filterLabel": "Mostrar", "empty": "No hay eventos.",
+    "filter": { "all": "Todos los eventos", "auth": "Accesos y sesiones", "user": "Usuarios", "settings": "Ajustes", "account": "Preferencias de cuenta" },
+    "actions": {
+      "auth": { "login": "Entró", "login_failed": "Acceso fallido", "logout": "Cerró sesión", "password_changed": "Cambió la contraseña", "refresh_reuse_detected": "Token de sesión reutilizado: se cerraron todas las sesiones" },
+      "user": { "created": "Creó un usuario", "updated": "Modificó un usuario", "deactivated": "Desactivó un usuario", "restored": "Reactivó un usuario", "password_reset": "Restableció la contraseña", "deleted_permanently": "Borró un usuario definitivamente" },
+      "settings": { "updated": "Cambió un ajuste", "reset": "Restauró el valor por defecto de un ajuste" },
+      "account": { "updated": "Cambió sus preferencias" }
+    },
+    "fields": { "value": "Valor", "display_name": "Nombre", "preferred_language": "Idioma", "theme": "Tema", "role": "Rol", "email": "Email", "deleted_at": "Desactivado" }
+  },
+  "translatable": {
+    "missing": "Sin traducción al {{lang}}", "master": "Idioma maestro (obligatorio)", "optional": "Opcional",
+    "tabsLabel": "Idiomas", "required": "El texto en inglés es obligatorio.", "fieldInLanguage": "{{field}} ({{lang}})"
+  },
+  "errors": {
+    "network": "El servidor no responde. Comprueba la conexión y vuelve a intentarlo.",
+    "unknown": "Algo ha fallado. Referencia: {{ref}}",
+    "unexpected": "Algo ha fallado.",
+    "http": { "404": "No encontrado.", "405": "Operación no permitida.", "429": "Demasiadas peticiones. Espera un momento." },
+    "server": { "internal": "Algo ha fallado en el servidor. Referencia: {{ref}}" },
+    "validation": { "failed": "Hay campos que no son válidos." },
+    "auth": {
+      "invalid_credentials": "Email o contraseña incorrectos.",
+      "too_many_attempts": "Demasiados intentos fallidos. Vuelve a probar dentro de {{minutes}} minutos.",
+      "session_expired": "Tu sesión ha terminado. Vuelve a entrar.",
+      "not_authenticated": "Tienes que entrar.",
+      "forbidden": "No tienes permiso para hacer esto.",
+      "password_change_required": "Antes cambia tu contraseña temporal.",
+      "current_password_incorrect": "La contraseña actual no es correcta.",
+      "password_too_short": "La contraseña nueva necesita al menos {{min}} caracteres.",
+      "password_too_long": "La contraseña nueva es demasiado larga (como mucho {{max_bytes}} bytes).",
+      "password_unchanged": "La contraseña nueva tiene que ser distinta de la actual.",
+      "origin_not_allowed": "Petición desde un sitio no permitido."
+    },
+    "users": {
+      "not_found": "Ese usuario no existe.", "email_taken": "Ya hay un usuario con ese email.",
+      "last_admin": "Tiene que quedar al menos un administrador activo.",
+      "cannot_change_own_role": "No puedes cambiar tu propio rol.",
+      "cannot_deactivate_self": "No puedes desactivar tu propia cuenta.",
+      "inactive": "El usuario está desactivado.", "must_deactivate_first": "Desactiva el usuario antes de borrarlo.",
+      "confirmation_mismatch": "El email escrito no coincide."
+    },
+    "settings": {
+      "not_found": "Ese ajuste no existe.", "invalid_type": "El valor no es del tipo correcto.",
+      "too_small": "Tiene que ser al menos {{min}}.", "too_large": "Tiene que ser como mucho {{max}}.",
+      "too_short": "Tiene que tener al menos {{min_length}} caracteres.", "too_long": "Tiene que tener como mucho {{max_length}} caracteres.",
+      "invalid_option": "Elige una de las opciones.", "unknown_field": "Campo desconocido.", "missing_field": "Falta un campo.",
+      "unsupported_type": "Tipo de ajuste no admitido."
+    }
+  }
+}

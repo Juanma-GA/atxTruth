@@ -1,0 +1,22 @@
+{
+  "name": "atxtruth",
+  "private": true,
+  "type": "module",
+  "description": "atxTruth — source of truth de Customer Services (ATEXIS/ALTEN)",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "check": "node scripts/check.mjs",
+    "check:forbidden": "node scripts/check-forbidden.mjs",
+    "test:backend": "node scripts/backend.mjs pytest",
+    "test:db:create": "node scripts/backend.mjs create-test-db",
+    "dev:backend": "node scripts/backend.mjs serve",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "verify:e0": "node scripts/verify-e0.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "playwright": "1.63.0"
+  }
+}

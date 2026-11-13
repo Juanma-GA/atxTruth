@@ -1,0 +1,12 @@
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.pptx binary
+*.xlsx binary
+*.woff binary
+*.woff2 binary
+*.ps1 text eol=crlf
+
+# Vendored framework and source material: stored byte-for-byte, never normalised.
+aacf/** -text
+sources/** -text
