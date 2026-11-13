@@ -1,18 +1,20 @@
 import uuid
 from datetime import datetime
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import EmailStr, Field
+from pydantic import EmailStr, Field, StringConstraints
 
 from app.core.i18n import Language
 from app.schemas.base import ResponseModel, StrictModel
 
 Theme = Literal["system", "light", "dark"]
+# Passwords are taken exactly as typed: never stripped (StrictModel strips other strings).
+Password = Annotated[str, StringConstraints(strip_whitespace=False, min_length=1, max_length=200)]
 
 
 class LoginRequest(StrictModel):
     email: EmailStr
-    password: str = Field(min_length=1, max_length=200)
+    password: Password
 
 
 class TokenResponse(ResponseModel):
@@ -21,8 +23,8 @@ class TokenResponse(ResponseModel):
 
 
 class ChangePasswordRequest(StrictModel):
-    current_password: str = Field(min_length=1, max_length=200)
-    new_password: str = Field(min_length=1, max_length=200)
+    current_password: Password
+    new_password: Password
 
 
 class MeUpdate(StrictModel):

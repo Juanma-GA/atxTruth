@@ -234,3 +234,22 @@ async def test_no_passwords_or_tokens_in_audit(client: httpx.AsyncClient) -> Non
     assert DEFAULT_PASSWORD not in dump
     assert "password_hash" not in dump
     assert client.cookies.get(COOKIE) not in dump
+
+
+async def test_rate_limit_holds_under_concurrent_attempts(client: httpx.AsyncClient) -> None:
+    import asyncio
+
+    await make_user("ana@example.com")
+    responses = await asyncio.gather(
+        *(client.post("/api/auth/login", json={"email": "ana@example.com", "password": "x"}) for _ in range(8))
+    )
+    statuses = sorted(r.status_code for r in responses)
+    assert statuses.count(401) == 5  # max_attempts
+    assert statuses.count(429) == 3
+
+
+async def test_passwords_are_not_stripped(client: httpx.AsyncClient) -> None:
+    await make_user("ana@example.com", password=" spaced pass 1 ")
+    bad = await client.post("/api/auth/login", json={"email": "ana@example.com", "password": "spaced pass 1"})
+    assert bad.status_code == 401
+    await login(client, "ana@example.com", " spaced pass 1 ")

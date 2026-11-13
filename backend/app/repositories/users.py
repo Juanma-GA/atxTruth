@@ -4,7 +4,7 @@ import uuid
 from collections.abc import Sequence
 from datetime import datetime
 
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import User
@@ -33,10 +33,9 @@ async def list_users(db: AsyncSession, *, include_deleted: bool) -> Sequence[Use
 
 
 async def count_active_admins(db: AsyncSession) -> int:
-    result = await db.execute(
-        select(func.count()).select_from(User).where(User.role == "admin", User.deleted_at.is_(None))
-    )
-    return int(result.scalar_one())
+    """Count active admins, locking their rows so two concurrent demotions cannot both pass."""
+    result = await db.execute(select(User.id).where(User.role == "admin", User.deleted_at.is_(None)).with_for_update())
+    return len(result.all())
 
 
 def add(db: AsyncSession, user: User) -> User:

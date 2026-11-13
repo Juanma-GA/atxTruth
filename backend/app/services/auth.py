@@ -5,6 +5,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from fastapi import Request
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.current_user import CurrentUser
@@ -67,11 +68,14 @@ async def _check_rate_limit(db: AsyncSession, email: str) -> None:
 
 async def login(db: AsyncSession, email: str, password: str, request: Request | None) -> IssuedSession:
     email = email.lower()
+    # Serialise attempts per email until this transaction commits, so parallel requests cannot all
+    # read the same failure count and slip past the limit.
+    await db.execute(select(func.pg_advisory_xact_lock(func.hashtext(email))))
     await _check_rate_limit(db, email)
     user = await users_repo.get_by_email(db, email)
-    valid = user is not None and user.deleted_at is None and verify_password(password, user.password_hash)
-    if user is None:
-        verify_password(password, DUMMY_PASSWORD_HASH)  # same timing as a known email
+    # bcrypt always runs, so timing does not reveal whether the account exists or is deactivated.
+    password_ok = verify_password(password, user.password_hash if user is not None else DUMMY_PASSWORD_HASH)
+    valid = user is not None and user.deleted_at is None and password_ok
     if not valid or user is None:
         audit.record(db, actor=None, action=LOGIN_FAILED, target_type="user", target_label=email, request=request)
         await db.commit()
