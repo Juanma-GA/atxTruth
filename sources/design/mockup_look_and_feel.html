@@ -1,0 +1,1491 @@
+<!doctype html>
+<html><head><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<title>Standard Migrator</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: desktop tool shell. Top bar, workflow rail on the left, workspace on the right; panes scroll inside a fixed-height app. */
+:root{
+  --bg:#eef1f5; --panel:#ffffff; --sunk:#f6f8fb; --ink:#152132; --muted:#566275; --line:#d6dce5; --line2:#e6eaf0;
+  --accent:#173f7a; --accent-ink:#ffffff; --accent-soft:#e3ebf7; --focus:#2563eb;
+  --ok:#1f7a45; --ok-soft:#e1f2e8; --warn:#9a5a00; --warn-soft:#fdf0d8; --bad:#b42318; --bad-soft:#fde7e5;
+  --t-blue:#2f6fd6; --t-orange:#e0701a; --t-green:#2b9150; --t-grey:#6f7a8a; --t-purple:#7a4bd0; --t-teal:#11878a; --t-brown:#8d5a2a; --t-yellow:#c49a00; --t-light:#aab2be;
+  --code-tag:#173f7a; --code-attr:#8d5a2a; --code-val:#1f7a45; --code-com:#7d8796;
+  --f-ui:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-head:"IBM Plex Sans Condensed", "Arial Narrow", "IBM Plex Sans", sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e131a; --panel:#151c26; --sunk:#111821; --ink:#e4e9f0; --muted:#9aa6b6; --line:#2a3544; --line2:#212a36;
+  --accent:#8db0ff; --accent-ink:#0b1220; --accent-soft:#1d2a40; --focus:#8db0ff;
+  --ok:#5cc98a; --ok-soft:#14301f; --warn:#f0b54a; --warn-soft:#33270f; --bad:#ff8a7e; --bad-soft:#3a1714;
+  --t-blue:#6c9cf0; --t-orange:#f39a4f; --t-green:#5cc07e; --t-grey:#98a3b3; --t-purple:#a98bf0; --t-teal:#43c1c3; --t-brown:#c99562; --t-yellow:#e6c23e; --t-light:#6b7584;
+  --code-tag:#8db0ff; --code-attr:#e0b07a; --code-val:#7fd6a0; --code-com:#7d8796; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e131a; --panel:#151c26; --sunk:#111821; --ink:#e4e9f0; --muted:#9aa6b6; --line:#2a3544; --line2:#212a36;
+  --accent:#8db0ff; --accent-ink:#0b1220; --accent-soft:#1d2a40; --focus:#8db0ff;
+  --ok:#5cc98a; --ok-soft:#14301f; --warn:#f0b54a; --warn-soft:#33270f; --bad:#ff8a7e; --bad-soft:#3a1714;
+  --t-blue:#6c9cf0; --t-orange:#f39a4f; --t-green:#5cc07e; --t-grey:#98a3b3; --t-purple:#a98bf0; --t-teal:#43c1c3; --t-brown:#c99562; --t-yellow:#e6c23e; --t-light:#6b7584;
+  --code-tag:#8db0ff; --code-attr:#e0b07a; --code-val:#7fd6a0; --code-com:#7d8796; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:14px;line-height:1.45}
+*{box-sizing:border-box}
+svg{width:16px;height:16px;flex:none}
+.stepbtn .n svg{width:13px;height:13px}
+.banner svg{width:18px;height:18px;color:var(--ok)}
+.demo .io svg{color:var(--muted)}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-head);font-weight:600;margin:0;text-wrap:balance;letter-spacing:.005em}
+.mono{font-family:var(--f-mono);font-size:12.5px}
+.muted{color:var(--muted)}
+.app{height:100%;display:grid;grid-template-rows:auto 1fr;min-height:0}
+/* top bar */
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--panel);border-bottom:1px solid var(--line);padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand img{height:30px;width:auto}
+.brand b{font-family:var(--f-head);font-size:18px;font-weight:600;white-space:nowrap}
+.brand small{display:block;color:var(--muted);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase}
+.crumb{font-size:13px;color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1 1 160px}
+.crumb strong{color:var(--ink);font-weight:600}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.seg button{border:0;background:transparent;padding:5px 10px;cursor:pointer;font-size:12.5px;font-weight:500;min-height:32px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:var(--r);padding:6px 12px;cursor:pointer;font-weight:500;font-size:13px;min-height:34px;white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.small{min-height:28px;padding:3px 9px;font-size:12.5px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn svg{width:15px;height:15px}
+/* body grid */
+.main{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:0}
+.rail{background:var(--panel);border-right:1px solid var(--line);overflow:auto;padding:14px 10px;display:flex;flex-direction:column;gap:2px}
+.rail h3{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:4px 10px 8px;font-family:var(--f-ui);font-weight:600}
+.stepbtn{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:center;border:0;background:transparent;text-align:left;padding:8px 10px;border-radius:var(--r);cursor:pointer;min-height:40px;width:100%}
+.stepbtn .n{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:11.5px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.stepbtn .l{font-size:13.5px;line-height:1.25}
+.stepbtn .l small{display:block;color:var(--muted);font-size:11.5px}
+.stepbtn[aria-current="step"]{background:var(--accent-soft)}
+.stepbtn[aria-current="step"] .n{border-color:var(--accent);color:var(--accent)}
+.stepbtn.done .n{background:var(--ok);border-color:var(--ok);color:var(--panel)}
+.stepbtn:disabled{cursor:not-allowed;opacity:.5}
+.work{min-width:0;min-height:0;overflow:auto;display:flex;flex-direction:column}
+.hint{display:flex;gap:10px;align-items:flex-start;background:var(--warn-soft);color:var(--ink);border-bottom:1px solid var(--line);padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));font-size:13px}
+.hint b{color:var(--warn);font-weight:600;white-space:nowrap}
+.page{padding:20px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px;min-height:0;flex:1}
+.page.full{padding-bottom:12px}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.head h2{font-size:22px}
+.head p{margin:2px 0 0;color:var(--muted);max-width:70ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+.card > .ch{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line2);flex-wrap:wrap}
+.card > .ch h3{font-size:15px}
+.card > .cb{padding:14px}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:1px 8px;font-size:11.5px;font-weight:600;white-space:nowrap;border:1px solid transparent}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.info{background:var(--accent-soft);color:var(--accent)}
+.pill.plain{border-color:var(--line);color:var(--muted)}
+table.grid{width:100%;border-collapse:collapse;font-size:13px}
+table.grid th{text-align:left;font-weight:600;font-size:12px;color:var(--muted);background:var(--sunk);padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.grid td{padding:7px 10px;border-bottom:1px solid var(--line2);vertical-align:top}
+table.grid tr.sel td{background:var(--accent-soft)}
+table.grid tr.click{cursor:pointer}
+table.grid tr.click:hover td{background:var(--sunk)}
+.tw{overflow-x:auto;max-width:100%}
+/* home */
+.home{max-width:1180px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.homehead{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:24px;align-items:end}
+.homehead h1{font-size:34px;line-height:1.1}
+.homehead p{color:var(--muted);margin:8px 0 0;max-width:62ch}
+.flow{display:flex;flex-wrap:wrap;gap:6px;font-size:12px}
+.flow span{border:1px solid var(--line);border-radius:4px;padding:2px 7px;background:var(--panel);color:var(--muted)}
+.demos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.demo{display:flex;flex-direction:column;gap:10px;padding:16px;text-align:left;cursor:pointer;border:1px solid var(--line);background:var(--panel);border-radius:var(--r);min-height:44px}
+.demo:hover{border-color:var(--accent)}
+.demo .k{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.demo h2{font-size:20px}
+.demo .io{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;font-size:12.5px}
+.demo .io div{border:1px solid var(--line2);background:var(--sunk);border-radius:4px;padding:6px 8px;min-width:0}
+.demo .io b{display:block;font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.demo ul{margin:0;padding-left:18px;color:var(--muted);font-size:13px;display:flex;flex-direction:column;gap:3px}
+.demo .go{margin-top:auto;font-weight:600;color:var(--accent);font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+/* settings */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tabs button{border:0;background:transparent;padding:9px 14px;cursor:pointer;font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px;min-height:40px}
+.tabs button[aria-selected="true"]{border-bottom-color:var(--accent);color:var(--accent)}
+.form{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px 16px}
+.fld{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fld label{font-size:12px;color:var(--muted);font-weight:500}
+.fld input,.fld select{border:1px solid var(--line);background:var(--sunk);border-radius:4px;padding:6px 8px;min-height:34px;min-width:0;width:100%}
+.codeparts{display:flex;flex-wrap:wrap;gap:4px}
+.codeparts input{width:auto;min-width:0;text-align:center;font-family:var(--f-mono);font-size:12.5px;border:1px solid var(--line);background:var(--sunk);border-radius:4px;padding:5px 4px;min-height:32px}
+.filepick{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.filepick .path{border:1px solid var(--line);background:var(--sunk);border-radius:4px;padding:6px 8px;min-height:34px;font-family:var(--f-mono);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.filepick .path.empty{color:var(--muted);font-family:var(--f-ui)}
+.cirs{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.cirbox{border:1px solid var(--line2);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.cirbox h4{margin:0;font-size:13.5px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.cirlist{max-height:150px;overflow:auto;font-size:12.5px;border-top:1px solid var(--line2);padding-top:6px}
+.cirlist div{display:grid;grid-template-columns:92px minmax(0,1fr);gap:8px;padding:2px 0}
+.footbar{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;align-items:center}
+/* standards */
+.stds{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.std{border:1px solid var(--line);background:var(--panel);border-radius:var(--r);padding:14px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-height:92px}
+.std b{font-family:var(--f-head);font-size:17px;font-weight:600}
+.std small{color:var(--muted)}
+.std[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
+/* import */
+.drop{border:1.5px dashed var(--line);border-radius:var(--r);padding:22px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:var(--panel)}
+.fileicon{width:46px;height:56px;border-radius:4px;display:grid;place-items:end center;padding-bottom:6px;font-weight:700;font-size:11px;color:#fff;flex:none}
+.fileicon.pdf{background:#b42318}.fileicon.docx{background:#2b579a}
+.stages{display:flex;flex-direction:column;gap:2px}
+.stage{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border-radius:var(--r)}
+.stage .ic{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center}
+.stage.run .ic{border-color:var(--accent);border-top-color:transparent;animation:spin .8s linear infinite}
+.stage.done .ic{background:var(--ok);border-color:var(--ok)}
+.stage.done .ic::after{content:"";width:8px;height:4px;border:2px solid var(--panel);border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.stage b{font-weight:600}
+.stage small{display:block;color:var(--muted)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.stage.run .ic{animation:none}}
+pre.json,pre.xml{margin:0;font-family:var(--f-mono);font-size:12px;line-height:1.55;background:var(--sunk);border:1px solid var(--line2);border-radius:4px;padding:10px 12px;overflow:auto;white-space:pre}
+/* review workspace */
+.ws{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:12px;flex:1;min-height:520px}
+.ws.three{grid-template-columns:220px minmax(0,1.05fr) minmax(0,1fr)}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
+.pane > .ph{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line2);flex-wrap:wrap}
+.pane > .ph h3{font-size:14px}
+.pane > .pb{overflow:auto;min-height:0;flex:1;position:relative}
+.doc{padding:12px;display:flex;flex-direction:column;gap:12px;background:var(--sunk)}
+.pg{position:relative;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.18);line-height:0}
+.pg img{width:100%;height:auto;display:block}
+.pg .pn{position:absolute;right:6px;top:6px;line-height:1.2;font-size:11px;background:rgba(20,30,45,.75);color:#fff;border-radius:3px;padding:1px 6px}
+.ov{position:absolute;border:1.5px solid var(--c);background:color-mix(in srgb,var(--c) 10%,transparent);cursor:pointer;padding:0;border-radius:2px}
+.ov:hover{background:color-mix(in srgb,var(--c) 22%,transparent)}
+.ov.pend{border-style:dashed;border-width:2px}
+.ov.sel{outline:3px solid var(--c);outline-offset:2px;background:color-mix(in srgb,var(--c) 24%,transparent);z-index:2}
+.ov.dim{opacity:.25}
+.ov .tag{position:absolute;left:-1.5px;top:-15px;line-height:1;font-size:9.5px;font-weight:600;background:var(--c);color:#fff;padding:2px 4px;border-radius:2px 2px 0 0;white-space:nowrap;display:none}
+.ov.sel .tag,.ov.pend .tag{display:block}
+.list{display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:4px minmax(0,1fr) auto;gap:10px;align-items:start;padding:8px 12px 8px 0;border:0;border-bottom:1px solid var(--line2);background:transparent;text-align:left;cursor:pointer;width:100%}
+.row:hover{background:var(--sunk)}
+.row.sel{background:var(--accent-soft)}
+.row .bar{align-self:stretch;background:var(--c)}
+.row .tx{min-width:0;display:flex;flex-direction:column;gap:3px}
+.row .ty{font-size:11.5px;font-weight:600;color:var(--c);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.row .ty .st{color:var(--muted);font-weight:500}
+.row .tt{font-size:13px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.row .cf{display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-size:11.5px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.meter{width:54px;height:5px;border-radius:3px;background:var(--line2);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--ok)}
+.meter.mid i{background:var(--warn)}.meter.low i{background:var(--bad)}
+.insp{border-top:1px solid var(--line);padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--panel);max-height:48%;overflow:auto}
+.insp .r1{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.insp .kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 12px;font-size:12.5px}
+.insp .kv dt{color:var(--muted)}
+.insp .kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+.similar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--r);padding:8px 10px;font-size:13px}
+.similar svg{width:18px;height:18px;flex:none;color:var(--accent)}
+.kbd{font-family:var(--f-mono);font-size:11px;border:1px solid var(--line);border-bottom-width:2px;border-radius:3px;padding:0 4px;background:var(--panel)}
+.keys{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted)}
+.counters{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tree{display:flex;flex-direction:column;padding:6px}
+.tree button{display:flex;flex-direction:column;gap:2px;align-items:flex-start;text-align:left;border:0;background:transparent;border-radius:4px;padding:8px;cursor:pointer;min-height:44px}
+.tree button[aria-current="true"]{background:var(--accent-soft)}
+.tree button small{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);overflow-wrap:anywhere}
+.tree .grp{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:10px 8px 2px}
+/* segmentation */
+.secs{display:flex;flex-direction:column;gap:8px;padding:10px}
+.sec{border:1px solid var(--line);border-left:5px solid var(--c);border-radius:var(--r);padding:10px 12px;display:flex;flex-direction:column;gap:6px;background:var(--panel)}
+.sec.flag{border-color:var(--warn);border-left-color:var(--c);background:var(--warn-soft)}
+.sec .t{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.sec .t b{font-size:14px}
+.sec .m{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px 12px;font-size:12px}
+.sec .m span{color:var(--muted)}
+.sec select{border:1px solid var(--line);background:var(--sunk);border-radius:4px;padding:3px 6px;min-height:30px;font-size:12px;max-width:100%}
+.bound{position:absolute;left:0;right:0;height:0;border-top:2px dashed var(--c);z-index:3;pointer-events:none}
+.bound span{position:absolute;left:4px;top:-17px;line-height:1.2;font-size:10px;font-weight:600;background:var(--c);color:#fff;padding:1px 5px;border-radius:2px;white-space:nowrap;max-width:95%;overflow:hidden;text-overflow:ellipsis}
+.pmtree{font-size:13px;display:flex;flex-direction:column;gap:4px;padding:4px 10px 12px}
+.pmtree .e{font-weight:600;margin-top:4px}
+.pmtree .d{padding-left:16px;font-family:var(--f-mono);font-size:11.5px;color:var(--muted);overflow-wrap:anywhere}
+/* xml */
+.xmlwrap{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:12px;flex:1;min-height:480px}
+.xmlwrap pre.xml{height:100%;border:0;border-radius:0}
+.xt{color:var(--code-tag)}.xa{color:var(--code-attr)}.xv{color:var(--code-val)}.xc{color:var(--code-com);font-style:italic}
+.side{display:flex;flex-direction:column;gap:12px;min-width:0;overflow:auto}
+.uselist{display:flex;flex-direction:column;gap:6px;font-size:12.5px}
+.uselist .u{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:start}
+.uselist .u code{font-family:var(--f-mono);font-size:11px;background:var(--sunk);border:1px solid var(--line2);border-radius:3px;padding:0 4px;white-space:nowrap}
+.filetabs{display:flex;gap:4px;flex-wrap:wrap;padding:8px 10px;border-bottom:1px solid var(--line2)}
+.filetabs button{border:1px solid var(--line);background:var(--panel);border-radius:4px;padding:3px 8px;font-family:var(--f-mono);font-size:11px;cursor:pointer;min-height:28px}
+.filetabs button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.banner{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-radius:var(--r);padding:10px 12px;font-size:13px}
+.banner.warn{background:var(--warn-soft);border:1px solid var(--warn)}
+.banner.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.banner.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+/* validation */
+.checks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.chk{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);padding:14px;display:flex;flex-direction:column;gap:6px;border-top:4px solid var(--line)}
+.chk.ok{border-top-color:var(--ok)}.chk.bad{border-top-color:var(--bad)}.chk.run{border-top-color:var(--accent)}
+.chk b{font-family:var(--f-head);font-size:17px;font-weight:600}
+.chk .res{font-size:13px}
+.errs{display:flex;flex-direction:column;gap:6px}
+.err{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid var(--line2);border-left:4px solid var(--bad);border-radius:4px;padding:8px 10px;font-size:13px;background:var(--panel)}
+/* publish */
+.pubv{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:12px;flex:1;min-height:520px}
+.pubmain{background:var(--sunk);border:1px solid var(--line);border-radius:var(--r);overflow:auto;display:flex;justify-content:center;padding:16px}
+.pubmain img{max-width:min(100%,760px);height:auto;box-shadow:0 1px 4px rgba(0,0,0,.25);background:#fff;align-self:flex-start}
+.thumbs{display:flex;flex-direction:column;gap:8px;overflow:auto;padding-right:2px}
+.thumbs button{border:2px solid transparent;padding:0;background:transparent;cursor:pointer;border-radius:3px;line-height:0;position:relative}
+.thumbs button[aria-pressed="true"]{border-color:var(--accent)}
+.thumbs img{width:100%;height:auto;background:#fff}
+.thumbs span{position:absolute;bottom:3px;right:3px;line-height:1.2;font-size:10px;background:rgba(20,30,45,.75);color:#fff;padding:0 4px;border-radius:2px}
+/* report */
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.kpi b{font-family:var(--f-head);font-size:28px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi span{font-size:12.5px;color:var(--muted)}
+.stack{height:10px;border-radius:5px;overflow:hidden;display:flex;background:var(--line2)}
+.stack i{display:block;height:100%}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(10,16,26,.45);display:grid;place-items:center;z-index:50;padding:16px}
+.modal .box{background:var(--panel);border:1px solid var(--line);border-radius:8px;max-width:520px;width:100%;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:6px;font-size:13px;z-index:60;max-width:calc(100% - 32px)}
+@media (max-width:1100px){
+  .ws.three{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .ws.three > .treepane{grid-column:1 / -1;max-height:220px}
+  .xmlwrap{grid-template-columns:minmax(0,1fr)}
+  .homehead{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:860px){
+  .app{height:auto;min-height:100%}
+  .main{grid-template-columns:minmax(0,1fr)}
+  .rail{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px}
+  .rail h3{display:none}
+  .stepbtn{width:auto;flex:none}
+  .stepbtn .l small{display:none}
+  .work{overflow:visible}
+  .demos,.checks{grid-template-columns:minmax(0,1fr)}
+  .ws,.ws.three{grid-template-columns:minmax(0,1fr);min-height:0}
+  .ws .pane{max-height:75vh}
+  .pubv{grid-template-columns:minmax(0,1fr)}
+  .thumbs{flex-direction:row;overflow-x:auto}
+  .thumbs button{flex:none;width:90px}
+  .xmlwrap pre.xml{max-height:60vh}
+}
+
+/* v2 additions: project home, dialogs, Windows file picker, assistant drawer, info button */
+.iconbtn{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--muted);padding:0}
+.iconbtn:hover{color:var(--ink);border-color:var(--muted)}
+.iconbtn svg{width:16px;height:16px}
+.iconbtn.small{width:26px;height:26px;opacity:.7}
+.iconbtn.small svg{width:14px;height:14px}
+.projects{max-width:1100px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.empty{border:1.5px dashed var(--line);border-radius:var(--r);padding:40px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;background:var(--panel)}
+.empty h3{font-size:18px}
+.empty p{margin:0;color:var(--muted);max-width:52ch}
+.rail .proj{padding:6px 10px 10px;border-bottom:1px solid var(--line2);margin-bottom:6px;display:flex;flex-direction:column;gap:4px}
+.rail .proj b{font-family:var(--f-head);font-size:16px;font-weight:600}
+.rail .sub{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:12px 10px 4px;font-weight:600}
+.navbtn{display:flex;align-items:center;gap:10px;border:0;background:transparent;text-align:left;padding:8px 10px;border-radius:var(--r);cursor:pointer;min-height:40px;width:100%;font-size:13.5px}
+.navbtn[aria-current="page"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.navbtn svg{width:16px;height:16px;color:var(--muted)}
+.navbtn .cnt{margin-left:auto}
+.dlg{position:fixed;inset:0;background:rgba(10,16,26,.45);display:grid;place-items:center;z-index:50;padding:16px}
+.dlg .box{background:var(--panel);border:1px solid var(--line);border-radius:8px;width:100%;max-width:640px;max-height:calc(100% - 32px);display:flex;flex-direction:column;box-shadow:0 12px 36px rgba(0,0,0,.3)}
+.dlg .bh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--line2)}
+.dlg .bh h3{font-size:18px}
+.dlg .bb{padding:16px 18px;overflow:auto;display:flex;flex-direction:column;gap:14px}
+.dlg .bf{padding:12px 18px;border-top:1px solid var(--line2);display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.opt{border:1px solid var(--line);background:var(--panel);border-radius:var(--r);padding:10px 12px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-height:58px}
+.opt b{font-size:14px}
+.opt small{color:var(--muted);font-size:11.5px}
+.opt[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
+.opt:disabled{cursor:not-allowed;opacity:.55}
+.opt .lock{display:inline-flex;gap:4px;align-items:center;color:var(--warn);font-weight:600}
+.opt .lock svg{width:11px;height:11px}
+.dmpick{max-height:260px;overflow:auto;border:1px solid var(--line2);border-radius:4px}
+.dmpick table.grid td,.dmpick table.grid th{padding:5px 8px}
+/* Windows-style open dialog (deliberately the OS look, light only) */
+.win{position:fixed;inset:0;background:rgba(0,0,0,.35);display:grid;place-items:center;z-index:70;padding:16px}
+.win .w{width:100%;max-width:1000px;height:min(560px,calc(100% - 32px));background:#f3f3f3;color:#1b1b1b;border:1px solid #9a9a9a;border-radius:8px;box-shadow:0 18px 50px rgba(0,0,0,.4);display:grid;grid-template-rows:auto auto 1fr auto;font-family:"Segoe UI",var(--f-ui);font-size:13px;overflow:hidden;color-scheme:light}
+.win .tb{display:flex;align-items:center;justify-content:space-between;padding:6px 6px 6px 14px;background:#fff}
+.win .tb span{font-size:12.5px}
+.win .tb button{border:0;background:transparent;width:40px;height:30px;cursor:pointer;color:#1b1b1b;font-size:16px}
+.win .tb button:hover{background:#e81123;color:#fff}
+.win .addr{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fff;border-bottom:1px solid #e5e5e5;flex-wrap:wrap}
+.win .addr .nav{color:#8a8a8a;font-size:14px;letter-spacing:6px}
+.win .path{flex:1 1 300px;border:1px solid #d6d6d6;border-radius:4px;padding:4px 10px;background:#fff;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.win .srch{flex:0 1 220px;border:1px solid #d6d6d6;border-radius:4px;padding:4px 10px;color:#8a8a8a;background:#fff}
+.win .mid{display:grid;grid-template-columns:190px minmax(0,1fr);min-height:0}
+.win .side2{background:#f3f3f3;padding:8px 6px;overflow:auto;border-right:1px solid #e5e5e5}
+.win .side2 div{padding:5px 10px;border-radius:4px;display:flex;gap:8px;align-items:center;white-space:nowrap}
+.win .side2 div.on{background:#ddebf8}
+.win .side2 i{width:14px;height:12px;border-radius:2px;background:#e8b84a;display:inline-block;flex:none}
+.win .side2 i.pc{background:#4a90d9}
+.win .files{background:#fff;overflow:auto}
+.win table{width:100%;border-collapse:collapse}
+.win th{text-align:left;font-weight:400;color:#5c5c5c;padding:6px 10px;border-bottom:1px solid #e5e5e5;white-space:nowrap;position:sticky;top:0;background:#fff}
+.win td{padding:5px 10px;white-space:nowrap;cursor:default}
+.win tr.f:hover td{background:#e5f3ff}
+.win tr.f.on td{background:#cce8ff}
+.win .ficon{display:inline-block;width:14px;height:16px;border-radius:2px;vertical-align:-3px;margin-right:8px;background:#7a7a7a}
+.win .ficon.xml{background:#6b8e23}.win .ficon.xlsx{background:#1d6f42}.win .ficon.pdf{background:#c4302b}.win .ficon.docx{background:#2b579a}.win .ficon.dir{background:#e8b84a}
+.win .ft{display:grid;grid-template-columns:auto minmax(0,1fr) 220px;gap:8px 10px;align-items:center;padding:10px 12px;background:#f3f3f3;border-top:1px solid #e5e5e5}
+.win .ft input,.win .ft select{border:1px solid #c8c8c8;border-radius:4px;padding:5px 8px;background:#fff;color:#1b1b1b;min-width:0;font:inherit}
+.win .ft .bt{grid-column:2 / -1;display:flex;justify-content:flex-end;gap:8px}
+.win .ft button{min-width:96px;padding:6px 14px;border-radius:4px;border:1px solid #c8c8c8;background:#fff;color:#1b1b1b;cursor:pointer;font:inherit}
+.win .ft button.p{background:#005fb8;border-color:#005fb8;color:#fff}
+/* busy overlay */
+.busy{position:fixed;inset:0;background:rgba(10,16,26,.4);display:grid;place-items:center;z-index:60;padding:16px}
+.busy .box{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px 20px;width:100%;max-width:440px;display:flex;flex-direction:column;gap:6px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.busy .bar{height:4px;border-radius:2px;background:var(--line2);overflow:hidden;margin-top:6px}
+.busy .bar i{display:block;height:100%;background:var(--accent);transition:width .4s ease}
+/* assistant drawer */
+.chat{position:fixed;top:0;right:0;bottom:0;width:min(380px,100%);background:var(--panel);border-left:1px solid var(--line);box-shadow:-8px 0 24px rgba(0,0,0,.12);z-index:40;display:grid;grid-template-rows:auto 1fr auto;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.chat .chh{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line2)}
+.chat .chh b{font-family:var(--f-head);font-size:16px}
+.chat .chh small{display:block;color:var(--muted);font-size:11.5px}
+.chat .msgs{overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--sunk)}
+.msg{max-width:92%;border-radius:10px;padding:8px 11px;font-size:13px;line-height:1.45;display:flex;flex-direction:column;gap:6px}
+.msg.bot{background:var(--panel);border:1px solid var(--line2);align-self:flex-start}
+.msg.me{background:var(--accent);color:var(--accent-ink);align-self:flex-end}
+.msg .it{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px;align-items:start;font-size:12.5px}
+.msg .it code{font-family:var(--f-mono);font-size:11px;background:var(--sunk);border:1px solid var(--line2);border-radius:3px;padding:0 4px;white-space:nowrap}
+.msg .acts{display:flex;flex-wrap:wrap;gap:6px}
+.typing{display:inline-flex;gap:3px}.typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:blink 1s infinite}.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
+@media (prefers-reduced-motion: reduce){.typing i{animation:none}}
+.chat .cin{border-top:1px solid var(--line2);padding:10px;display:flex;flex-direction:column;gap:8px;background:var(--panel)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:3px 10px;font-size:12px;cursor:pointer;text-align:left}
+.chips button:hover{border-color:var(--accent);color:var(--accent)}
+.chat form{display:flex;gap:6px}
+.chat form input{flex:1;min-width:0;border:1px solid var(--line);background:var(--sunk);border-radius:6px;padding:8px 10px}
+.chatfab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:35;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.cirpick{border:1px solid var(--line2);border-radius:4px;max-height:170px;overflow:auto}
+.cirpick label{display:grid;grid-template-columns:auto 96px minmax(0,1fr);gap:8px;align-items:center;padding:4px 8px;font-size:12.5px;cursor:pointer;border-bottom:1px solid var(--line2)}
+.cirpick label:hover{background:var(--sunk)}
+.cirpick label.on{background:var(--accent-soft)}
+.cirpick input[type=search]{width:100%}
+.pickmode{background:var(--accent);color:var(--accent-ink);border-radius:var(--r);padding:8px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px}
+.pickmode .btn{background:transparent;color:inherit;border-color:currentColor}
+.sec.active{box-shadow:0 0 0 2px var(--c)}
+.sec .rng{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px}
+.sec input.nm{border:1px solid transparent;background:transparent;font-weight:600;font-size:14px;padding:2px 4px;border-radius:4px;min-width:0;flex:1}
+.sec input.nm:hover,.sec input.nm:focus{border-color:var(--line);background:var(--sunk)}
+@media (max-width:860px){.win .mid{grid-template-columns:minmax(0,1fr)}.win .side2{display:none}.win .ft{grid-template-columns:minmax(0,1fr)}.win .ft .bt{grid-column:1}}
+
+.win td{font-size:12.5px}
+@media (min-width:1101px){.main.withchat{padding-right:min(380px,100%)}}
+.aibtn{border-color:var(--t-purple)!important;color:var(--t-purple)!important}
+.aipill{background:color-mix(in srgb,var(--t-purple) 14%,transparent);color:var(--t-purple)}
+.aicard{border:1px solid var(--t-purple);border-radius:var(--r);padding:10px 12px;display:flex;flex-direction:column;gap:6px;background:color-mix(in srgb,var(--t-purple) 6%,var(--panel))}
+.aicard ul{margin:0;padding-left:18px;font-size:12.5px;display:flex;flex-direction:column;gap:2px}
+.verdict{border-radius:4px;padding:8px 10px;display:flex;flex-direction:column;gap:4px;font-size:12.5px}
+.verdict.ok{background:var(--ok-soft)}.verdict.bad{background:var(--bad-soft)}
+.verdict .jc{display:flex;flex-wrap:wrap;gap:4px 12px}
+.sotsw{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:var(--r);padding:12px;cursor:pointer}
+.sotsw input{width:18px;height:18px;margin-top:2px}
+.sotmini{display:flex;gap:6px;align-items:center;font-size:11.5px;margin-top:4px;flex-wrap:wrap}
+.insp{position:relative}
+.insp-x{position:absolute;top:8px;right:8px;opacity:.85}
+.insp .r1:first-of-type{padding-right:36px}
+[hidden]{display:none!important}
+
+.crumb a{color:var(--muted);text-decoration:none}.crumb a:hover{color:var(--ink);text-decoration:underline}
+</style>
+
+</head><body>
+<div class="app" id="app"></div>
+<script src="data.js" charset="utf-8"></script>
+<script>
+(function(){
+'use strict';
+const DATA = window.SM_DATA;
+const PW = 595.3, PH = 841.9;
+const PROJECT_NAME = 'A-Cross Migration';
+
+/* ================= strings ================= */
+const STR = {
+ en:{
+  projects:'Projects', newProject:'New project', projEmptyT:'No projects yet', projEmptyP:'Create a project to set the target standard, load the project data and start migrating documents.',
+  projName:'Project name', projStd:'Project standard', create:'Create', cancel:'Cancel', save:'Save', next:'Continue', close:'Close',
+  license:'License pending', stdIssue:'Issue', projCreated:'Project created',
+  colProject:'Project', colStd:'Standard', colTasks:'Tasks', colUpd:'Updated', open:'Open',
+  navSettings:'Project settings', navTasks:'Tasks', taskSteps:'Task',
+  setT:'Project settings', setP:'Defaults, data module requirements list, common information repositories and applicability. Loaded once and reused by every task in the project.',
+  tDefaults:'Defaults', tCIR:'CIR', tApplic:'Applicability',
+  fIssue:'S1000D issue', fDMRL:'DMRL file', choose:'Choose', fOrig:'Orig. CAGE', fRPC:'RPC CAGE', fCountry:'Country', fLang:'Language', fSec:'Security', fBrex:'BREX DM ref', fICN:'ICN format', fXref:'Cross-reference IDs', fFig:'Figures', fTab:'Tables', fSE:'Support equip.', fSpa:'Spares', fSup:'Supplies', fIssueNo:'DM issue number', fInwork:'In-work', fShowC:'Show container DMC',
+  cirTools:'Tools (support equipment)', cirSpares:'Spares', cirSupplies:'Supplies', cirWarnings:'Warnings', cirCautions:'Cautions', items:'items', notLoaded:'No file selected', dmrlRows:'data modules',
+  appP:'Products and attributes from the ACT and the PCT. They are used to write the applicability of each block.', product:'Product', version:'Version', powertrain:'Powertrain', model:'Model', attr:'Attributes',
+  setNeed:'Load the DMRL, the five CIRs and the applicability to save.', setSaved:'Project settings saved',
+  tasksT:'Tasks', tasksP:'Each task converts one source into its output: a data module or a publication module.', newTask:'New task', tasksEmptyT:'No tasks yet', tasksEmptyP:'Create a task, choose its output type and the data modules from the DMRL.', needSettings:'Save the project settings before creating tasks.',
+  colTask:'Task', colType:'Output', colDMs:'DMs', colStatus:'Status',
+  stNew:'New', stImported:'Imported', stReview:'In review', stXml:'XML generated', stValid:'Validated', stPub:'Published',
+  ntT:'New task', ntType:'Output type', ntName:'Task name', ntDMs:'Data modules from the DMRL', ntSel:'selected', ntNeed:'Choose the output type, the name and at least one data module.',
+  outs:{descript:['Descriptive DM','Description, function'],proced:['Procedural DM','Remove, install, test'],ipd:['IPD DM','Illustrated parts data'],fault:['Fault DM','Fault isolation'],cmm:['PM · CMM','Component maintenance manual'],sb:['PM · SB','Service bulletin']},
+  taskNames:{'1':'Wheel – How it is made','2':'Steering wheel – Remove','3':'Brake system – CMM'},
+  dmc:'DMC', tech:'Tech name', info:'Info name', schema:'Type', descriptive:'Descriptive', procedural:'Procedural', common:'Project data',
+  steps:{import:'Import source',segment:'Segmentation',review:'Human review',xml:'S1000D XML',validate:'Validation',publish:'Publication',report:'Migration report'},
+  impT:'Import source document', impP:'Select the source document. The app extracts it, keeps where each block comes from and classifies it.',
+  selFile:'Select file', processing:'Processing', done:'Done', pages:'pages',
+  st1pdf:'OCR extraction', st1doc:'Word structure extraction', st1s:'Text, layout, tables and figures',
+  st2:'Transformation to JSON with provenance', st2s:'Each block keeps its page and position',
+  st3:'Automatic enrichment', st3s:'Block classification, references and reusable data detection',
+  st4:'JSON schema validation', st4s:'Against the S1000D Issue 4.2 profile',
+  blocksFound:'blocks', cirFound:'CIR matches', refsFound:'references', valid:'valid',
+  sampleBlock:'Sample block with provenance', toReview:'Open the review window', toSeg:'Open segmentation',
+  segT:'Segmentation into data modules', segP:'Approve how the content is split into data modules, with which DMC and info code, and how the publication module is built.',
+  sections:'Sections', pmStruct:'Publication module structure', conf:'Confidence', infoCode:'Data module', pmEntry:'PM entry',
+  segFlag:'Possible missing boundary', segFlagTxt:'This section also seems to contain the installation steps.', showBound:'Show the suspect block',
+  setStart:'Choose start', setEnd:'Choose end', goStart:'Go to start', goEnd:'Go to end', merge:'Merge with previous',
+  pickStart:s=>`Click the first block of “${s}” in the original.`, pickEnd:s=>`Click the last block of “${s}” in the original.`,
+  segSel:'Selected block', newHere:'Start a new section here', startHere:s=>`Make “${s}” start here`, endHere:s=>`Make “${s}” end here`,
+  segSave:'Save segmentation', segSaved:'Segmentation saved', unassigned:'Not assigned', blocksN:'blocks',
+  segPick:'Click a section to work on it, or a block in the original. Suspect boundaries are dotted.',
+  newSecT:'New section', newSecP:'The app suggests the DMRL data module that matches the heading.', createSec:'Create section', name:'Name',
+  badRange:'That block is outside the allowed range for this section.',
+  revT:'Human review', revP:'Only what was not detected or has low confidence needs a person. Everything else is ready to validate.',
+  original:'Original', blocks:'Blocks in reading order', filterAll:'All', filterPend:'Pending', pending:'pending', ok:'OK', reviewed:'reviewed',
+  undetected:'Not detected', low:'Low confidence', okS:'Detected',
+  type:'Type', style:'Style', element:'S1000D element', cir:'CIR', applic:'Applicability', page:'Page', source:'Source',
+  indent:'Indent', outdent:'Outdent', mergeN:'Merge with next', split:'Split', accept:'Accept',
+  similar:'Apply to similar', similarTxt:(n,s)=>`${n} similar block${n>1?'s':''} with the same style “${s}” and the same issue.`, applied:n=>`Applied to ${n} similar block${n>1?'s':''}`,
+  xmlPrev:'XML preview of the block', noSel:'Select a block on either side.', genXML:'Validate and generate XML', genAnyway:'Generate XML anyway',
+  pendLeft:n=>`${n} block${n>1?'s':''} still pending. You can generate the XML, but validation will report them.`,
+  keysT:'Keyboard', kNav:'next / previous', kInd:'indent / outdent', kType:'Warning, Caution, Note, Para, Ignore', kAcc:'accept', kSim:'apply to similar', kFil:'pending filter',
+  dmTree:'Data modules', allOk:'All blocks detected. Ready to validate.',
+  cirPickT:{tools:'Tool from the CIR',spares:'Spare from the CIR',supplies:'Supply from the CIR'}, cirFilter:'Filter', cirChanged:id=>`Linked to ${id}`,
+  gen1:'Building the data module', gen2:'Resolving CIR references and applicability', gen3:'Checking the structure against S1000D 4.2', genT:'Generating XML',
+  xmlT:'S1000D 4.2 XML', xmlP:'Generated data module, with the CIR items and the applicability it uses.',
+  cirUsed:'CIR items used', applicUsed:'Applicability used', noneUsed:'None',
+  xmlPend:'This output still has pending blocks. Validation will report them.',
+  valT:'Post-validation', valP:'XSD schema, project BREX and Schematron rules. If something fails, go back to the review with the block already selected.',
+  runVal:'Run validation', rerun:'Run again', xsd:'XSD schema', brex:'BREX', sch:'Schematron', passed:'Passed', failed:'Failed', running:'Running',
+  xsdOk:n=>`${n} file${n>1?'s':''} valid against S1000D 4.2`, brexOk:n=>`${n} rules checked, 0 violations`, schOk:n=>`${n} rules checked, 0 errors`,
+  errs:'Errors to fix', goBlock:'Go to block', backReview:'Back to review', allPass:'All checks passed', brexRules:'BREX rules',
+  errWarn:'Text that starts with the warning word is a para. Warnings must be referenced from the CIR (warningRef).',
+  errStep:'Typed step number does not match the step level.', errSeg:'Block marked with low confidence.',
+  runs:'Validation runs', run:'Run', errorsW:'errors',
+  pubT:'Publication', pubP:'PDF in S1000D Issue 4.2 page format, with the ALTEN logo.', publish:'Publish PDF', publishing:'Publishing', openPdf:'Open PDF', pageOf:(a,b)=>`Page ${a} of ${b}`,
+  repT:'Migration report', repP:'Traceability from source to target, automatic detection rate and errors.',
+  kBlocks:'Source blocks', kAuto:'Detected automatically', kHuman:'Changed by a person', kCir:'CIR items reused', kDms:'Data modules', kVal:'Validation',
+  trace:'Traceability source → target', target:'Target', status:'Status', auto:'Automatic', human:'Reviewed', all2:'All', onlyHuman:'Only reviewed',
+  errHist:'Errors found and fixed', noErrs:'No errors in any run.', fixed:'fixed', finish:'Back to tasks',
+  loaded:'Loaded',
+  // windows dialog
+  wOpen:'Open', wFileName:'File name:', wAll:'All files (*.*)', wName:'Name', wDate:'Date modified', wType:'Type', wSize:'Size', wSearch:'Search', wHome:'Home', wDesktop:'Desktop', wDownloads:'Downloads', wDocs:'Documents', wPC:'This PC',
+  ftype:{xml:'XML Document',xlsx:'Microsoft Excel Worksheet',pdf:'Adobe Acrobat Document',docx:'Microsoft Word Document'},
+  // assistant
+  asT:'Migration assistant', asSub:'Resolves references against the project CIR, DMRL and BREX', asPh:'Ask about a part number, a tool, a warning…', asSend:'Send', asOpen:'Assistant',
+  asHello:'Hello. I can find items in the project CIR, the DMRL and the BREX, and link them to the block you have selected.',
+  asNo:'I did not find anything for that. Try a part number, a tool name, a CIR id (for example W001 or supequi-0005) or a DMRL title.',
+  asFound:n=>`I found ${n} item${n>1?'s':''} in the CIR:`, asApply:id=>`Link to ${id}`, asApplied:(id,b)=>`Done: block ${b} is now linked to ${id}.`,
+  asPend:n=>n?`There ${n>1?'are':'is'} ${n} pending block${n>1?'s':''} in this task:`:'There are no pending blocks in this task.', asGo:b=>`Go to ${b}`,
+  asBrex:'The project BREX has these rules:', asDmrl:'These DMRL entries match:', asApplicT:'Applicability in this project uses the attribute version: E (electric) and GT (petrol). Spares restricted to one version:',
+  asBlock:(b,ty,el)=>`Block ${b} is a ${ty}. It becomes ${el}.`, asSel:'Selected block',
+  sug:{
+   gen:['Which rules does the BREX have?','Find the airbag warning in the CIR'],
+   '1':['Which CIR warning does this DM use?','Which spares are only for the A-Cross GT?'],
+   '2':['Which tool is ACX-TL-T50?','Find the airbag warning in the CIR','Which blocks are still pending?'],
+   '3':['Which data module is the pad installation?','Which supplies does the bleeding use?','Which blocks are still pending?']},
+  // info / presenter
+  infoT:'Demo preparation', infoP:'Only for the presenter. Nothing here is visible to the customer unless you turn on the tips.', tipsOn:'Show presenter tips on screen', ref:'Quick reference', resetAll:'Reset everything', resetDone:'Everything reset',
+  refRows:[['Project','A-Cross Migration · S1000D Issue 4.2'],['Task 1','Descriptive DM · “Wheel – How it is made” · DMRL: Wheel – Description of how it is made (041)'],['Task 2','Procedural DM · “Steering wheel – Remove” · DMRL: Steering wheel – Remove procedure (520)'],['Task 3','PM · CMM · “Brake system – CMM” · DMRL: the 6 brake system rows (040, 042, 311, 520, 720, 231)'],['Files','Any file chosen in the Open dialog loads the right one.']],
+  presenter:'Presenter',
+  hints:{
+   projects:'Click “New project”. Type anything in the name: it fills in “A-Cross Migration”. Choose S1000D Issue 4.2 (the others say “License pending”).',
+   settings:'Click “Choose” for the DMRL, then the CIR and Applicability tabs. Any file you pick in the Open dialog loads the right one. Save.',
+   tasks:'Click “New task”. Choose the output type, type anything in the name (it fills in), tick the DMRL rows in the quick reference (ⓘ). Create.',
+   import:'Click “Select file”, pick the source in the Open dialog and comment on each stage while it runs.',
+   segment:'“Front brake pads: removal” has low confidence. Click “Show the suspect block”, then “Start a new section here”. You can also click a section and use “Choose start” / “Choose end”. Save.',
+   review1:'Click any block on either side: the other side follows. Filter “Pending”: it is empty. Open the assistant and ask about the warning. Validate.',
+   review2:'Filter “Pending”. Select the first warning, press W, then “Apply to similar”. Indent a sub-step (→) and apply to similar. Click a tool block to show the CIR tool list.',
+   review3:'Open the first DM (Brake system – Description). Everything is detected: validate.',
+   xml:'Show the XML and the right panel: CIR items reused and applicability A-Cross E / GT.',
+   validate:'Run the validation. If there are errors, “Go to block” takes you back to the review.',
+   publish:'Publish and browse the pages: status page, references, warnings from the CIR, applicability in the footer.',
+   report:'Close with the figures: detection rate, what a person changed, CIR reuse, validation clean.'
+  }
+ },
+ es:{
+  projects:'Proyectos', newProject:'Nuevo proyecto', projEmptyT:'Todavía no hay proyectos', projEmptyP:'Cree un proyecto para fijar el estándar destino, cargar los datos del proyecto y empezar a migrar documentos.',
+  projName:'Nombre del proyecto', projStd:'Estándar del proyecto', create:'Crear', cancel:'Cancelar', save:'Guardar', next:'Continuar', close:'Cerrar',
+  license:'Pendiente de licencia', stdIssue:'Edición', projCreated:'Proyecto creado',
+  colProject:'Proyecto', colStd:'Estándar', colTasks:'Tareas', colUpd:'Actualizado', open:'Abrir',
+  navSettings:'Settings del proyecto', navTasks:'Tareas', taskSteps:'Tarea',
+  setT:'Settings del proyecto', setP:'Valores por defecto, lista de módulos de datos requeridos, repositorios de información común y aplicabilidad. Se cargan una vez y los usan todas las tareas del proyecto.',
+  tDefaults:'Defaults', tCIR:'CIR', tApplic:'Aplicabilidad',
+  fIssue:'Edición S1000D', fDMRL:'Fichero DMRL', choose:'Elegir', fOrig:'CAGE origen', fRPC:'CAGE RPC', fCountry:'País', fLang:'Idioma', fSec:'Seguridad', fBrex:'Ref. DM del BREX', fICN:'Formato ICN', fXref:'IDs de referencias cruzadas', fFig:'Figuras', fTab:'Tablas', fSE:'Equipos de apoyo', fSpa:'Piezas', fSup:'Consumibles', fIssueNo:'N.º de edición del DM', fInwork:'In-work', fShowC:'Mostrar DMC del contenedor',
+  cirTools:'Herramientas (equipos de apoyo)', cirSpares:'Piezas (Spares)', cirSupplies:'Consumibles (Supplies)', cirWarnings:'Advertencias (Warnings)', cirCautions:'Precauciones (Cautions)', items:'elementos', notLoaded:'Ningún fichero seleccionado', dmrlRows:'módulos de datos',
+  appP:'Productos y atributos de la ACT y la PCT. Se usan para escribir la aplicabilidad de cada bloque.', product:'Producto', version:'Versión', powertrain:'Propulsión', model:'Modelo', attr:'Atributos',
+  setNeed:'Cargue el DMRL, los cinco CIR y la aplicabilidad para guardar.', setSaved:'Settings del proyecto guardados',
+  tasksT:'Tareas', tasksP:'Cada tarea convierte una fuente en su salida: un módulo de datos o un módulo de publicación.', newTask:'Nueva tarea', tasksEmptyT:'Todavía no hay tareas', tasksEmptyP:'Cree una tarea, elija su tipo de salida y los módulos de datos de la DMRL.', needSettings:'Guarde los settings del proyecto antes de crear tareas.',
+  colTask:'Tarea', colType:'Salida', colDMs:'DMs', colStatus:'Estado',
+  stNew:'Nueva', stImported:'Importada', stReview:'En revisión', stXml:'XML generado', stValid:'Validada', stPub:'Publicada',
+  ntT:'Nueva tarea', ntType:'Tipo de salida', ntName:'Nombre de la tarea', ntDMs:'Módulos de datos de la DMRL', ntSel:'seleccionados', ntNeed:'Elija el tipo de salida, el nombre y al menos un módulo de datos.',
+  outs:{descript:['DM descriptivo','Descripción, funcionamiento'],proced:['DM procedimental','Desmontaje, montaje, pruebas'],ipd:['DM IPD','Catálogo ilustrado de piezas'],fault:['DM Fault','Aislamiento de averías'],cmm:['PM · CMM','Manual de mantenimiento de componentes'],sb:['PM · SB','Boletín de servicio']},
+  taskNames:{'1':'Rueda – Cómo está fabricada','2':'Volante – Desmontaje','3':'Sistema de frenos – CMM'},
+  dmc:'DMC', tech:'Tech name', info:'Info name', schema:'Tipo', descriptive:'Descriptivo', procedural:'Procedimental', common:'Datos del proyecto',
+  steps:{import:'Importar fuente',segment:'Segmentación',review:'Revisión humana',xml:'XML S1000D',validate:'Validación',publish:'Publicación',report:'Informe de migración'},
+  impT:'Importar documento fuente', impP:'Seleccione el documento fuente. La app lo extrae, guarda de dónde sale cada bloque y lo clasifica.',
+  selFile:'Seleccionar fichero', processing:'Procesando', done:'Hecho', pages:'páginas',
+  st1pdf:'Extracción OCR', st1doc:'Extracción de la estructura del Word', st1s:'Texto, maquetación, tablas y figuras',
+  st2:'Transformación a JSON con procedencia', st2s:'Cada bloque guarda su página y su posición',
+  st3:'Enriquecimiento automático', st3s:'Clasificación de bloques, referencias y detección de datos reutilizables',
+  st4:'Validación del esquema JSON', st4s:'Contra el perfil de S1000D Issue 4.2',
+  blocksFound:'bloques', cirFound:'coincidencias en el CIR', refsFound:'referencias', valid:'válido',
+  sampleBlock:'Bloque de ejemplo con procedencia', toReview:'Abrir la ventana de revisión', toSeg:'Abrir la segmentación',
+  segT:'Segmentación en módulos de datos', segP:'Apruebe cómo se parte el contenido en módulos de datos, con qué DMC e info code, y cómo se estructura el módulo de publicación.',
+  sections:'Secciones', pmStruct:'Estructura del módulo de publicación', conf:'Confianza', infoCode:'Módulo de datos', pmEntry:'Entrada del PM',
+  segFlag:'Posible límite no detectado', segFlagTxt:'Esta sección parece contener también los pasos de montaje.', showBound:'Ver el bloque dudoso',
+  setStart:'Elegir inicio', setEnd:'Elegir fin', goStart:'Ir al inicio', goEnd:'Ir al fin', merge:'Unir con la anterior',
+  pickStart:s=>`Pulse en el original el primer bloque de «${s}».`, pickEnd:s=>`Pulse en el original el último bloque de «${s}».`,
+  segSel:'Bloque seleccionado', newHere:'Empezar aquí una sección nueva', startHere:s=>`Que «${s}» empiece aquí`, endHere:s=>`Que «${s}» termine aquí`,
+  segSave:'Guardar segmentación', segSaved:'Segmentación guardada', unassigned:'Sin asignar', blocksN:'bloques',
+  segPick:'Pulse una sección para trabajar con ella, o un bloque del original. Los límites dudosos van en punteado.',
+  newSecT:'Sección nueva', newSecP:'La app propone el módulo de datos de la DMRL que corresponde al título.', createSec:'Crear sección', name:'Nombre',
+  badRange:'Ese bloque está fuera del rango permitido para esta sección.',
+  revT:'Revisión humana', revP:'Solo necesita a una persona lo no detectado o de baja confianza. Lo demás está listo para validar.',
+  original:'Original', blocks:'Bloques en orden de lectura', filterAll:'Todos', filterPend:'Pendientes', pending:'pendientes', ok:'OK', reviewed:'revisados',
+  undetected:'No detectado', low:'Baja confianza', okS:'Detectado',
+  type:'Tipo', style:'Estilo', element:'Elemento S1000D', cir:'CIR', applic:'Aplicabilidad', page:'Página', source:'Fuente',
+  indent:'Sangrar', outdent:'Desangrar', mergeN:'Unir con el siguiente', split:'Dividir', accept:'Aceptar',
+  similar:'Aplicar a similares', similarTxt:(n,s)=>`${n} bloque${n>1?'s':''} similar${n>1?'es':''} con el mismo estilo «${s}» y el mismo problema.`, applied:n=>`Aplicado a ${n} bloque${n>1?'s':''} similar${n>1?'es':''}`,
+  xmlPrev:'Vista previa del XML del bloque', noSel:'Seleccione un bloque en cualquiera de los dos lados.', genXML:'Validar y generar XML', genAnyway:'Generar XML igualmente',
+  pendLeft:n=>`Quedan ${n} bloque${n>1?'s':''} pendiente${n>1?'s':''}. Puede generar el XML, pero la validación los señalará.`,
+  keysT:'Teclado', kNav:'siguiente / anterior', kInd:'sangrar / desangrar', kType:'Warning, Caution, Note, Para, Ignore', kAcc:'aceptar', kSim:'aplicar a similares', kFil:'filtro de pendientes',
+  dmTree:'Módulos de datos', allOk:'Todos los bloques detectados. Listo para validar.',
+  cirPickT:{tools:'Herramienta del CIR',spares:'Pieza del CIR',supplies:'Consumible del CIR'}, cirFilter:'Filtrar', cirChanged:id=>`Enlazado con ${id}`,
+  gen1:'Construyendo el módulo de datos', gen2:'Resolviendo referencias del CIR y aplicabilidad', gen3:'Comprobando la estructura contra S1000D 4.2', genT:'Generando XML',
+  xmlT:'XML S1000D 4.2', xmlP:'Módulo de datos generado, con los elementos del CIR y la aplicabilidad que usa.',
+  cirUsed:'Elementos del CIR usados', applicUsed:'Aplicabilidad usada', noneUsed:'Ninguno',
+  xmlPend:'Este resultado aún tiene bloques pendientes. La validación los señalará.',
+  valT:'Post-validación', valP:'Esquema XSD, BREX del proyecto y reglas Schematron. Si algo falla, se vuelve a la revisión con el bloque ya seleccionado.',
+  runVal:'Ejecutar validación', rerun:'Volver a ejecutar', xsd:'Esquema XSD', brex:'BREX', sch:'Schematron', passed:'Correcto', failed:'Con errores', running:'Ejecutando',
+  xsdOk:n=>`${n} fichero${n>1?'s':''} válido${n>1?'s':''} contra S1000D 4.2`, brexOk:n=>`${n} reglas comprobadas, 0 incumplimientos`, schOk:n=>`${n} reglas comprobadas, 0 errores`,
+  errs:'Errores que corregir', goBlock:'Ir al bloque', backReview:'Volver a la revisión', allPass:'Todo correcto', brexRules:'Reglas del BREX',
+  errWarn:'Un texto que empieza por la palabra de advertencia está como para. Las advertencias se referencian desde el CIR (warningRef).',
+  errStep:'El número escrito del paso no coincide con su nivel.', errSeg:'Bloque marcado con baja confianza.',
+  runs:'Ejecuciones de la validación', run:'Ejecución', errorsW:'errores',
+  pubT:'Publicación', pubP:'PDF con formato de página S1000D Issue 4.2 y el logo de ALTEN.', publish:'Publicar PDF', publishing:'Publicando', openPdf:'Abrir PDF', pageOf:(a,b)=>`Página ${a} de ${b}`,
+  repT:'Informe de migración', repP:'Trazabilidad de origen a destino, porcentaje de detección automática y errores.',
+  kBlocks:'Bloques de la fuente', kAuto:'Detección automática', kHuman:'Cambiados por una persona', kCir:'Elementos del CIR reutilizados', kDms:'Módulos de datos', kVal:'Validación',
+  trace:'Trazabilidad origen → destino', target:'Destino', status:'Estado', auto:'Automático', human:'Revisado', all2:'Todos', onlyHuman:'Solo revisados',
+  errHist:'Errores encontrados y corregidos', noErrs:'Sin errores en ninguna ejecución.', fixed:'corregido', finish:'Volver a las tareas',
+  loaded:'Cargado',
+  wOpen:'Abrir', wFileName:'Nombre:', wAll:'Todos los archivos (*.*)', wName:'Nombre', wDate:'Fecha de modificación', wType:'Tipo', wSize:'Tamaño', wSearch:'Buscar', wHome:'Inicio', wDesktop:'Escritorio', wDownloads:'Descargas', wDocs:'Documentos', wPC:'Este equipo',
+  ftype:{xml:'Documento XML',xlsx:'Hoja de cálculo de Microsoft Excel',pdf:'Documento de Adobe Acrobat',docx:'Documento de Microsoft Word'},
+  asT:'Asistente de migración', asSub:'Resuelve referencias contra el CIR, la DMRL y el BREX del proyecto', asPh:'Pregunte por un número de pieza, una herramienta, una advertencia…', asSend:'Enviar', asOpen:'Asistente',
+  asHello:'Hola. Puedo buscar elementos en el CIR, la DMRL y el BREX del proyecto, y enlazarlos con el bloque que tenga seleccionado.',
+  asNo:'No he encontrado nada. Pruebe con un número de pieza, el nombre de una herramienta, un id del CIR (por ejemplo W001 o supequi-0005) o un título de la DMRL.',
+  asFound:n=>`He encontrado ${n} elemento${n>1?'s':''} en el CIR:`, asApply:id=>`Enlazar con ${id}`, asApplied:(id,b)=>`Hecho: el bloque ${b} queda enlazado con ${id}.`,
+  asPend:n=>n?`Hay ${n} bloque${n>1?'s':''} pendiente${n>1?'s':''} en esta tarea:`:'No hay bloques pendientes en esta tarea.', asGo:b=>`Ir a ${b}`,
+  asBrex:'El BREX del proyecto tiene estas reglas:', asDmrl:'Estas entradas de la DMRL coinciden:', asApplicT:'La aplicabilidad del proyecto usa el atributo version: E (eléctrico) y GT (gasolina). Piezas limitadas a una versión:',
+  asBlock:(b,ty,el)=>`El bloque ${b} es de tipo ${ty}. Se convierte en ${el}.`, asSel:'Bloque seleccionado',
+  sug:{
+   gen:['¿Qué reglas tiene el BREX?','Busca en el CIR la advertencia del airbag'],
+   '1':['¿Qué advertencia del CIR usa este DM?','¿Qué piezas son solo para el A-Cross GT?'],
+   '2':['¿Qué herramienta es ACX-TL-T50?','Busca en el CIR la advertencia del airbag','¿Qué bloques quedan pendientes?'],
+   '3':['¿Qué módulo de datos es el montaje de pastillas?','¿Qué consumibles usa el purgado?','¿Qué bloques quedan pendientes?']},
+  infoT:'Preparación de la demo', infoP:'Solo para el presentador. El cliente no ve nada de esto salvo que active los consejos.', tipsOn:'Mostrar los consejos del presentador en pantalla', ref:'Chuleta', resetAll:'Restablecer todo', resetDone:'Todo restablecido',
+  refRows:[['Proyecto','A-Cross Migration · S1000D Issue 4.2'],['Tarea 1','DM descriptivo · «Rueda – Cómo está fabricada» · DMRL: Rueda – Descripción de cómo está fabricada (041)'],['Tarea 2','DM procedimental · «Volante – Desmontaje» · DMRL: Volante – Procedimiento de desmontaje (520)'],['Tarea 3','PM · CMM · «Sistema de frenos – CMM» · DMRL: las 6 filas del sistema de frenos (040, 042, 311, 520, 720, 231)'],['Ficheros','Cualquier fichero que se elija en la ventana Abrir carga el correcto.']],
+  presenter:'Presentador',
+  hints:{
+   projects:'Pulse «Nuevo proyecto». Escriba lo que sea en el nombre: se rellena «A-Cross Migration». Elija S1000D Issue 4.2 (los demás dicen «Pendiente de licencia»).',
+   settings:'Pulse «Elegir» en el DMRL y después en las pestañas CIR y Aplicabilidad. Cualquier fichero que elija en la ventana Abrir carga el correcto. Guarde.',
+   tasks:'Pulse «Nueva tarea». Elija el tipo de salida, escriba lo que sea en el nombre (se rellena) y marque las filas de la DMRL de la chuleta (ⓘ). Cree.',
+   import:'Pulse «Seleccionar fichero», elija la fuente en la ventana Abrir y comente cada etapa mientras corre.',
+   segment:'«Pastillas de freno delanteras: desmontaje» tiene baja confianza. Pulse «Ver el bloque dudoso» y «Empezar aquí una sección nueva». También puede pulsar una sección y usar «Elegir inicio» / «Elegir fin». Guarde.',
+   review1:'Pulse cualquier bloque en un lado: el otro lo sigue. Filtre «Pendientes»: está vacío. Abra el asistente y pregunte por la advertencia. Valide.',
+   review2:'Filtre «Pendientes». Seleccione la primera advertencia, tecla W y «Aplicar a similares». Sangre un subpaso (→) y aplique a similares. Pulse un bloque de herramienta para ver la lista de herramientas del CIR.',
+   review3:'Abra el primer DM (Sistema de frenos – Descripción). Todo está detectado: valide.',
+   xml:'Enseñe el XML y el panel derecho: elementos del CIR reutilizados y aplicabilidad A-Cross E / GT.',
+   validate:'Ejecute la validación. Si hay errores, «Ir al bloque» le devuelve a la revisión.',
+   publish:'Publique y recorra las páginas: página de estado, referencias, advertencias del CIR, aplicabilidad en el pie.',
+   report:'Cierre con las cifras: porcentaje de detección, lo que cambió una persona, reutilización del CIR, validación limpia.'
+  }
+ }
+};
+
+/* ================= block types ================= */
+const TYPES = {
+ para:{c:'blue',s:'S1000D ParaText',e:'para',en:'Paragraph',es:'Párrafo'},
+ heading1:{c:'purple',s:'S1000D Para0 Title',e:'levelledPara/title',en:'Heading 1',es:'Título 1',lv:1,fam:'h'},
+ heading2:{c:'purple',s:'S1000D SubPara1 Title',e:'levelledPara/levelledPara/title',en:'Heading 2',es:'Título 2',lv:2,fam:'h'},
+ heading3:{c:'purple',s:'S1000D SubPara2 Title',e:'levelledPara/levelledPara/levelledPara/title',en:'Heading 3',es:'Título 3',lv:3,fam:'h'},
+ heading4:{c:'purple',s:'S1000D SubPara3 Title',e:'levelledPara (level 4)/title',en:'Heading 4',es:'Título 4',lv:4,fam:'h'},
+ randomListItem:{c:'blue',s:'S1000D RandList',e:'randomList/listItem/para',en:'Bulleted list',es:'Lista con viñetas'},
+ sequentialListItem:{c:'blue',s:'S1000D NumberedList',e:'sequentialList/listItem/para',en:'Numbered list',es:'Lista numerada'},
+ warning:{c:'orange',s:'S1000D WARNING',e:'warningsAndCautionsRef/warningRef (CIR)',en:'Warning',es:'Advertencia'},
+ caution:{c:'yellow',s:'S1000D CAUTION',e:'warningsAndCautionsRef/cautionRef (CIR)',en:'Caution',es:'Precaución'},
+ note:{c:'grey',s:'S1000D NOTE',e:'note/notePara',en:'Note',es:'Nota'},
+ figure:{c:'teal',s:'(graphic)',e:'figure/graphic',en:'Figure',es:'Figura'},
+ figureTitle:{c:'teal',s:'S1000D Figure Title',e:'figure/title',en:'Figure title',es:'Título de figura'},
+ table:{c:'teal',s:'(table)',e:'table/tgroup',en:'Table',es:'Tabla'},
+ tableTitle:{c:'teal',s:'S1000D Table Title',e:'table/title',en:'Table title',es:'Título de tabla'},
+ stepTitle:{c:'green',s:'S1000D Step Title',e:'proceduralStep/title',en:'Step 1 (title)',es:'Paso 1 (título)',lv:1,fam:'s'},
+ step2:{c:'green',s:'S1000D Step2',e:'proceduralStep/proceduralStep/para',en:'Step 2',es:'Paso 2',lv:2,fam:'s'},
+ step3:{c:'green',s:'S1000D Step3',e:'proceduralStep/proceduralStep/proceduralStep/para',en:'Step 3',es:'Paso 3',lv:3,fam:'s'},
+ step4:{c:'green',s:'S1000D Step4',e:'proceduralStep (level 4)/para',en:'Step 4',es:'Paso 4',lv:4,fam:'s'},
+ reqCond:{c:'brown',s:'S1000D Req Cond',e:'reqCondGroup/reqCondNoRef',en:'Required condition',es:'Condición requerida'},
+ reqPersons:{c:'brown',s:'S1000D ParaText (persons)',e:'reqPersons/personnel',en:'Required persons',es:'Personal requerido'},
+ supportEquip:{c:'brown',s:'(support equipment item)',e:'reqSupportEquips/supportEquipDescr',en:'Support equipment',es:'Equipo de apoyo',cir:'tools'},
+ supply:{c:'brown',s:'(supply item)',e:'reqSupplies/supplyDescr',en:'Supply',es:'Consumible',cir:'supplies'},
+ spare:{c:'brown',s:'(spare item)',e:'reqSpares/spareDescr',en:'Spare',es:'Pieza',cir:'spares'},
+ closeUp:{c:'brown',s:'S1000D Close Up',e:'closeRqmts/reqCondGroup',en:'Close-up',es:'Cierre (Close up)'},
+ sectionStart:{c:'purple',s:'(data module boundary)',e:'(new data module)',en:'Section start',es:'Inicio de sección'},
+ ignore:{c:'light',s:'S1000D Ignore',e:'(not converted)',en:'Ignore',es:'Ignorar'}
+};
+const TYPE_ORDER = ['para','heading1','heading2','heading3','heading4','randomListItem','sequentialListItem','warning','caution','note','figure','figureTitle','table','tableTitle','stepTitle','step2','step3','step4','reqCond','reqPersons','supportEquip','supply','spare','closeUp','sectionStart','ignore'];
+const CVAR = c => `var(--t-${c})`;
+const STANDARDS = [['DITA 1.3',0],['ATA iSpec 2200',0],['S1000D Issue 3.0.1',0],['S1000D Issue 4.1',0],['S1000D Issue 4.2',1],['S1000D Issue 5.0',0],['S1000D Issue 6.0',0],['S1000D Issue 7.0',0]];
+const OUTS = [['descript','1'],['proced','2'],['ipd',null],['fault',null],['cmm','3'],['sb',null]];
+/* ================= v3: AI strings ================= */
+Object.assign(STR.en, {
+ tAI:'AI assistant', sot:'Source of truth', sotP:'When it is on, the assistant connects to the LLM and reasons only with the project sources below. The AI proposes; a person accepts or rejects every change.',
+ sotOn:'Connected', sotOff:'Off', srcCol:'Source', contCol:'Content', stCol:'Status',
+ src:[['S1000D Issue 4.2 XSD','descript, proced, pm, comrep, brex…'],['Project BREX','8 rules'],['Project CIR','44 items in 5 repositories'],['DMRL','22 data modules'],['Reference DM database (S1000D 4.2)','Validated data modules from previous projects, indexed by info code'],['LLM','ALTEN corporate model']],
+ stStyles:'Style analysis and mapping to the schema', stStylesS:'Source styles mapped to S1000D 4.2 elements (XSD)', stylesN:n=>`${n} styles mapped`,
+ mapT:'Style mapping proposed by the app', mapStyle:'Detected style', mapBlocks:'Blocks', mapEl:'Proposed S1000D element', mapConf:'Avg. confidence', mapRev:'to review', mapP:'First approximation from the document styles and the selected XSD. Anything uncertain goes to the human review.',
+ aiSolveAll:n=>`Resolve pending with AI (${n})`, aiSolve:'Resolve with AI', aiAcceptAll:n=>`Accept all proposals (${n})`,
+ aiThinking:'The AI is preparing proposals', aiT1:'Reading the blocks and their context', aiT2:'Comparing with the reference DM database', aiT3:'Checking against the XSD, the BREX and the CIR',
+ aiProp:'AI proposal', aiPill:'AI proposal', aiAccept:'Accept', aiReject:'Reject', aiJudge:'Ask the judge', aiConf:'Confidence', aiSources:'Sources',
+ aiAccepted:'Proposal accepted', aiRejected:'Proposal rejected: the block stays pending', aiProposals:n=>`${n} AI proposal${n>1?'s':''} ready`, aiTypeChg:'Type',
+ judgeT:'Judge verdict', judging:'The judge is reviewing the proposal', vOk:'Correct', vBad:'Incorrect', vFix:'Apply the judge correction', judgeFixed:'Correction applied',
+ jc:{xsd:'XSD 4.2 structure',brex:'Project BREX',cir:'CIR reference',ref:'Reference DMs',dmrl:'DMRL entry',pm:'PM structure'},
+ aiSeg:'Propose with AI', aiSegT:'AI proposal for the segmentation', aiSegTxt:(b,s)=>`Start a new data module at ${b}: “${s}”`,
+ kAi:'Resolved by AI', kAiProps:'AI proposals', kAiSub:(a,r,j)=>`${a} accepted · ${r} rejected · ${j} judged`, aiSt:'AI',
+ errCir:id=>`The warning text does not match the CIR item it references (${id}).`,
+ asSot:'Connected to the LLM · Source of truth', asNoSot:'Source of truth off', asSolve:n=>`I prepared ${n} proposal${n>1?'s':''} for the pending blocks. Accept or reject each one in the review panel, or ask the judge.`, asSolveNone:'There are no pending blocks to resolve.', asNeedSot:'Turn on Source of truth so the AI can propose solutions.', asFirst:'Show the first one', asSolveChip:'Resolve the pending blocks',
+ rs:{
+  warn:(id)=>[`The text starts with the warning word and matches ${id} in the warnings CIR (0A4).`,`In the reference DM database (4.2), warnings are coded as warningRef to the CIR, not as para.`,`BREX BRDP-ACX-006 forbids inline warnings.`],
+  step:(num,lv)=>[`The typed number ${num} is level ${lv}.`,`XSD: proceduralStep can be nested at level ${lv}; BREX BRDP-ACX-005 allows up to 4 levels.`,`In the reference DM database (4.2), numbered sub-steps a.b.c sit at the third level.`],
+  seg:(s)=>[`“${s}” starts the installation procedure: the subject of the text changes.`,`The DMRL has an install DM for the front brake pads (720).`,`In the reference DM database (4.2), removal (520) and installation (720) are separate DMs.`],
+  gen:()=>[`The block fits the expected structure.`],
+  jOk:'All checks passed. The proposal can be accepted.', jBad:(bad,good)=>`The text matches ${good}, not ${bad}. Proposed correction: link to ${good}.`
+ },
+ hints2:{review2:'Manual path: filter “Pending”, W + “Apply to similar”, → + “Apply to similar”. AI path (Source of truth on): “Resolve pending with AI”, open b032 and “Ask the judge”: it catches W001 → apply the correction. Accept the rest.',
+  settings:'Load the DMRL, the CIRs and the applicability (any file works). In the “AI assistant” tab, turn on Source of truth. Save.',
+  segment:'Manual: “Show the suspect block” → “Start a new section here”. AI: “Propose with AI” → “Ask the judge” → “Accept”. You can also use “Choose start” / “Choose end”. Save.'}
+});
+Object.assign(STR.es, {
+ tAI:'Asistente IA', sot:'Source of truth', sotP:'Al activarlo, el asistente se conecta al LLM y razona solo con las fuentes del proyecto de abajo. La IA propone; cada cambio lo acepta o lo rechaza una persona.',
+ sotOn:'Conectado', sotOff:'Desactivado', srcCol:'Fuente', contCol:'Contenido', stCol:'Estado',
+ src:[['XSD de S1000D Issue 4.2','descript, proced, pm, comrep, brex…'],['BREX del proyecto','8 reglas'],['CIR del proyecto','44 elementos en 5 repositorios'],['DMRL','22 módulos de datos'],['Base de DMs de referencia (S1000D 4.2)','Módulos de datos validados de proyectos anteriores, indexados por info code'],['LLM','Modelo corporativo de ALTEN']],
+ stStyles:'Análisis de estilos y mapeo al esquema', stStylesS:'Estilos de la fuente mapeados a elementos de S1000D 4.2 (XSD)', stylesN:n=>`${n} estilos mapeados`,
+ mapT:'Mapeo de estilos propuesto por la app', mapStyle:'Estilo detectado', mapBlocks:'Bloques', mapEl:'Elemento S1000D propuesto', mapConf:'Confianza media', mapRev:'a revisar', mapP:'Primera aproximación a partir de los estilos del documento y del XSD seleccionado. Lo dudoso pasa a la revisión humana.',
+ aiSolveAll:n=>`Resolver pendientes con IA (${n})`, aiSolve:'Resolver con IA', aiAcceptAll:n=>`Aceptar todas las propuestas (${n})`,
+ aiThinking:'La IA está preparando propuestas', aiT1:'Leyendo los bloques y su contexto', aiT2:'Comparando con la base de DMs de referencia', aiT3:'Comprobando contra el XSD, el BREX y el CIR',
+ aiProp:'Propuesta de la IA', aiPill:'Propuesta IA', aiAccept:'Aceptar', aiReject:'Rechazar', aiJudge:'Pedir veredicto al juez', aiConf:'Confianza', aiSources:'Fuentes',
+ aiAccepted:'Propuesta aceptada', aiRejected:'Propuesta rechazada: el bloque sigue pendiente', aiProposals:n=>`${n} propuesta${n>1?'s':''} de la IA lista${n>1?'s':''}`, aiTypeChg:'Tipo',
+ judgeT:'Veredicto del juez', judging:'El juez está revisando la propuesta', vOk:'Correcta', vBad:'Incorrecta', vFix:'Aplicar la corrección del juez', judgeFixed:'Corrección aplicada',
+ jc:{xsd:'Estructura XSD 4.2',brex:'BREX del proyecto',cir:'Referencia al CIR',ref:'DMs de referencia',dmrl:'Entrada de la DMRL',pm:'Estructura del PM'},
+ aiSeg:'Proponer con IA', aiSegT:'Propuesta de la IA para la segmentación', aiSegTxt:(b,s)=>`Empezar un módulo de datos nuevo en ${b}: «${s}»`,
+ kAi:'Resueltos por la IA', kAiProps:'Propuestas de la IA', kAiSub:(a,r,j)=>`${a} aceptadas · ${r} rechazadas · ${j} juzgadas`, aiSt:'IA',
+ errCir:id=>`El texto de la advertencia no coincide con el elemento del CIR que referencia (${id}).`,
+ asSot:'Conectado al LLM · Source of truth', asNoSot:'Source of truth desactivado', asSolve:n=>`He preparado ${n} propuesta${n>1?'s':''} para los bloques pendientes. Acéptelas o recháchelas una a una en el panel de revisión, o pida el veredicto del juez.`, asSolveNone:'No hay bloques pendientes que resolver.', asNeedSot:'Active Source of truth para que la IA pueda proponer soluciones.', asFirst:'Ver la primera', asSolveChip:'Resuelve los bloques pendientes',
+ rs:{
+  warn:(id)=>[`El texto empieza por la palabra de advertencia y coincide con ${id} del CIR de advertencias (0A4).`,`En la base de DMs de referencia (4.2), las advertencias se codifican como warningRef al CIR, no como para.`,`El BREX BRDP-ACX-006 prohíbe las advertencias en línea.`],
+  step:(num,lv)=>[`El número escrito ${num} es de nivel ${lv}.`,`XSD: proceduralStep admite anidar el paso en el nivel ${lv}; el BREX BRDP-ACX-005 permite hasta 4 niveles.`,`En la base de DMs de referencia (4.2), los subpasos numerados a.b.c van en el tercer nivel.`],
+  seg:(s)=>[`«${s}» empieza el procedimiento de montaje: cambia el tema del texto.`,`La DMRL tiene un DM de montaje para las pastillas delanteras (720).`,`En la base de DMs de referencia (4.2), el desmontaje (520) y el montaje (720) van en DMs distintos.`],
+  gen:()=>[`El bloque encaja en la estructura esperada.`],
+  jOk:'Todas las comprobaciones son correctas. Se puede aceptar la propuesta.', jBad:(bad,good)=>`El texto coincide con ${good}, no con ${bad}. Corrección propuesta: enlazar con ${good}.`
+ },
+ hints2:{review2:'Camino manual: filtre «Pendientes», W + «Aplicar a similares», → + «Aplicar a similares». Camino IA (Source of truth activado): «Resolver pendientes con IA», abra b032 y «Pedir veredicto al juez»: detecta W001 → aplique la corrección. Acepte el resto.',
+  settings:'Cargue el DMRL, los CIR y la aplicabilidad (vale cualquier fichero). En la pestaña «Asistente IA», active Source of truth. Guarde.',
+  segment:'Manual: «Ver el bloque dudoso» → «Empezar aquí una sección nueva». IA: «Proponer con IA» → «Pedir veredicto al juez» → «Aceptar». También «Elegir inicio» / «Elegir fin». Guarde.'}
+});
+['en','es'].forEach(l=>Object.assign(STR[l].hints, STR[l].hints2));
+STR.en.cirPickT.warnings='Warning from the CIR'; STR.en.cirPickT.cautions='Caution from the CIR';
+STR.es.cirPickT.warnings='Advertencia del CIR'; STR.es.cirPickT.cautions='Precaución del CIR';
+STR.en.sug['2'].unshift('Resolve the pending blocks'); STR.es.sug['2'].unshift('Resuelve los bloques pendientes');
+TYPES.warning.cir='warnings'; TYPES.caution.cir='cautions';
+
+/* ================= v3: AI engine (proposals + judge) ================= */
+function stepNum(text){ const m=text.match(/^(\d+(?:\.\d+)+)/); return m?m[1]:null; }
+function aiProposalFor(b){
+  const R = t('rs'); const ex = b.expected || {};
+  if(ex.type==='warning' || /^(WARNING|ADVERTENCIA)/i.test(b.text)){
+    const good = matchCIR(b.text,'warning') || ex.cir_ref; const wrong = (DN()==='2' && b.id==='b032') ? 'W001' : null;
+    return {type:'warning', cir: wrong||good, conf: wrong?0.71:0.94, reasons:R.warn(wrong||good), sources:['CIR 0A4','BREX','DMs 4.2']};
+  }
+  if(ex.type && /^step/.test(ex.type)){ const num = stepNum(b.text)||''; const lv = TYPES[ex.type].lv;
+    return {type:ex.type, conf:0.92, reasons:R.step(num,lv), sources:['XSD proced.xsd','BREX','DMs 4.2']}; }
+  return {type:b.detected_type, conf:0.88, reasons:R.gen(), sources:['XSD']};
+}
+function judgeFor(b, p){
+  const R = t('rs'); const checks = [['xsd',true],['brex',true],['ref',true]];
+  if(p.type==='warning'){ const good = matchCIR(b.text,'warning'); const ok = !good || good===p.cir; checks.splice(2,0,['cir',ok]);
+    if(!ok) return {ok:false, checks, text:R.jBad(p.cir, good), fix:{cir:good}}; }
+  return {ok:true, checks, text:R.jOk};
+}
+function aiStats(d){ return {acc:d.blocks.filter(b=>b.ai==='accepted').length, rej:(d.aiRej||0), judged:(d.aiJudged||0)}; }
+
+
+/* ================= state ================= */
+const S = {lang:'es', presenter:false, view:'projects', project:null, settings:null, tasks:[], cur:null, step:null, chat:{open:false, msgs:[], busy:false}, ai:{sot:false}};
+try{ const l = localStorage.getItem('sm_lang'); if(l==='en'||l==='es') S.lang = l; }catch(e){}
+const t = k => STR[S.lang][k];
+const L = () => DATA.lang[S.lang];
+const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const tn = ty => (TYPES[ty]||{})[S.lang] || ty;
+const today = () => new Date().toLocaleDateString(S.lang==='es'?'es-ES':'en-GB',{day:'2-digit',month:'2-digit',year:'numeric'});
+const nowT = () => new Date().toLocaleTimeString(S.lang==='es'?'es-ES':'en-GB',{hour:'2-digit',minute:'2-digit'});
+function newSettings(){ return {tab:'defaults', loaded:{dmrl:false,tools:false,spares:false,supplies:false,warnings:false,cautions:false,applic:false}, saved:false}; }
+S.settings = newSettings();
+
+function newDemoState(n){
+  const j = L().demos[n].json;
+  const blocks = j.blocks.map(b => Object.assign({}, b, {origType:b.detected_type, origStatus:b.status, origCir:b.cir_ref, human:false}));
+  const st = {n, reached:0, imported:0, blocks, sel:null, filter:'all', similar:null, segSaved:false, segSel:null, segActive:null, pick:null, curDM:null,
+    xmlFile:null, runs:[], valState:null, published:false, pubPage:0, repFilter:'all', status:'stNew', cirFilter:''};
+  if(j.segmentation){ const ids = blocks.map(b=>b.id); st.sections = j.segmentation.proposed_by_app.map(s=>Object.assign({}, s, {startIdx: ids.indexOf(s.first_block)})); st.lastEnd = ids.indexOf(j.segmentation.proposed_by_app.slice(-1)[0].last_block); st.curDM = st.sections[0].dmc; syncSegments(st); }
+  return st;
+}
+const T = () => S.cur;            // current task
+const D = () => S.cur.d;           // its demo state
+const DN = () => S.cur.demo;       // '1' | '2' | '3'
+const J = () => L().demos[DN()].json;
+function stepsFor(n){ return n==='3' ? ['import','segment','review','xml','validate','publish','report'] : ['import','review','xml','validate','publish','report']; }
+
+/* ================= icons ================= */
+const sv = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+const IC = {
+ arrowR:sv('<path d="M5 12h14M13 6l6 6-6 6"/>'), arrowL:sv('<path d="M19 12H5M11 6l-6 6 6 6"/>'), folder:sv('<path d="M3 6h6l2 2h10v11H3z"/>'),
+ check:sv('<path d="M5 12l5 5 9-10"/>'), wand:sv('<path d="M4 20L16 8"/><path d="M14 4v3M18 6h3M19 10v1M10 3h1"/>'), ext:sv('<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v6H4V6h6"/>'),
+ info:sv('<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>'), chat:sv('<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>'), plus:sv('<path d="M12 5v14M5 12h14"/>'),
+ gear:sv('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>'),
+ list:sv('<path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/>'), lock:sv('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'),
+ x:sv('<path d="M6 6l12 12M18 6L6 18"/>'), send:sv('<path d="M4 12l16-8-6 16-2-6z"/>'), file:sv('<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/>')
+};
+
+/* ================= shell ================= */
+const app = document.getElementById('app');
+function render(){
+  document.documentElement.lang = S.lang;
+  const crumbs = [`<a href="#" data-go="projects">${t('projects')}</a>`];
+  if(S.project) crumbs.push(`<a href="#" data-go="tasks">${esc(S.project.name)}</a>`);
+  if(S.view==='task' && S.cur) crumbs.push(`<strong>${esc(S.cur.name)}</strong>`);
+  app.innerHTML = `
+  <header class="top">
+    <div class="brand"><img src="img/alten_logo.png" alt="ALTEN"><div><b>Standard Migrator</b><small>ALTEN</small></div></div>
+    <nav class="crumb" aria-label="Breadcrumb">${crumbs.join(' <span class="muted">›</span> ')}</nav>
+    <div class="tools">
+      ${S.project?`<button class="btn small" id="b-chat" aria-pressed="${S.chat.open}">${IC.chat}${t('asOpen')}</button>`:''}
+      <div class="seg" role="group" aria-label="Language"><button id="l-en" aria-pressed="${S.lang==='en'}">EN</button><button id="l-es" aria-pressed="${S.lang==='es'}">ES</button></div>
+      <button class="iconbtn small" id="b-info" aria-label="Info">${IC.info}</button>
+    </div>
+  </header>
+  <div class="main ${S.chat.open?'withchat':''}" style="${S.project?'':'grid-template-columns:minmax(0,1fr)'}">
+    ${S.project?railHTML():''}
+    <main class="work" id="work"></main>
+  </div>
+  ${S.chat.open?chatHTML():''}`;
+  const q = id => document.getElementById(id);
+  q('l-en').onclick = () => setLang('en'); q('l-es').onclick = () => setLang('es');
+  q('b-info').onclick = openInfo;
+  const bc = q('b-chat'); if(bc) bc.onclick = () => { S.chat.open = !S.chat.open; render(); };
+  app.querySelectorAll('[data-go]').forEach(a => a.onclick = e => { e.preventDefault(); const g=a.dataset.go; if(g==='projects'){ S.view='projects'; S.cur=null; } else if(g==='tasks'){ S.view='tasks'; S.cur=null; } else if(g==='settings'){ S.view='settings'; S.cur=null; } render(); });
+  app.querySelectorAll('.stepbtn').forEach(b => b.onclick = () => go(b.dataset.s));
+  app.querySelectorAll('[data-task]').forEach(b => b.onclick = () => openTask(b.dataset.task));
+  if(S.chat.open) bindChat();
+  renderWork();
+}
+function setLang(l){ S.lang=l; try{localStorage.setItem('sm_lang',l)}catch(_){}
+  S.tasks.forEach(tk => { const fresh = DATA.lang[l].demos[tk.demo].json; const byId={}; fresh.blocks.forEach(b=>byId[b.id]=b);
+    tk.d.blocks.forEach(b=>{ const f=byId[b.id]; if(f && !b.merged && !b.splitPart) b.text=f.text; });
+    tk.name = STR[l].taskNames[tk.demo];
+    if(tk.d.sections){ const ex=fresh.segmentation; tk.d.sections.forEach(s=>{ const m=ex.expected_after_review.find(a=>a.dmc===s.dmc)||ex.proposed_by_app.find(a=>a.dmc===s.dmc); const row=DATA.lang[l].dmrl.find(r=>r.dmc===s.dmc); if(m){ s.section=m.section; s.pm_entry=m.pm_entry; } if(row){ s.tech_name=row.tech; s.info_name=row.info; } if(m&&m.issue&&s.issue) s.issue=m.issue; }); }
+  });
+  S.chat.msgs = [];
+  render(); }
+function railHTML(){
+  const ps = S.project;
+  let h = `<nav class="rail" aria-label="Project"><div class="proj"><b>${esc(ps.name)}</b><span class="pill info" style="align-self:flex-start">${esc(ps.std)}</span></div>
+   <button class="navbtn" data-go="settings" ${S.view==='settings'?'aria-current="page"':''}>${IC.gear}${t('navSettings')}${S.settings.saved?`<span class="cnt pill ok">✓</span>`:''}</button>
+   <button class="navbtn" data-go="tasks" ${S.view==='tasks'?'aria-current="page"':''}>${IC.list}${t('navTasks')}<span class="cnt pill plain">${S.tasks.length}</span></button>`;
+  if(S.tasks.length){ h += `<div class="sub">${t('navTasks')}</div>`; h += S.tasks.map(tk=>`<button class="navbtn" data-task="${tk.id}" ${S.view==='task'&&S.cur===tk?'aria-current="page"':''} style="font-size:13px">${IC.file}<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(tk.name)}</span></button>`).join(''); }
+  if(S.view==='task' && S.cur){ const d=D(), steps=stepsFor(DN()); h += `<div class="sub">${esc(S.cur.name)}</div>` + steps.map((s,i)=>{ const can=i<=d.reached;
+      return `<button class="stepbtn ${i<d.reached?'done':''}" data-s="${s}" ${S.step===s?'aria-current="step"':''} ${can?'':'disabled'}><span class="n">${i<d.reached?IC.check:i+1}</span><span class="l">${esc(t('steps')[s])}</span></button>`; }).join(''); }
+  return h + `</nav>`;
+}
+function openTask(id){ const tk = S.tasks.find(x=>x.id===id); if(!tk) return; if(S.cur!==tk) S.chat.msgs=[]; S.cur=tk; S.view='task'; const st=stepsFor(tk.demo); S.step=st[Math.min(tk.d.reached, st.length-1)]; render(); }
+function go(s){ S.step=s; const d=D(); const i=stepsFor(DN()).indexOf(s); if(i>d.reached) d.reached=i; render(); }
+function advance(){ const steps=stepsFor(DN()); const i=steps.indexOf(S.step); const d=D(); if(i+1>d.reached) d.reached=i+1; go(steps[Math.min(i+1,steps.length-1)]); }
+function hintHTML(key){ if(!S.presenter) return ''; const h = t('hints')[key]; return h?`<div class="hint" role="note"><b>${t('presenter')}</b><span>${esc(h)}</span></div>`:''; }
+function toast(msg){ document.querySelectorAll('.toast').forEach(x=>x.remove()); const el=document.createElement('div'); el.className='toast'; el.textContent=msg; document.body.appendChild(el); setTimeout(()=>el.remove(),2400); }
+function setStatus(k){ if(S.cur) S.cur.d.status=k; }
+
+function renderWork(){
+  const w = document.getElementById('work'); if(!w) return;
+  document.onkeydown = null;
+  if(S.view==='projects') return vProjects(w);
+  if(S.view==='settings') return vSettings(w);
+  if(S.view==='tasks') return vTasks(w);
+  ({import:vImport, segment:vSegment, review:vReview, xml:vXml, validate:vValidate, publish:vPublish, report:vReport})[S.step](w);
+}
+
+/* ================= magic typing ================= */
+function magic(input, target){ input.addEventListener('input', () => { const n = input.value.length; input.value = target().slice(0, Math.min(n, target().length)); }); }
+
+/* ================= dialogs ================= */
+function dialog(title, body, foot, wide){
+  const el = document.createElement('div'); el.className='dlg';
+  el.innerHTML = `<div class="box" role="dialog" aria-modal="true" aria-label="${esc(title)}" style="${wide?'max-width:860px':''}"><div class="bh"><h3>${esc(title)}</h3><button class="iconbtn" data-x aria-label="${t('close')}">${IC.x}</button></div><div class="bb">${body}</div>${foot?`<div class="bf">${foot}</div>`:''}</div>`;
+  document.body.appendChild(el); el.querySelector('[data-x]').onclick = () => el.remove();
+  return el;
+}
+function fmtSize(b){ return b>=1048576 ? (b/1048576).toFixed(1).replace('.', S.lang==='es'?',':'.')+' MB' : Math.max(1,Math.round(b/1024)).toLocaleString(S.lang)+' KB'; }
+function openFileDialog(folder, files, onOpen){
+  const el = document.createElement('div'); el.className='win';
+  const ext = n => n.split('.').pop().toLowerCase();
+  const dates = ['14/10/2026 9:12','14/10/2026 9:15','15/10/2026 11:40','15/10/2026 11:42','16/10/2026 16:05','16/10/2026 16:07','17/10/2026 10:21','17/10/2026 10:25','18/10/2026 12:02','18/10/2026 12:30'];
+  el.innerHTML = `<div class="w" role="dialog" aria-modal="true" aria-label="${t('wOpen')}">
+    <div class="tb"><span>${t('wOpen')}</span><button data-x aria-label="${t('close')}">✕</button></div>
+    <div class="addr"><span class="nav" aria-hidden="true">←→↑⟳</span><div class="path">${esc([t('wPC'), t('wDocs'), 'ALTEN', PROJECT_NAME].concat(folder).join('  ›  '))}</div><div class="srch">${t('wSearch')}: ${esc(folder[folder.length-1])}</div></div>
+    <div class="mid"><div class="side2"><div><i class="pc"></i>${t('wHome')}</div><div><i></i>${t('wDesktop')}</div><div><i></i>${t('wDownloads')}</div><div class="on"><i></i>${t('wDocs')}</div><div><i class="pc"></i>${t('wPC')}</div></div>
+      <div class="files"><table><thead><tr><th>${t('wName')}</th><th>${t('wDate')}</th><th>${t('wType')}</th><th>${t('wSize')}</th></tr></thead><tbody>
+      ${files.map((f,i)=>`<tr class="f" data-i="${i}"><td><span class="ficon ${ext(f.name)}"></span>${esc(f.name)}</td><td>${dates[i%dates.length]}</td><td>${esc((t('ftype')[ext(f.name)])||ext(f.name).toUpperCase())}</td><td style="text-align:right">${fmtSize(f.size)}</td></tr>`).join('')}
+      </tbody></table></div></div>
+    <div class="ft"><label for="w-fn">${t('wFileName')}</label><input id="w-fn" autocomplete="off"><select aria-label="${t('wType')}"><option>${t('wAll')}</option></select>
+      <div class="bt"><button class="p" id="w-ok">${t('wOpen')}</button><button id="w-c">${t('cancel')}</button></div></div></div>`;
+  document.body.appendChild(el);
+  const fn = el.querySelector('#w-fn'); let chosen = null;
+  el.querySelectorAll('tr.f').forEach(tr => { tr.onclick = () => { el.querySelectorAll('tr.f').forEach(x=>x.classList.remove('on')); tr.classList.add('on'); chosen=files[+tr.dataset.i]; fn.value=chosen.name; };
+    tr.ondblclick = () => { chosen=files[+tr.dataset.i]; finish(); }; });
+  const close = () => el.remove();
+  function finish(){ close(); onOpen(chosen); }
+  el.querySelector('[data-x]').onclick = close; el.querySelector('#w-c').onclick = close;
+  el.querySelector('#w-ok').onclick = () => { if(!fn.value && !chosen) { fn.focus(); return; } finish(); };
+  fn.onkeydown = e => { if(e.key==='Enter'){ e.preventDefault(); el.querySelector('#w-ok').click(); } };
+}
+function busy(title, steps, ms, done){
+  const el = document.createElement('div'); el.className='busy';
+  el.innerHTML = `<div class="box" role="status"><b style="font-family:var(--f-head);font-size:17px">${esc(title)}…</b><span class="muted" id="bz-s" style="font-size:13px">${esc(steps[0])}</span><div class="bar"><i id="bz-b" style="width:4%"></i></div></div>`;
+  document.body.appendChild(el);
+  const per = ms/steps.length; steps.forEach((s,i)=>setTimeout(()=>{ const sp=el.querySelector('#bz-s'); if(sp) sp.textContent=s; const b=el.querySelector('#bz-b'); if(b) b.style.width=Math.round((i+1)/steps.length*100)+'%'; }, i*per));
+  setTimeout(()=>{ el.remove(); done(); }, ms+250);
+}
+
+/* ================= info (presenter) ================= */
+function openInfo(){
+  const el = dialog(t('infoT'), `<p class="muted" style="margin:0">${esc(t('infoP'))}</p>
+    <label style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="i-tips" ${S.presenter?'checked':''}> ${t('tipsOn')}</label>
+    <div><b style="font-size:13px">${t('ref')}</b><div class="tw" style="margin-top:6px"><table class="grid"><tbody>${t('refRows').map(r=>`<tr><td style="white-space:nowrap"><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td></tr>`).join('')}</tbody></table></div></div>
+    <div class="keys"><b>${t('keysT')}:</b><span><span class="kbd">↑</span><span class="kbd">↓</span> ${t('kNav')}</span><span><span class="kbd">→</span><span class="kbd">←</span> ${t('kInd')}</span><span><span class="kbd">W</span><span class="kbd">C</span><span class="kbd">N</span><span class="kbd">P</span><span class="kbd">I</span> ${t('kType')}</span><span><span class="kbd">A</span> ${t('kSim')}</span><span><span class="kbd">F</span> ${t('kFil')}</span></div>`,
+    `<button class="btn" id="i-reset">${t('resetAll')}</button><button class="btn primary" id="i-ok">${t('close')}</button>`);
+  el.querySelector('#i-tips').onchange = e => { S.presenter = e.target.checked; renderWork(); };
+  el.querySelector('#i-ok').onclick = () => el.remove();
+  el.querySelector('#i-reset').onclick = () => { S.project=null; S.settings=newSettings(); S.tasks=[]; S.cur=null; S.view='projects'; S.chat={open:false,msgs:[],busy:false}; S.ai={sot:false}; el.remove(); render(); toast(t('resetDone')); };
+}
+
+/* ================= projects ================= */
+function vProjects(w){
+  const p = S.project;
+  w.innerHTML = hintHTML('projects') + `<div class="page"><div class="projects"><div class="head"><div><h2>${t('projects')}</h2></div><button class="btn primary" id="b-np">${IC.plus}${t('newProject')}</button></div>
+   ${p ? `<div class="card"><div class="tw"><table class="grid"><thead><tr><th>${t('colProject')}</th><th>${t('colStd')}</th><th>${t('colTasks')}</th><th>${t('colUpd')}</th><th></th></tr></thead><tbody>
+      <tr class="click" id="r-p"><td><b>${esc(p.name)}</b></td><td>${esc(p.std)}</td><td>${S.tasks.length}</td><td>${p.date}</td><td style="text-align:right"><span class="btn small">${t('open')}</span></td></tr></tbody></table></div></div>`
+    : `<div class="empty"><h3>${t('projEmptyT')}</h3><p>${esc(t('projEmptyP'))}</p><button class="btn primary" id="b-np2">${IC.plus}${t('newProject')}</button></div>`}
+  </div></div>`;
+  const np = () => newProject();
+  w.querySelector('#b-np').onclick = np; const b2=w.querySelector('#b-np2'); if(b2) b2.onclick = np;
+  const r=w.querySelector('#r-p'); if(r) r.onclick = () => { S.view = S.settings.saved?'tasks':'settings'; render(); };
+}
+function newProject(){
+  let std = null;
+  const el = dialog(t('newProject'), `<div class="fld"><label for="np-n">${t('projName')}</label><input id="np-n" autocomplete="off" spellcheck="false"></div>
+    <div class="fld"><label>${t('projStd')}</label><div class="opts" id="np-s">${STANDARDS.map(([n,on])=>`<button class="opt" data-std="${n}" ${on?'':'disabled'} aria-pressed="false"><b>${n}</b>${on?`<small>${t('stdIssue')} 4.2 · BREX</small>`:`<small class="lock">${IC.lock}${t('license')}</small>`}</button>`).join('')}</div></div>`,
+    `<button class="btn" id="np-c">${t('cancel')}</button><button class="btn primary" id="np-ok" disabled>${t('create')}</button>`);
+  const nm = el.querySelector('#np-n'); magic(nm, ()=>PROJECT_NAME); nm.focus();
+  const ok = el.querySelector('#np-ok'); const chk = () => ok.disabled = !(nm.value.length && std);
+  nm.addEventListener('input', chk);
+  el.querySelectorAll('[data-std]').forEach(b=>b.onclick=()=>{ std=b.dataset.std; el.querySelectorAll('[data-std]').forEach(x=>x.setAttribute('aria-pressed', x===b)); chk(); });
+  el.querySelector('#np-c').onclick = () => el.remove();
+  ok.onclick = () => { S.project = {name: nm.value.length<PROJECT_NAME.length?PROJECT_NAME:nm.value, std, date: today()}; el.remove(); S.view='settings'; render(); toast(t('projCreated')); };
+}
+
+/* ================= settings ================= */
+function commonFile(sub){ return L().common_files.find(f=>f.name.includes(sub)); }
+const SETFILE = {dmrl:'DMRL_A-Cross', tools:'00NA', spares:'00GA', supplies:'00LA', warnings:'0A4A', cautions:'0A5A', applic:'00WA'};
+function vSettings(w){
+  const st = S.settings, lg = L(), c = lg.cir;
+  const fname = k => k==='applic' ? commonFile('00WA').name+' ; '+commonFile('00PA').name : commonFile(SETFILE[k]).name;
+  const allLoaded = Object.values(st.loaded).every(Boolean);
+  const pick = (key,label) => `<div class="fld">${label?`<label>${label}</label>`:''}<div class="filepick"><div class="path ${st.loaded[key]?'':'empty'}">${st.loaded[key]?esc('…\\'+PROJECT_NAME+'\\00_Common\\'+fname(key)):t('notLoaded')}</div><button class="btn small" data-load="${key}">${IC.folder}${t('choose')}</button></div></div>`;
+  const cirBox = (key,label,items,fmt) => `<div class="cirbox"><h4>${label} ${st.loaded[key]?`<span class="pill ok">${items.length} ${t('items')}</span>`:''}</h4>${pick(key,'')}${st.loaded[key]?`<div class="cirlist">${items.map(fmt).join('')}</div>`:''}</div>`;
+  const parts = ['ACROSS','A','D00','0','0','00','00','AA','022','A','D'];
+  let body = '';
+  if(st.tab==='defaults') body = `<div class="form">
+     <div class="fld"><label>${t('projName')}</label><input value="${esc(S.project.name)}" readonly></div>
+     <div class="fld"><label>${t('fIssue')}</label><select><option>S1000D 4.2 XML</option></select></div>
+     <div style="grid-column:1/-1">${pick('dmrl',t('fDMRL'))}${st.loaded.dmrl?`<p class="muted" style="margin:6px 0 0;font-size:12.5px">${lg.dmrl.length} ${t('dmrlRows')}</p>`:''}</div>
+     <div class="fld"><label for="f-oc">${t('fOrig')}</label><input id="f-oc" value="A1234"></div>
+     <div class="fld"><label for="f-rc">${t('fRPC')}</label><input id="f-rc" value="A1234"></div>
+     <div class="fld"><label for="f-co">${t('fCountry')}</label><input id="f-co" value="${S.lang==='es'?'ES':'US'}"></div>
+     <div class="fld"><label for="f-la">${t('fLang')}</label><input id="f-la" value="${S.lang}"></div>
+     <div class="fld"><label for="f-se">${t('fSec')}</label><input id="f-se" value="01"></div>
+     <div class="fld" style="grid-column:1/-1"><label>${t('fBrex')}</label><div class="codeparts">${parts.map((p,i)=>`<input aria-label="BREX ${i+1}" value="${p}" size="${Math.max(2,p.length+1)}">`).join('')}</div></div>
+     <div class="fld" style="grid-column:1/-1"><label>${t('fICN')}</label><div class="mono">ICN-ACROSS-A-&lt;SNS&gt;-0-A1234-<b>00001</b>-A-01-1</div></div>
+     <div class="fld" style="grid-column:1/-1"><label>${t('fXref')}</label><div class="form" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))">${[['fFig','fig-'],['fTab','tab-'],['fSE','supequi-'],['fSpa','spa-'],['fSup','sup-']].map(([k,v])=>`<div class="fld"><label>${t(k)}</label><input value="${v}0001" class="mono"></div>`).join('')}</div></div>
+     <div class="fld"><label>${t('fIssueNo')}</label><input value="001"></div><div class="fld"><label>${t('fInwork')}</label><input value="00"></div>
+     <label style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" checked> ${t('fShowC')}</label></div>`;
+  else if(st.tab==='cir') body = `<div class="cirs">
+    ${cirBox('tools',t('cirTools'),c.tools,x=>`<div><span class="mono">${x.id}</span><span>${esc(x.name)} <span class="muted">· ${x.pn}</span></span></div>`)}
+    ${cirBox('spares',t('cirSpares'),c.spares,x=>`<div><span class="mono">${x.id}</span><span>${esc(x.name)} <span class="muted">· ${x.pn}${x.applic.length===1?' · '+x.applic[0]:''}</span></span></div>`)}
+    ${cirBox('supplies',t('cirSupplies'),c.supplies,x=>`<div><span class="mono">${x.id}</span><span>${esc(x.name)} <span class="muted">· ${x.pn}</span></span></div>`)}
+    ${cirBox('warnings',t('cirWarnings'),c.warnings,x=>`<div><span class="mono">${x.id}</span><span>${esc(x.text)}</span></div>`)}
+    ${cirBox('cautions',t('cirCautions'),c.cautions,x=>`<div><span class="mono">${x.id}</span><span>${esc(x.text)}</span></div>`)}</div>`;
+  else if(st.tab==='applic') body = `<p class="muted" style="margin:0">${t('appP')}</p>${pick('applic','ACT / PCT')}
+    ${st.loaded.applic?`<div class="tw"><table class="grid"><thead><tr><th>${t('product')}</th><th>${t('model')}</th><th>${t('version')}</th><th>${t('powertrain')}</th></tr></thead><tbody>
+     ${DATA.products.map(p=>`<tr><td><b>A-Cross ${p.version}</b> <span class="mono muted">${p.id}</span></td><td>${p.model}</td><td>${p.version}</td><td>${S.lang==='es'?(p.powertrain==='Electric'?'Eléctrico':'Gasolina'):p.powertrain}</td></tr>`).join('')}
+    </tbody></table></div><p class="muted" style="margin:0;font-size:12.5px">${t('attr')}: <span class="mono">model · version · powertrain</span></p>`:''}`;
+  else body = `<label class="sotsw"><input type="checkbox" id="sot" ${S.ai.sot?'checked':''}><span><b>${t('sot')}</b><br><span class="muted" style="font-size:12.5px">${esc(t('sotP'))}</span></span></label>
+   <div class="tw"><table class="grid"><thead><tr><th>${t('srcCol')}</th><th>${t('contCol')}</th><th>${t('stCol')}</th></tr></thead><tbody>${t('src').map(r=>`<tr><td><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td><span class="pill ${S.ai.sot?'ok':'plain'}">${S.ai.sot?t('sotOn'):t('sotOff')}</span></td></tr>`).join('')}</tbody></table></div>`;
+  w.innerHTML = hintHTML('settings') + `<div class="page"><div class="head"><div><h2>${t('setT')}</h2><p>${esc(t('setP'))}</p></div>${st.saved?`<span class="pill ok">${t('setSaved')}</span>`:''}</div>
+   <div class="card"><div class="tabs" role="tablist">${[['defaults','tDefaults',['dmrl']],['cir','tCIR',['tools','spares','supplies','warnings','cautions']],['applic','tApplic',['applic']],['ai','tAI',[]]].map(([k,l,need])=>`<button role="tab" data-tab="${k}" aria-selected="${st.tab===k}">${t(l)} ${(k==='ai'?S.ai.sot:need.every(x=>st.loaded[x]))?'<span class="pill ok" style="margin-left:4px">✓</span>':''}</button>`).join('')}</div>
+   <div class="cb" style="display:flex;flex-direction:column;gap:14px">${body}</div></div>
+   <div class="footbar">${allLoaded?'':`<span class="muted" style="font-size:13px">${t('setNeed')}</span>`}<button class="btn primary" id="b-save" ${allLoaded?'':'disabled'}>${t('save')} ${IC.arrowR}</button></div></div>`;
+  w.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{st.tab=b.dataset.tab; vSettings(w);});
+  const so=w.querySelector('#sot'); if(so) so.onchange=()=>{ S.ai.sot=so.checked; vSettings(w); if(S.chat.open) refreshChat(); };
+  w.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>{ const k=b.dataset.load; openFileDialog(['00_Common'], L().common_files, () => { st.loaded[k]=true; st.saved=false; vSettings(w); toast(t('loaded')+': '+fname(k)); }); });
+  w.querySelector('#b-save').onclick = () => { st.saved=true; toast(t('setSaved')); S.view='tasks'; render(); };
+}
+
+/* ================= tasks ================= */
+function vTasks(w){
+  const can = S.settings.saved;
+  w.innerHTML = hintHTML('tasks') + `<div class="page"><div class="head"><div><h2>${t('tasksT')}</h2><p>${esc(t('tasksP'))}</p></div><button class="btn primary" id="b-nt" ${can?'':'disabled'}>${IC.plus}${t('newTask')}</button></div>
+   ${!can?`<div class="banner warn">${t('needSettings')} <button class="btn small" data-go2="settings">${t('navSettings')}</button></div>`:''}
+   ${S.tasks.length?`<div class="card"><div class="tw"><table class="grid"><thead><tr><th>${t('colTask')}</th><th>${t('colType')}</th><th>${t('colDMs')}</th><th>${t('colStatus')}</th><th>${t('colUpd')}</th></tr></thead><tbody>
+     ${S.tasks.map(tk=>`<tr class="click" data-open="${tk.id}"><td><b>${esc(tk.name)}</b></td><td>${esc(t('outs')[tk.type][0])}</td><td>${tk.dms.length}</td><td><span class="pill ${tk.d.status==='stPub'?'ok':tk.d.status==='stNew'?'plain':'info'}">${t(tk.d.status)}</span></td><td>${tk.date}</td></tr>`).join('')}
+   </tbody></table></div></div>`:`<div class="empty"><h3>${t('tasksEmptyT')}</h3><p>${esc(t('tasksEmptyP'))}</p></div>`}</div>`;
+  const nt = w.querySelector('#b-nt'); nt.onclick = newTask;
+  const g = w.querySelector('[data-go2]'); if(g) g.onclick = () => { S.view='settings'; render(); };
+  w.querySelectorAll('[data-open]').forEach(r=>r.onclick=()=>openTask(r.dataset.open));
+}
+function newTask(){
+  let type = null, sel = new Set(); const rows = L().dmrl.filter(r=>r.demo!=='common');
+  const el = dialog(t('ntT'), `<div class="fld"><label>${t('ntType')}</label><div class="opts">${OUTS.map(([k,n])=>`<button class="opt" data-out="${k}" ${n?'':'disabled'} aria-pressed="false"><b>${esc(t('outs')[k][0])}</b>${n?`<small>${esc(t('outs')[k][1])}</small>`:`<small class="lock">${IC.lock}${t('license')}</small>`}</button>`).join('')}</div></div>
+    <div class="fld"><label for="nt-n">${t('ntName')}</label><input id="nt-n" autocomplete="off" spellcheck="false" disabled></div>
+    <div class="fld"><label>${t('ntDMs')} <span class="muted" id="nt-c"></span></label><div class="dmpick"><table class="grid"><thead><tr><th></th><th>${t('dmc')}</th><th>${t('tech')}</th><th>${t('info')}</th></tr></thead><tbody>
+      ${rows.map(r=>`<tr class="click" data-k="${r.key}"><td><input type="checkbox" aria-label="${esc(r.dmc)}"></td><td class="mono" style="font-size:11.5px">${esc(r.dmc)}</td><td>${esc(r.tech)}</td><td>${esc(r.info)}</td></tr>`).join('')}</tbody></table></div></div>`,
+    `<span class="muted" id="nt-need" style="font-size:12.5px;margin-right:auto">${t('ntNeed')}</span><button class="btn" id="nt-x">${t('cancel')}</button><button class="btn primary" id="nt-ok" disabled>${t('create')}</button>`, true);
+  const nm = el.querySelector('#nt-n'); const demoOf = () => (OUTS.find(o=>o[0]===type)||[])[1];
+  magic(nm, () => demoOf() ? t('taskNames')[demoOf()] : '');
+  const ok = el.querySelector('#nt-ok');
+  const chk = () => { ok.disabled = !(type && nm.value.length && sel.size); el.querySelector('#nt-c').textContent = sel.size?`· ${sel.size} ${t('ntSel')}`:''; el.querySelector('#nt-need').hidden = !ok.disabled; };
+  el.querySelectorAll('[data-out]').forEach(b=>b.onclick=()=>{ type=b.dataset.out; el.querySelectorAll('[data-out]').forEach(x=>x.setAttribute('aria-pressed',x===b)); nm.disabled=false; nm.value=''; nm.focus(); chk(); });
+  nm.addEventListener('input', chk);
+  el.querySelectorAll('tr[data-k]').forEach(tr=>tr.onclick=e=>{ const k=tr.dataset.k; const cb=tr.querySelector('input'); if(e.target!==cb) cb.checked=!cb.checked; cb.checked?sel.add(k):sel.delete(k); tr.classList.toggle('sel',cb.checked); chk(); });
+  el.querySelector('#nt-x').onclick = () => el.remove();
+  ok.onclick = () => { const n = demoOf(); const tk = {id:'t'+Date.now(), type, demo:n, name:t('taskNames')[n], dms:[...sel], date:today(), d:newDemoState(n)};
+    S.tasks.push(tk); el.remove(); openTask(tk.id); };
+}
+
+/* ================= import ================= */
+function vImport(w){
+  const d = D(), dm = L().demos[DN()], j = dm.json, isDoc = dm.source_file.endsWith('.docx');
+  const nCir = j.blocks.filter(b=>b.cir_ref||b.cir_refs).reduce((a,b)=>a+(b.cir_refs?b.cir_refs.length:1),0);
+  const nRefs = j.blocks.filter(b=>/figure|table/.test(b.detected_type)).length;
+  const stages = [[isDoc?t('st1doc'):t('st1pdf'), t('st1s'), `${j.page_count} ${t('pages')} · ${j.blocks.length} ${t('blocksFound')}`],[t('st2'),t('st2s'),'page + bbox'],[t('stStyles'),t('stStylesS'),t('stylesN')(new Set(j.blocks.map(b=>b.style)).size)],[t('st3'),t('st3s'),`${nCir} ${t('cirFound')} · ${nRefs} ${t('refsFound')}`],[t('st4'),t('st4s'),t('valid')]];
+  const sample = j.blocks.find(b=>b.cir_ref||b.cir_refs) || j.blocks[5];
+  const sj = {id:sample.id, page:sample.page, bbox:sample.bbox, text:sample.text, detected_type:sample.detected_type, style:sample.style, s1000d_element:sample.s1000d_element, confidence:sample.confidence};
+  if(sample.cir_ref) sj.cir_ref = sample.cir_ref; if(sample.cir_refs) sj.cir_refs = sample.cir_refs;
+  w.innerHTML = hintHTML('import') + `<div class="page"><div class="head"><div><h2>${t('impT')}</h2><p>${esc(t('impP'))}</p></div></div>
+   <div class="drop">${d.imported?`<div class="fileicon ${isDoc?'docx':'pdf'}">${isDoc?'DOCX':'PDF'}</div><div style="min-width:0;flex:1"><b style="overflow-wrap:anywhere">${esc(dm.source_file)}</b><div class="muted" style="font-size:13px">${j.page_count} ${t('pages')} · ${isDoc?'Microsoft Word':'PDF'}</div></div>`
+     :`<div style="flex:1;min-width:0" class="muted">${t('notLoaded')}</div>`}
+     <button class="btn ${d.imported?'':'primary'}" id="b-open" ${d.imported?'disabled':''}>${IC.folder}${t('selFile')}</button></div>
+   ${d.imported?`<div class="card"><div class="ch"><h3>${d.imported<6?t('processing')+'…':t('done')}</h3><span class="pill info">${esc(S.project.std)}</span></div><div class="cb"><div class="stages">
+     ${stages.map((s,i)=>{ const stt = d.imported>i+1?'done':d.imported===i+1?'run':''; return `<div class="stage ${stt}"><span class="ic" aria-hidden="true"></span><div><b>${esc(s[0])}</b><small>${esc(s[1])}</small></div><span class="muted mono" style="font-size:12px">${stt==='done'?esc(s[2]):''}</span></div>`;}).join('')}
+   </div></div></div>`:''}
+   ${d.imported>=6?`${mapCard(j)}
+    <div class="footbar"><button class="btn primary" id="b-next">${DN()==='3'?t('toSeg'):t('toReview')} ${IC.arrowR}</button></div>`:''}</div>`;
+  const o = w.querySelector('#b-open'); if(o) o.onclick = () => openFileDialog(['Sources'], L().sources, () => {
+    d.imported=1; setStatus('stImported'); vImport(w); const tk=S.cur; const tick=()=>{ if(S.cur!==tk||S.step!=='import') { if(tk.d.imported<6){ tk.d.imported++; setTimeout(tick,900);} return; } d.imported++; vImport(w); if(d.imported<6) setTimeout(tick, 900); }; setTimeout(tick,1000); });
+  const n = w.querySelector('#b-next'); if(n) n.onclick = advance;
+}
+
+function mapCard(j){
+  const groups={}; j.blocks.forEach(b=>{ const g=groups[b.style]||(groups[b.style]={n:0,c:0,ty:{}}); g.n++; g.c+=b.confidence; g.ty[b.detected_type]=(g.ty[b.detected_type]||0)+1; });
+  const rows=Object.entries(groups).map(([st,g])=>({st, n:g.n, ty:Object.entries(g.ty).sort((a,b)=>b[1]-a[1])[0][0], c:g.c/g.n})).sort((a,b)=>b.n-a.n);
+  return `<div class="card"><div class="ch"><h3>${t('mapT')}</h3><span class="pill info">XSD 4.2</span></div><div class="cb" style="display:flex;flex-direction:column;gap:8px"><p class="muted" style="margin:0;font-size:13px">${esc(t('mapP'))}</p>
+   <div class="tw"><table class="grid"><thead><tr><th>${t('mapStyle')}</th><th>${t('mapBlocks')}</th><th>${t('mapEl')}</th><th>${t('mapConf')}</th></tr></thead><tbody>${rows.map(r=>{ const ty=TYPES[r.ty]||TYPES.para; return `<tr><td>${esc(r.st)}</td><td style="font-variant-numeric:tabular-nums">${r.n}</td><td><i class="sw" style="background:${CVAR(ty.c)}"></i><span class="mono" style="font-size:11.5px">${esc(ty.e)}</span></td><td style="white-space:nowrap">${Math.round(r.c*100)} % ${r.c<0.8?`<span class="pill warn">${t('mapRev')}</span>`:''}</td></tr>`; }).join('')}</tbody></table></div></div></div>`;
+}
+/* ================= page + overlays ================= */
+const isPend = b => b.status==='undetected' || b.status==='low_confidence';
+function pagesHTML(pageNums, blocks, opts){
+  opts = opts || {}; const imgs = L().demos[DN()].pages;
+  return `<div class="doc">${pageNums.map(p=>`<div class="pg" data-page="${p}"><img src="${imgs[p-1]}" alt="${t('page')} ${p}" loading="lazy"><span class="pn">${p}</span>
+    ${blocks.filter(b=>b.page===p).map(b=>{ const ty=TYPES[b.detected_type]||TYPES.para; const c = opts.color?opts.color(b):CVAR(ty.c); const [x,y,ww,hh]=b.bbox;
+      return `<button class="ov ${isPend(b)?'pend':''} ${opts.dim&&opts.dim(b)?'dim':''}" data-b="${b.id}" style="--c:${c};left:${(x-2)/PW*100}%;top:${(y-2)/PH*100}%;width:${(ww+4)/PW*100}%;height:${(hh+4)/PH*100}%" aria-label="${esc(b.id+' '+tn(b.detected_type))}"><span class="tag">${esc(opts.tag?opts.tag(b):tn(b.detected_type))}</span></button>`;}).join('')}
+    ${opts.extra?opts.extra(p):''}</div>`).join('')}</div>`;
+}
+function scrollInto(pane, el){ if(!pane||!el) return; const pr=pane.getBoundingClientRect(), er=el.getBoundingClientRect(); if(er.top<pr.top+30 || er.bottom>pr.bottom-30){ pane.scrollTop += (er.top-pr.top) - pane.clientHeight/2 + er.height/2; } }
+
+/* ================= segmentation (demo 3) ================= */
+const SEC_COLORS = ['var(--t-blue)','var(--t-teal)','var(--t-green)','var(--t-orange)','var(--t-purple)','var(--t-brown)','var(--t-yellow)'];
+function secEnd(d,i){ return i<d.sections.length-1 ? d.sections[i+1].startIdx-1 : d.lastEnd; }
+function secOf(d, idx){ for(let i=0;i<d.sections.length;i++){ if(idx>=d.sections[i].startIdx && idx<=secEnd(d,i)) return i; } return -1; }
+function syncSegments(d){ // block -> DM from the current segmentation; the suspect boundary resolves when a section starts there
+  d.sections.sort((a,b)=>a.startIdx-b.startIdx);
+  d.blocks.forEach((b,idx)=>{ const i=secOf(d,idx); b.data_module = i>=0 ? d.sections[i].dmc : null; });
+  d.sections.forEach(s=>{ const b=d.blocks[s.startIdx]; if(b && b.origStatus==='low_confidence' && isPend(b)){ b.status='ok'; b.detected_type='sectionStart'; b.confidence=1; b.human=true; } });
+}
+function vSegment(w){
+  const d = D(), j = J(), dmrl = L().dmrl;
+  const brakeRows = dmrl.filter(r=>r.dmc.includes('-DA4-'));
+  const ids = d.blocks.map(b=>b.id);
+  const pmGroups = []; d.sections.forEach(s=>{ let g=pmGroups.find(x=>x.e===s.pm_entry); if(!g){g={e:s.pm_entry,d:[]};pmGroups.push(g);} g.d.push(s.dmc); });
+  const selIdx = d.segSel!=null ? ids.indexOf(d.segSel) : -1; const sel = selIdx>=0 ? d.blocks[selIdx] : null; const selSec = selIdx>=0 ? secOf(d, selIdx) : -1;
+  const act = d.segActive;
+  const nm = i => d.sections[i].section;
+  let selBox = '';
+  if(d.pick){ selBox = `<div class="pickmode">${esc(d.pick.edge==='start'?t('pickStart')(nm(d.pick.i)):t('pickEnd')(nm(d.pick.i)))}<button class="btn small" id="pk-c">${t('cancel')}</button></div>`; }
+  else if(d.segAI){ const p=d.segAI; selBox = `<div class="aicard"><div class="r1"><b>${t('aiSegT')}</b><span class="pill plain">${t('aiConf')} 93%</span></div><div style="font-size:13px">${esc(t('aiSegTxt')(p.at, p.name))} → <span class="mono">${esc(p.row.dmc)}</span></div><ul>${t('rs').seg(p.name).map(r=>`<li>${esc(r)}</li>`).join('')}</ul><div class="chips"><span class="muted" style="font-size:12px">${t('aiSources')}:</span><span class="pill plain">DMRL</span><span class="pill plain">DMs 4.2</span><span class="pill plain">BREX</span></div>${p.v?`<div class="verdict ok"><b>${t('judgeT')}: ${t('vOk')}</b><div class="jc">${['dmrl','ref','pm','brex'].map(k=>`<span>✓ ${esc(t('jc')[k])}</span>`).join('')}</div><span>${esc(t('rs').jOk)}</span></div>`:''}<div class="acts"><button class="btn small primary" id="sg-acc">${IC.check}${t('aiAccept')}</button><button class="btn small" id="sg-rej">${t('aiReject')}</button>${p.v?'':`<button class="btn small" id="sg-jdg">${t('aiJudge')}</button>`}</div></div>`; }
+  else if(sel){ const btns = [];
+    if(selSec>=0 && d.sections[selSec].startIdx!==selIdx) btns.push(`<button class="btn primary small" data-sa="split">${t('newHere')}</button>`);
+    if(selSec>0 && d.sections[selSec].startIdx!==selIdx) btns.push(`<button class="btn small" data-sa="start">${esc(t('startHere')(nm(selSec)))}</button>`);
+    if(selSec>=0 && secEnd(d,selSec)!==selIdx && selSec<d.sections.length-1) btns.push(`<button class="btn small" data-sa="end">${esc(t('endHere')(nm(selSec)))}</button>`);
+    if(selSec<0 && selIdx<d.sections[0].startIdx) btns.push(`<button class="btn small" data-sa="startFirst">${esc(t('startHere')(nm(0)))}</button>`);
+    if(selSec<0 && selIdx>d.lastEnd) btns.push(`<button class="btn small" data-sa="endLast">${esc(t('endHere')(nm(d.sections.length-1)))}</button>`);
+    selBox = `<div class="similar" style="flex-direction:column;align-items:stretch;position:relative;padding-right:40px"><button class="iconbtn small" id="sel-x" aria-label="${t('close')}" style="position:absolute;top:6px;right:6px">${IC.x}</button><div><b>${t('segSel')}:</b> <span class="mono">${sel.id}</span> · ${esc(sel.text.slice(0,70))} ${isPend(sel)?`<span class="pill warn">${t('low')} ${Math.round(sel.confidence*100)}%</span>`:''} <span class="pill plain">${selSec>=0?esc(nm(selSec)):t('unassigned')}</span></div>${btns.length?`<div class="acts">${btns.join('')}</div>`:''}</div>`; }
+  w.innerHTML = hintHTML('segment') + `<div class="page full"><div class="head"><div><h2>${t('segT')}</h2><p>${esc(t('segP'))}</p></div>
+    <div class="counters"><span class="pill info">${d.sections.length} ${t('sections').toLowerCase()}</span>${d.segSaved?`<span class="pill ok">${t('segSaved')}</span>`:''}</div></div>
+   <div class="ws"><section class="pane"><div class="ph"><h3>${t('original')} · <span class="mono muted" style="font-size:12px">${esc(j.document)}</span></h3></div>
+     <div class="pb" id="seg-left">${pagesHTML([1,2,3,4,5,6,7,8], d.blocks, {
+        color:b=>{ const i=secOf(d, ids.indexOf(b.id)); return i>=0?SEC_COLORS[i%SEC_COLORS.length]:'var(--t-light)'; },
+        dim:b=>{ if(act==null) return false; return secOf(d, ids.indexOf(b.id))!==act; },
+        tag:b=>{ const i=secOf(d, ids.indexOf(b.id)); return i>=0?(d.sections[i].info_code||'')+' · '+tn(b.detected_type):tn(b.detected_type); },
+        extra:p=>d.sections.map((s,i)=>{ const b=d.blocks[s.startIdx]; if(!b||b.page!==p) return ''; return `<div class="bound" style="--c:${SEC_COLORS[i%SEC_COLORS.length]};top:${(b.bbox[1]-6)/PH*100}%"><span>${esc(s.info_code+' · '+s.section)}</span></div>`; }).join('') + d.blocks.filter(b=>b.page===p && b.status==='low_confidence').map(b=>`<div class="bound" style="--c:var(--warn);top:${(b.bbox[1]-6)/PH*100}%;border-top-style:dotted"></div>`).join('')})}</div></section>
+   <section class="pane"><div class="ph"><h3>${t('sections')}</h3><button class="btn primary small" id="b-save">${t('segSave')}</button></div><div class="pb">
+     <div class="secs" style="padding-bottom:0">${selBox || `<p class="muted" style="margin:0;font-size:13px">${t('segPick')}</p>`}</div>
+     <div class="secs">${d.sections.map((s,i)=>{ const a=s.startIdx, z=secEnd(d,i); const flag = s.confidence<0.8;
+       return `<div class="sec ${flag?'flag':''} ${act===i?'active':''}" data-sec="${i}" style="--c:${SEC_COLORS[i%SEC_COLORS.length]}"><div class="t"><input class="nm" data-nm="${i}" value="${esc(s.section)}" aria-label="${t('name')}"><span class="pill ${flag?'warn':'ok'}">${t('conf')} ${Math.round(s.confidence*100)}%</span></div>
+         <div class="mono" style="font-size:11.5px;overflow-wrap:anywhere">${esc(s.dmc)}</div>
+         <div class="m"><div><span>${t('infoCode')}:</span> <select data-dm="${i}" aria-label="${t('infoCode')}">${brakeRows.map(r=>`<option value="${r.key}" ${r.dmc===s.dmc?'selected':''}>${r.dmc.slice(-6,-3)} · ${esc(r.tech)} – ${esc(r.info)}</option>`).join('')}</select></div>
+           <div><span>${t('schema')}:</span> ${s.schema==='descript'?t('descriptive'):t('procedural')}</div><div><span>${t('pmEntry')}:</span> ${esc(s.pm_entry)}</div></div>
+         <div class="rng"><span class="mono">${ids[a]} → ${ids[z]}</span><span class="muted">(${z-a+1} ${t('blocksN')})</span>
+           <button class="btn small" data-pk="start" data-i="${i}">${t('setStart')}</button><button class="btn small" data-pk="end" data-i="${i}">${t('setEnd')}</button>
+           <button class="btn small ghost" data-gt="${a}">${t('goStart')}</button><button class="btn small ghost" data-gt="${z}">${t('goEnd')}</button>${i>0?`<button class="btn small ghost" data-mg="${i}">${t('merge')}</button>`:''}</div>
+         ${flag?`<div style="font-size:12.5px"><b style="color:var(--warn)">${t('segFlag')}.</b> ${t('segFlagTxt')} <button class="btn small" data-show="${i}">${t('showBound')}</button>${S.ai.sot?` <button class="btn small aibtn" data-aiseg="${i}">${IC.wand}${t('aiSeg')}</button>`:''}</div>`:''}</div>`;}).join('')}</div>
+     <h3 style="font-size:14px;padding:4px 12px 0">${t('pmStruct')} <span class="mono muted" style="font-size:11px">PMC-ACROSS-A1234-00001-01</span></h3>
+     <div class="pmtree">${pmGroups.map(g=>`<div class="e">${esc(g.e)}</div>${g.d.map(x=>`<div class="d">${esc(x)}</div>`).join('')}`).join('')}</div>
+   </div></section></div></div>`;
+  const left = w.querySelector('#seg-left');
+  const keepScroll = (fn) => { const st=w.querySelector('#seg-left').scrollTop; fn(); const l=w.querySelector('#seg-left'); l.scrollTop=st; return l; };
+  const markSel = l => { if(d.segSel){ const o=l.querySelector(`.ov[data-b="${d.segSel}"]`); if(o){ o.classList.add('sel'); return o; } } };
+  markSel(left);
+  const touched = i => { const s=d.sections[i]; if(s){ s.confidence=1; delete s.issue; } };
+  function setStart(i, k){ const lo = i>0 ? d.sections[i-1].startIdx+1 : 0, hi = secEnd(d,i); if(k<lo||k>hi){ toast(t('badRange')); return false; } d.sections[i].startIdx=k; touched(i); if(i>0) touched(i-1); return true; }
+  function setEnd(i, k){ const lo=d.sections[i].startIdx; if(i===d.sections.length-1){ if(k<lo){ toast(t('badRange')); return false; } d.lastEnd=k; touched(i); return true; }
+    const hi = secEnd(d,i+1)-1; if(k<lo||k>hi){ toast(t('badRange')); return false; } d.sections[i+1].startIdx=k+1; touched(i); touched(i+1); return true; }
+  w.querySelectorAll('.ov').forEach(o=>o.onclick=()=>{ const k=ids.indexOf(o.dataset.b);
+    if(d.pick){ const {i,edge}=d.pick; const okk = edge==='start'?setStart(i,k):setEnd(i,k); if(okk){ d.pick=null; d.segSel=null; syncSegments(d); } keepScroll(()=>vSegment(w)); return; }
+    d.segSel=o.dataset.b; const i=secOf(d,k); d.segActive = i>=0?i:null; const l=keepScroll(()=>vSegment(w)); scrollInto(l, markSel(l)); });
+  const toBlock = (l, id) => { const o=l.querySelector(`.ov[data-b="${id}"]`); if(o){ const pr=l.getBoundingClientRect(), er=o.getBoundingClientRect(); l.scrollTop += (er.top-pr.top) - 60; } };
+  w.querySelectorAll('.sec').forEach(c=>c.onclick=e=>{ if(e.target.closest('button,select')) return; if(e.target.closest('input')){ toBlock(w.querySelector('#seg-left'), ids[d.sections[+c.dataset.sec].startIdx]); return; } const i=+c.dataset.sec; d.segActive = d.segActive===i?null:i; const l=keepScroll(()=>vSegment(w)); if(d.segActive!=null) toBlock(l, ids[d.sections[i].startIdx]); });
+  w.querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; d.pick={i, edge:b.dataset.pk}; d.segActive=i; const l=keepScroll(()=>vSegment(w)); toBlock(l, ids[b.dataset.pk==='start'?d.sections[i].startIdx:secEnd(d,i)]); });
+  w.querySelectorAll('[data-gt]').forEach(b=>b.onclick=()=>{ d.segSel=ids[+b.dataset.gt]; const l=keepScroll(()=>vSegment(w)); scrollInto(l, markSel(l)); });
+  w.querySelectorAll('[data-mg]').forEach(b=>b.onclick=()=>{ const i=+b.dataset.mg; d.sections.splice(i,1); touched(i-1); d.segActive=i-1; d.segSel=null; syncSegments(d); keepScroll(()=>vSegment(w)); });
+  w.querySelectorAll('[data-nm]').forEach(inp=>inp.onchange=()=>{ d.sections[+inp.dataset.nm].section=inp.value; vSegment(w); });
+  w.querySelectorAll('select[data-dm]').forEach(s=>s.onchange=()=>{ const r=dmrl.find(x=>x.key===s.value); const sec=d.sections[+s.dataset.dm]; Object.assign(sec,{dmc:r.dmc, info_code:r.dmc.slice(-6,-3), tech_name:r.tech, info_name:r.info, schema:r.schema}); touched(+s.dataset.dm); syncSegments(d); keepScroll(()=>vSegment(w)); });
+  w.querySelectorAll('[data-show]').forEach(b=>b.onclick=()=>{ const tgt=d.blocks.find(x=>x.status==='low_confidence'); if(tgt){ d.segSel=tgt.id; d.segActive=+b.dataset.show; const l=keepScroll(()=>vSegment(w)); scrollInto(l, markSel(l)); } });
+  const pc = w.querySelector('#pk-c'); if(pc) pc.onclick = () => { d.pick=null; keepScroll(()=>vSegment(w)); };
+  const sx = w.querySelector('#sel-x'); if(sx) sx.onclick = () => { d.segSel=null; keepScroll(()=>vSegment(w)); };
+  w.querySelectorAll('[data-aiseg]').forEach(b=>b.onclick=()=>busy(t('aiThinking'),[t('aiT1'),t('aiT2'),t('aiT3')],2000,()=>{ const tgt=d.blocks.find(x=>x.status==='low_confidence'); if(!tgt) return; const tm=J().segmentation.expected_after_review.find(s=>s.first_block===tgt.id); const row=dmrl.find(r=>r.dmc===(tm?tm.dmc:''))||dmrl.find(r=>r.key==='pad-720'); d.segAI={at:tgt.id, name:tm?tm.section:tgt.text, row, pm:tm?tm.pm_entry:null}; d.segSel=tgt.id; d.segActive=+b.dataset.aiseg; const l=keepScroll(()=>vSegment(w)); scrollInto(l, markSel(l)); }));
+  const sga=w.querySelector('#sg-acc'); if(sga) sga.onclick=()=>{ const p=d.segAI; const k=ids.indexOf(p.at); const i=secOf(d,k); doSplit(d,k,i,p.name,p.row,p.pm); const bb=d.blocks[k]; bb.human=false; bb.ai='accepted'; d.segAI=null; d.segSel=null; keepScroll(()=>vSegment(w)); toast(t('aiAccepted')); };
+  const sgr=w.querySelector('#sg-rej'); if(sgr) sgr.onclick=()=>{ d.segAI=null; d.aiRej=(d.aiRej||0)+1; keepScroll(()=>vSegment(w)); toast(t('aiRejected')); };
+  const sgj=w.querySelector('#sg-jdg'); if(sgj) sgj.onclick=()=>busy(t('judging'),[t('aiT2'),t('aiT3')],1400,()=>{ d.segAI.v=true; d.aiJudged=(d.aiJudged||0)+1; keepScroll(()=>vSegment(w)); });
+  w.querySelectorAll('[data-sa]').forEach(b=>b.onclick=()=>{ const a=b.dataset.sa;
+    if(a==='split') return openNewSection(sel, selIdx, selSec, w);
+    if(a==='start') setStart(selSec, selIdx); if(a==='end') setEnd(selSec, selIdx);
+    if(a==='startFirst') setStart(0, selIdx); if(a==='endLast') setEnd(d.sections.length-1, selIdx);
+    d.segSel=null; syncSegments(d); keepScroll(()=>vSegment(w)); });
+  w.querySelector('#b-save').onclick = () => { syncSegments(d); d.segSaved=true; d.curDM = d.sections[0].dmc; d.pick=null; toast(t('segSaved')); advance(); };
+}
+function doSplit(d,k,i,name,row,pm){ const ex=J().segmentation.expected_after_review; const prev=d.sections[i]; const ns={section:name, dmc:row.dmc, info_code:row.dmc.slice(-6,-3), tech_name:row.tech, info_name:row.info, schema:row.schema, pm_entry: pm||prev.pm_entry, startIdx:k, confidence:1}; prev.confidence=1; delete prev.issue; const fx=ex.find(s=>s.dmc===prev.dmc); if(fx) prev.section=fx.section; d.sections.splice(i+1,0,ns); d.segActive=i+1; syncSegments(d); return ns; }
+function openNewSection(b, k, i, w){
+  const d = D(), ex = J().segmentation.expected_after_review; const tmpl = ex.find(s=>s.first_block===b.id);
+  const dmrl = L().dmrl; const used = new Set(d.sections.map(s=>s.dmc));
+  const row = (tmpl && dmrl.find(r=>r.dmc===tmpl.dmc)) || dmrl.find(r=>r.dmc.includes('-DA4-') && !used.has(r.dmc)) || dmrl.find(r=>r.key==='pad-720');
+  const brakeRows = dmrl.filter(r=>r.dmc.includes('-DA4-'));
+  const el = dialog(t('newSecT'), `<p class="muted" style="margin:0">${t('newSecP')}</p>
+    <div class="fld"><label for="ns-n">${t('name')}</label><input id="ns-n" value="${esc(tmpl?tmpl.section:b.text)}"></div>
+    <div class="fld"><label for="ns-d">${t('infoCode')}</label><select id="ns-d">${brakeRows.map(r=>`<option value="${r.key}" ${r===row?'selected':''}>${r.dmc.slice(-6,-3)} · ${esc(r.tech)} – ${esc(r.info)}</option>`).join('')}</select></div>
+    <div class="fld"><label>${t('pmEntry')}</label><div>${esc(tmpl?tmpl.pm_entry:d.sections[i].pm_entry)}</div></div>`,
+    `<button class="btn" id="ns-c">${t('cancel')}</button><button class="btn primary" id="ns-ok">${t('createSec')}</button>`);
+  el.querySelector('#ns-ok').focus();
+  el.querySelector('#ns-c').onclick = () => el.remove();
+  el.querySelector('#ns-ok').onclick = () => {
+    const r = dmrl.find(x=>x.key===el.querySelector('#ns-d').value);
+    const ns = {section:el.querySelector('#ns-n').value, dmc:r.dmc, info_code:r.dmc.slice(-6,-3), tech_name:r.tech, info_name:r.info, schema:r.schema, pm_entry: tmpl?tmpl.pm_entry:d.sections[i].pm_entry, startIdx:k, confidence:1};
+    const prev = d.sections[i]; prev.confidence=1; delete prev.issue; const fx = ex.find(s=>s.dmc===prev.dmc); if(fx) prev.section = fx.section;
+    d.sections.splice(i+1,0,ns); d.segActive=i+1; d.segSel=null; syncSegments(d);
+    el.remove(); const st=w.querySelector('#seg-left').scrollTop; vSegment(w); w.querySelector('#seg-left').scrollTop=st; toast((S.lang==='es'?'Sección creada: ':'Section created: ')+ns.section);
+  };
+}
+
+/* ================= review ================= */
+function reviewBlocks(){ const d=D(); if(DN()!=='3') return d.blocks; return d.blocks.filter(b=>b.data_module===d.curDM); }
+function cirKindOfType(ty){ return (TYPES[ty]||{}).cir || null; }
+function vReview(w){
+  const d = D(), j = J();
+  if(d.status==='stImported'||d.status==='stNew') setStatus('stReview');
+  const vis = reviewBlocks();
+  const pages = [...new Set(vis.map(b=>b.page))].sort((a,b)=>a-b);
+  const three = DN()==='3';
+  const treeHTML = three ? `<section class="pane treepane"><div class="ph"><h3>${t('dmTree')}</h3></div><div class="pb"><div class="tree">${(()=>{ let out='', last=''; d.sections.forEach(s=>{ if(s.pm_entry!==last){ out+=`<div class="grp">${esc(s.pm_entry)}</div>`; last=s.pm_entry; } const bl=d.blocks.filter(b=>b.data_module===s.dmc); const p=bl.filter(isPend).length;
+      out += `<button data-dm="${s.dmc}" aria-current="${d.curDM===s.dmc}"><span>${esc(s.tech_name)} – ${esc(s.info_name)} ${p?`<span class="pill warn">${p}</span>`:`<span class="pill ok">${bl.length}</span>`}</span><small>${esc(s.dmc)}</small></button>`; }); return out; })()}</div></div></section>` : '';
+  w.innerHTML = hintHTML('review'+DN()) + `<div class="page full"><div class="head"><div><h2>${t('revT')}</h2><p>${esc(t('revP'))}</p></div><div class="counters" id="counters"></div></div>
+   <div class="ws ${three?'three':''}">${treeHTML}
+    <section class="pane"><div class="ph"><h3>${t('original')} · <span class="mono muted" style="font-size:12px">${esc(j.document)}</span></h3><div class="legend" style="font-size:11.5px">${['para','warning','caution','step2','note','heading2','supportEquip'].map(k=>`<span><i class="sw" style="background:${CVAR(TYPES[k].c)}"></i>${esc(tn(k))}</span>`).join('')}</div></div>
+      <div class="pb" id="rv-left">${pagesHTML(pages, vis)}</div></section>
+    <section class="pane"><div class="ph"><h3>${t('blocks')}</h3><div class="seg" role="group"><button id="f-all" aria-pressed="${d.filter==='all'}">${t('filterAll')}</button><button id="f-pend" aria-pressed="${d.filter==='pend'}">${t('filterPend')}</button></div></div>
+      <div class="pb" id="rv-list" tabindex="0" aria-label="${t('blocks')}"></div><div class="insp" id="rv-insp"></div></section>
+   </div><div class="footbar" id="rv-foot"></div></div>`;
+  const left = w.querySelector('#rv-left'), list = w.querySelector('#rv-list'), insp = w.querySelector('#rv-insp');
+  w.querySelector('#f-all').onclick = () => { d.filter='all'; vReview(w); };
+  w.querySelector('#f-pend').onclick = () => { d.filter='pend'; vReview(w); };
+  w.querySelectorAll('[data-dm]').forEach(b=>b.onclick=()=>{ d.curDM=b.dataset.dm; d.sel=null; d.similar=null; vReview(w); });
+  left.querySelectorAll('.ov').forEach(o=>o.onclick=()=>select(o.dataset.b,'left'));
+  function filtered(){ const v=reviewBlocks(); return d.filter==='pend' ? v.filter(b=>isPend(b) || b.id===d.sel) : v; }
+  function drawList(){
+    const st = list.scrollTop; const f = filtered();
+    list.innerHTML = !f.length ? `<div style="padding:24px 16px" class="muted">${t('allOk')}</div>` : `<div class="list">${f.map(b=>{ const ty=TYPES[b.detected_type]||TYPES.para; const lv = ty.lv?ty.lv-1:0; const cf=Math.round((b.confidence||0)*100);
+      const stt = b.ai==='accepted'?`<span class="pill aipill">${t('aiSt')}</span>`:(S.ai.sot&&b.aiProp&&isPend(b))?`<span class="pill aipill">${t('aiPill')}</span>`:b.human?`<span class="pill info">${t('reviewed')}</span>`:b.status==='undetected'?`<span class="pill bad">${t('undetected')}</span>`:b.status==='low_confidence'?`<span class="pill warn">${t('low')}</span>`:'';
+      return `<button class="row ${d.sel===b.id?'sel':''}" data-b="${b.id}" style="--c:${CVAR(ty.c)}"><span class="bar"></span><span class="tx" style="padding-left:${lv*14}px"><span class="ty">${esc(tn(b.detected_type))} <span class="st mono">${b.id} · p${b.page}</span> ${stt}</span><span class="tt">${esc(b.text)}</span></span>
+        <span class="cf">${cf}%<span class="meter ${cf<50?'low':cf<80?'mid':''}"><i style="width:${cf}%"></i></span></span></button>`;}).join('')}</div>`;
+    list.scrollTop = st;
+    list.querySelectorAll('.row').forEach(r=>r.onclick=()=>select(r.dataset.b,'list'));
+  }
+  function drawOverlays(){ vis.forEach(b=>{ const o=left.querySelector(`.ov[data-b="${b.id}"]`); if(!o) return; const ty=TYPES[b.detected_type]||TYPES.para; o.style.setProperty('--c',CVAR(ty.c)); o.classList.toggle('pend',isPend(b)); o.classList.toggle('sel',d.sel===b.id); o.querySelector('.tag').textContent=tn(b.detected_type); }); }
+  function counters(){ const v=reviewBlocks(); const p=v.filter(isPend).length, h=v.filter(b=>b.human).length;
+    const pv=v.filter(b=>isPend(b)&&!b.aiProp), pr=d.blocks.filter(b=>b.aiProp&&isPend(b));
+    w.querySelector('#counters').innerHTML = (S.ai.sot?(pv.length?`<button class="btn small aibtn" id="ai-all">${IC.wand}${t('aiSolveAll')(pv.length)}</button>`:'')+(pr.length?`<button class="btn small aibtn" id="ai-accall">${IC.check}${t('aiAcceptAll')(pr.length)}</button>`:''):'') + `<span class="pill plain">${v.length} ${t('blocksFound')}</span><span class="pill ok">${v.length-p} ${t('ok')}</span><span class="pill ${p?'warn':'ok'}">${p} ${t('pending')}</span>${h?`<span class="pill info">${h} ${t('reviewed')}</span>`:''}`;
+    const allP = d.blocks.filter(isPend).length;
+    w.querySelector('#rv-foot').innerHTML = `<div class="keys"><b>${t('keysT')}:</b><span><span class="kbd">↑</span><span class="kbd">↓</span> ${t('kNav')}</span><span><span class="kbd">→</span><span class="kbd">←</span> ${t('kInd')}</span><span><span class="kbd">W</span><span class="kbd">C</span><span class="kbd">N</span><span class="kbd">P</span><span class="kbd">I</span> ${t('kType')}</span><span><span class="kbd">Enter</span> ${t('kAcc')}</span><span><span class="kbd">A</span> ${t('kSim')}</span><span><span class="kbd">F</span> ${t('kFil')}</span></div>
+      <span style="flex:1"></span>${allP?`<span class="muted" style="font-size:12.5px;max-width:46ch">${t('pendLeft')(allP)}</span>`:''}<button class="btn ${allP?'':'primary'}" id="b-gen">${allP?t('genAnyway'):t('genXML')} ${IC.arrowR}</button>`;
+    const aall=w.querySelector('#ai-all'); if(aall) aall.onclick=()=>runAI(reviewBlocks());
+    const aacc=w.querySelector('#ai-accall'); if(aacc) aacc.onclick=()=>{ const pr2=d.blocks.filter(b=>b.aiProp&&isPend(b)); pr2.forEach(acceptProp); refreshAll(); toast(t('aiAccepted')+' ('+pr2.length+')'); };
+    w.querySelector('#b-gen').onclick = () => busy(t('genT'), [t('gen1'),t('gen2'),t('gen3')], 2400, () => { setStatus('stXml'); advance(); });
+  }
+  function cirPicker(b){
+    const kind = cirKindOfType(b.detected_type); if(!kind) return '';
+    const items = L().cir[kind]; const cur = b.cir_refs ? b.cir_refs : (b.cir_ref?[b.cir_ref]:[]);
+    const f = (d.cirFilter||'').toLowerCase();
+    const vis = items.filter(x=>!f || (x.id+' '+(x.pn||'')+' '+(x.name||x.text)).toLowerCase().includes(f));
+    return `<div><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:4px"><span style="font-size:12px;color:var(--muted)">${t('cirPickT')[kind]} · ${items.length}</span><input type="search" id="cir-f" placeholder="${t('cirFilter')}" value="${esc(d.cirFilter||'')}" style="border:1px solid var(--line);background:var(--sunk);border-radius:4px;padding:3px 6px;font-size:12px;width:140px"></div>
+      <div class="cirpick">${vis.map(x=>`<label class="${cur.includes(x.id)?'on':''}"><input type="${b.cir_refs?'checkbox':'radio'}" name="cirp" value="${x.id}" ${cur.includes(x.id)?'checked':''}><span class="mono" style="font-size:11px">${x.id}</span><span>${esc(x.name||clip(x.text,90))}${x.pn?` <span class="muted">· ${x.pn}</span>`:''}</span></label>`).join('')}</div></div>`;
+  }
+  function drawInsp(){
+    const b = d.blocks.find(x=>x.id===d.sel);
+    insp.hidden = !!d.inspHidden;
+    if(!b){ insp.innerHTML = `<p class="muted" style="margin:0">${t('noSel')}</p>`; return; }
+    const ty = TYPES[b.detected_type]||TYPES.para; const cir = cirLabel(b); const sim = d.similar && d.similar.from===b.id ? d.similar : null;
+    insp.innerHTML = `<button class="iconbtn small insp-x" id="insp-x" aria-label="${t('close')}">${IC.x}</button><div class="r1"><span class="mono">${b.id}</span><span class="pill plain">${t('page')} ${b.page}</span><span class="pill ${b.human?'info':isPend(b)?(b.status==='undetected'?'bad':'warn'):'ok'}">${b.human?t('reviewed'):b.status==='undetected'?t('undetected'):b.status==='low_confidence'?t('low'):t('okS')} · ${Math.round(b.confidence*100)}%</span></div>
+      <div class="r1"><label for="sel-type" style="font-size:12.5px;color:var(--muted)">${t('type')}</label><select id="sel-type" style="border:1px solid var(--line);background:var(--sunk);border-radius:4px;padding:4px 6px;min-height:32px;max-width:100%">${TYPE_ORDER.map(k=>`<option value="${k}" ${k===b.detected_type?'selected':''}>${esc(tn(k))}</option>`).join('')}</select>
+        <div class="acts"><button class="btn small" id="a-out" ${ty.lv>1?'':'disabled'}>${IC.arrowL}${t('outdent')}</button><button class="btn small" id="a-in" ${ty.lv&&ty.lv<4?'':'disabled'}>${t('indent')}${IC.arrowR}</button><button class="btn small" id="a-mer">${t('mergeN')}</button><button class="btn small" id="a-spl">${t('split')}</button>${isPend(b)?`<button class="btn small primary" id="a-acc">${IC.check}${t('accept')}</button>`:''}</div></div>
+      ${aiCard(b)}
+      ${sim?`<div class="similar">${IC.wand}<span style="flex:1;min-width:0">${esc(t('similarTxt')(sim.ids.length, sim.style))}</span><button class="btn primary small" id="a-sim">${t('similar')} (${sim.ids.length})</button></div>`:''}
+      ${cirPicker(b)}
+      <dl class="kv"><dt>${t('style')}</dt><dd>${esc(b.human?ty.s:b.style)}</dd><dt>${t('element')}</dt><dd class="mono">${esc(ty.e)}</dd>${cir?`<dt>${t('cir')}</dt><dd>${cir}</dd>`:''}${b.applic?`<dt>${t('applic')}</dt><dd>${esc(Array.isArray(b.applic)?b.applic.join(', '):b.applic)}</dd>`:''}<dt>${t('source')}</dt><dd class="mono">p${b.page} · [${b.bbox.map(v=>Math.round(v)).join(', ')}]</dd></dl>
+      <div><div style="font-size:12px;color:var(--muted);margin-bottom:4px">${t('xmlPrev')}</div><pre class="xml">${hl(esc(blockXML(b)))}</pre></div>`;
+    insp.querySelector('#insp-x').onclick = () => { d.inspHidden = true; insp.hidden = true; };
+    insp.querySelector('#sel-type').onchange = e => act(b,'type',e.target.value);
+    insp.querySelector('#a-in').onclick = () => act(b,'in'); insp.querySelector('#a-out').onclick = () => act(b,'out');
+    insp.querySelector('#a-mer').onclick = () => act(b,'merge'); insp.querySelector('#a-spl').onclick = () => act(b,'split');
+    const ac = insp.querySelector('#a-acc'); if(ac) ac.onclick = () => act(b,'accept');
+    const sb = insp.querySelector('#a-sim'); if(sb) sb.onclick = applySimilar;
+    const a1=insp.querySelector('#ai-one'); if(a1) a1.onclick=()=>runAI([b]);
+    const aa=insp.querySelector('#ai-acc'); if(aa) aa.onclick=()=>{ acceptProp(b); refreshAll(); toast(t('aiAccepted')); };
+    const ar=insp.querySelector('#ai-rej'); if(ar) ar.onclick=()=>{ delete b.aiProp; delete b.aiVerdict; d.aiRej=(d.aiRej||0)+1; refreshAll(); toast(t('aiRejected')); };
+    const aj=insp.querySelector('#ai-jdg'); if(aj) aj.onclick=()=>busy(t('judging'),[t('aiT2'),t('aiT3')],1400,()=>{ b.aiVerdict=judgeFor(b,b.aiProp); d.aiJudged=(d.aiJudged||0)+1; drawInsp(); });
+    const af=insp.querySelector('#ai-fix'); if(af) af.onclick=()=>{ Object.assign(b.aiProp,b.aiVerdict.fix); b.aiProp.conf=0.97; b.aiProp.reasons=t('rs').warn(b.aiProp.cir); b.aiVerdict={ok:true,checks:b.aiVerdict.checks.map(([k])=>[k,true]),text:t('rs').jOk}; drawInsp(); toast(t('judgeFixed')); };
+    const cf = insp.querySelector('#cir-f'); if(cf) cf.oninput = () => { d.cirFilter = cf.value; const pos=cf.selectionStart; drawInsp(); const n=insp.querySelector('#cir-f'); n.focus(); n.setSelectionRange(pos,pos); };
+    insp.querySelectorAll('input[name="cirp"]').forEach(r=>r.onchange=()=>{
+      if(b.cir_refs){ const set=new Set(b.cir_refs); r.checked?set.add(r.value):set.delete(r.value); b.cir_refs=[...set]; } else b.cir_ref = r.value;
+      b.human=true; if(isPend(b)) b.status='ok'; b.confidence=1; drawInsp(); drawList(); counters(); toast(t('cirChanged')(r.value)); });
+  }
+  function select(id, from){
+    d.sel = id; d.inspHidden = false; if(d.similar && d.similar.from!==id) d.similar=null; d.cirFilter='';
+    drawOverlays(); drawList(); drawInsp();
+    if(from!=='left') scrollInto(left, left.querySelector(`.ov[data-b="${id}"]`));
+    if(from!=='list') scrollInto(list, list.querySelector(`.row[data-b="${id}"]`));
+  }
+  function setType(b, ty){ b.detected_type = ty; b.style = TYPES[ty].s; b.s1000d_element = TYPES[ty].e; }
+  function resolve(b){ if(isPend(b)) b.status='ok'; b.human = true; b.confidence = 1; }
+  function act(b, kind, val){
+    const before = {type:b.origType, style:b.style}; const wasPend = isPend(b); let op = null;
+    if(kind==='type'){ setType(b,val); if(val==='warning'||val==='caution'){ const m = matchCIR(b.text, val); if(m) b.cir_ref = m; }
+      const ck = cirKindOfType(val); if(ck && !b.cir_ref && !b.cir_refs){ const m = bestCIR(b.text, ck); if(m) b.cir_ref = m; }
+      resolve(b); op={kind:'type',val}; }
+    if(kind==='in' || kind==='out'){ const ty=TYPES[b.detected_type]; const lv = ty.lv + (kind==='in'?1:-1); const nt = Object.keys(TYPES).find(k=>TYPES[k].fam===ty.fam && TYPES[k].lv===lv); if(!nt) return; setType(b,nt); resolve(b); op={kind}; }
+    if(kind==='accept') resolve(b);
+    if(kind==='merge'){ const i=d.blocks.indexOf(b), nx=d.blocks[i+1]; if(!nx) return; b.text = b.text+' '+nx.text; if(nx.page===b.page){ const x1=Math.min(b.bbox[0],nx.bbox[0]), y1=Math.min(b.bbox[1],nx.bbox[1]), x2=Math.max(b.bbox[0]+b.bbox[2],nx.bbox[0]+nx.bbox[2]), y2=Math.max(b.bbox[1]+b.bbox[3],nx.bbox[1]+nx.bbox[3]); b.bbox=[x1,y1,x2-x1,y2-y1]; } b.merged=true; d.blocks.splice(i+1,1); resolve(b); vReview(w); toast(S.lang==='es'?'Bloques unidos':'Blocks merged'); return; }
+    if(kind==='split'){ const i=d.blocks.indexOf(b); const cut = b.text.search(/[.:;]\s/); const pos = cut>0 && cut<b.text.length-3 ? cut+1 : Math.floor(b.text.length/2); const nb = Object.assign({}, b, {id:b.id+'a', text:b.text.slice(pos).trim(), bbox:[b.bbox[0], b.bbox[1]+b.bbox[3]/2, b.bbox[2], b.bbox[3]/2], splitPart:true}); b.text=b.text.slice(0,pos).trim(); b.bbox=[b.bbox[0],b.bbox[1],b.bbox[2],b.bbox[3]/2]; b.splitPart=true; resolve(b); resolve(nb); d.blocks.splice(i+1,0,nb); vReview(w); toast(S.lang==='es'?'Bloque dividido':'Block split'); return; }
+    d.similar = null;
+    if(op && wasPend){ const ids = d.blocks.filter(x=>x!==b && isPend(x) && x.origType===before.type && x.style===before.style && (!b.expected || !x.expected || x.expected.type===b.expected.type)).map(x=>x.id);
+      if(ids.length) d.similar = {from:b.id, ids, op, style:before.style.replace(' (not an S1000D style)','')}; }
+    drawOverlays(); drawList(); drawInsp(); counters(); refreshTree();
+  }
+  function applySimilar(){ const sim=d.similar; if(!sim) return; sim.ids.forEach(id=>{ const x=d.blocks.find(b=>b.id===id); if(!x) return;
+      if(sim.op.kind==='type'){ setType(x,sim.op.val); if(sim.op.val==='warning'||sim.op.val==='caution'){ const m=matchCIR(x.text,sim.op.val); if(m) x.cir_ref=m; } }
+      else { const ty=TYPES[x.detected_type]; const lv=ty.lv+(sim.op.kind==='in'?1:-1); const nt=Object.keys(TYPES).find(k=>TYPES[k].fam===ty.fam&&TYPES[k].lv===lv); if(nt) setType(x,nt); }
+      resolve(x); });
+    toast(t('applied')(sim.ids.length)); d.similar=null; drawOverlays(); drawList(); drawInsp(); counters(); refreshTree(); }
+  function refreshTree(){ if(!three) return; w.querySelectorAll('[data-dm]').forEach(btn=>{ const bl=d.blocks.filter(b=>b.data_module===btn.dataset.dm); const p=bl.filter(isPend).length; const pill=btn.querySelector('.pill'); pill.className='pill '+(p?'warn':'ok'); pill.textContent=p||bl.length; }); }
+  function refreshAll(){ drawOverlays(); drawList(); drawInsp(); counters(); refreshTree(); }
+  function aiCard(b){
+    if(!S.ai.sot) return '';
+    if(!b.aiProp) return isPend(b)?`<div class="acts"><button class="btn small aibtn" id="ai-one">${IC.wand}${t('aiSolve')}</button></div>`:'';
+    const p=b.aiProp, v=b.aiVerdict;
+    return `<div class="aicard"><div class="r1"><b>${t('aiProp')}</b><span class="pill plain">${t('aiConf')} ${Math.round(p.conf*100)}%</span></div>
+     <div style="font-size:13px">${t('aiTypeChg')}: ${esc(tn(b.detected_type))} → <b>${esc(tn(p.type))}</b>${p.cir?` · CIR <b class="mono">${p.cir}</b>`:''}</div>
+     <ul>${p.reasons.map(r=>`<li>${esc(r)}</li>`).join('')}</ul>
+     <div class="chips"><span class="muted" style="font-size:12px">${t('aiSources')}:</span>${p.sources.map(x=>`<span class="pill plain">${esc(x)}</span>`).join('')}</div>
+     ${v?`<div class="verdict ${v.ok?'ok':'bad'}"><b>${t('judgeT')}: ${v.ok?t('vOk'):t('vBad')}</b><div class="jc">${v.checks.map(([k,ok])=>`<span>${ok?'✓':'✗'} ${esc(t('jc')[k])}</span>`).join('')}</div><span>${esc(v.text)}</span>${v.fix?`<div><button class="btn small primary" id="ai-fix">${t('vFix')}</button></div>`:''}</div>`:''}
+     <div class="acts"><button class="btn small primary" id="ai-acc">${IC.check}${t('aiAccept')}</button><button class="btn small" id="ai-rej">${t('aiReject')}</button>${v?'':`<button class="btn small" id="ai-jdg">${t('aiJudge')}</button>`}</div></div>`;
+  }
+  function acceptProp(b){ const p=b.aiProp; if(!p) return; setType(b,p.type); if(p.cir) b.cir_ref=p.cir; if(isPend(b)) b.status='ok'; b.confidence=p.conf; b.ai='accepted'; b.human=false; delete b.aiProp; delete b.aiVerdict; }
+  function runAI(list){ const todo=list.filter(x=>isPend(x)&&!x.aiProp); if(!todo.length) return;
+    busy(t('aiThinking'),[t('aiT1'),t('aiT2'),t('aiT3')], todo.length>1?2600:1600, ()=>{ todo.forEach(x=>{ x.aiProp=aiProposalFor(x); }); if(!d.sel || !todo.find(x=>x.id===d.sel)) d.sel=todo[0].id; refreshAll(); scrollInto(list===null?null:document.getElementById('rv-list'), document.querySelector(`.row[data-b="${d.sel}"]`)); toast(t('aiProposals')(todo.length)); }); }
+  REVIEW_API = {select, refresh:refreshAll, runAll:()=>runAI(reviewBlocks())};
+  drawOverlays(); drawList(); drawInsp(); counters();
+  if(d.sel){ scrollInto(left, left.querySelector(`.ov[data-b="${d.sel}"]`)); scrollInto(list, list.querySelector(`.row[data-b="${d.sel}"]`)); }
+  document.onkeydown = e => {
+    if(S.view!=='task' || S.step!=='review' || document.querySelector('.dlg,.win,.busy')) return;
+    const tag = (e.target.tagName||'').toLowerCase(); if(tag==='select'||tag==='input'||tag==='textarea') return;
+    if(e.ctrlKey||e.metaKey||e.altKey) return;
+    const f = filtered(); const i = f.findIndex(b=>b.id===d.sel); const b = d.blocks.find(x=>x.id===d.sel); const k = e.key, kl = k.toLowerCase();
+    if(k==='ArrowDown'||k==='j'){ e.preventDefault(); const nb=f[Math.min(i+1,f.length-1)]||f[0]; if(nb) select(nb.id); }
+    else if(k==='ArrowUp'||k==='k'){ e.preventDefault(); const nb=f[Math.max(i-1,0)]; if(nb) select(nb.id); }
+    else if(kl==='f'){ d.filter = d.filter==='all'?'pend':'all'; vReview(w); }
+    else if(kl==='a'){ applySimilar(); }
+    else if(!b) return;
+    else if(k==='ArrowRight'){ e.preventDefault(); act(b,'in'); }
+    else if(k==='ArrowLeft'){ e.preventDefault(); act(b,'out'); }
+    else if(kl==='w') act(b,'type','warning'); else if(kl==='c') act(b,'type','caution'); else if(kl==='n') act(b,'type','note'); else if(kl==='p') act(b,'type','para'); else if(kl==='i') act(b,'type','ignore');
+    else if(k==='Enter' && tag!=='button') act(b,'accept');
+  };
+}
+let REVIEW_API = null;
+const clip = (s,n) => s.length>n ? s.slice(0,n-1).trimEnd()+'…' : s;
+const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+function matchCIR(text, kind){ const list = kind==='warning'?L().cir.warnings:L().cir.cautions; const body = norm(text.replace(/^[A-ZÁÉÍÓÚ]+:\s*/,'').trim()); const m = list.find(x=>norm(x.text).slice(0,40)===body.slice(0,40)); return m?m.id:null; }
+function bestCIR(text, kind){ const r = searchCIR(text, kind); return r.length ? r[0].id : null; }
+function cirItem(id){ const c=L().cir; for(const k of ['tools','spares','supplies','warnings','cautions']){ const x=c[k].find(i=>i.id===id); if(x) return Object.assign({kind:k},x); } return null; }
+function cirLabel(b){ const ids = b.cir_refs || (b.cir_ref?[b.cir_ref]:[]); if(!ids.length) return ''; return ids.map(id=>{ const x=cirItem(id); return `<span class="mono">${esc(id)}</span>${x?' '+esc((x.name||x.text).slice(0,60)):''}`; }).join('<br>'); }
+function blockXML(b){
+  const ty=b.detected_type, x=b.text.replace(/^\d+(\.\d+)*\s+/,''); const ind = n => '  '.repeat(n);
+  const cirIds = b.cir_refs||(b.cir_ref?[b.cir_ref]:[]);
+  switch(ty){
+   case 'warning': { const id=b.cir_ref||'W00?'; return `<warningsAndCautionsRef>\n  <warningRef id="${id.toLowerCase()}" warningIdentNumber="${id}">\n    <dmRef><dmRefIdent><dmCode modelIdentCode="ACROSS" systemDiffCode="A" systemCode="D00" subSystemCode="0" subSubSystemCode="0" assyCode="00" disassyCode="00" disassyCodeVariant="AA" infoCode="0A4" infoCodeVariant="A" itemLocationCode="D"/></dmRefIdent></dmRef>\n  </warningRef>\n</warningsAndCautionsRef>`; }
+   case 'caution': { const id=b.cir_ref||'C00?'; return `<warningsAndCautionsRef>\n  <cautionRef id="${id.toLowerCase()}" cautionIdentNumber="${id}">\n    <dmRef>…infoCode="0A5"…</dmRef>\n  </cautionRef>\n</warningsAndCautionsRef>`; }
+   case 'note': return `<note>\n  <notePara>${x.replace(/^(NOTE|NOTA):\s*/,'')}</notePara>\n</note>`;
+   case 'stepTitle': return `<proceduralStep id="stp-${b.id}">\n  <title>${x}</title>\n  …\n</proceduralStep>`;
+   case 'step2': case 'step3': case 'step4': { const lv=TYPES[ty].lv; let o='', c=''; for(let i=0;i<lv-1;i++){ o+=ind(i)+'<proceduralStep>\n'; c='\n'+ind(i)+'</proceduralStep>'+c; } return o+ind(lv-1)+`<proceduralStep id="stp-${b.id}">\n${ind(lv)}<para>${x}</para>\n${ind(lv-1)}</proceduralStep>`+c; }
+   case 'heading1': case 'heading2': case 'heading3': case 'heading4': return `<levelledPara id="par-${b.id}">\n  <title>${x}</title>\n  …\n</levelledPara>`;
+   case 'randomListItem': return `<randomList>\n  <listItem><para>${x.replace(/^[•\-]\s*/,'')}</para></listItem>\n</randomList>`;
+   case 'sequentialListItem': return `<sequentialList>\n  <listItem><para>${x}</para></listItem>\n</sequentialList>`;
+   case 'figure': return `<figure id="fig-${b.id}">\n  <graphic infoEntityIdent="ICN-ACROSS-A-…-A1234-0000n-A-01-1"/>\n</figure>`;
+   case 'figureTitle': return `<figure>\n  <title>${x}</title>\n</figure>`;
+   case 'table': return `<table>\n  <tgroup cols="…">…</tgroup>\n</table>`;
+   case 'tableTitle': return `<table>\n  <title>${x}</title>\n</table>`;
+   case 'reqCond': return `<reqCondGroup>\n  <reqCondNoRef><reqCond>${x}</reqCond></reqCondNoRef>\n</reqCondGroup>`;
+   case 'closeUp': return `<closeRqmts>\n  <reqCondGroup>\n    <reqCondNoRef><reqCond>${x}</reqCond></reqCondNoRef>\n  </reqCondGroup>\n</closeRqmts>`;
+   case 'reqPersons': return `<reqPersons>\n  <personnel numRequired="1"><personCategory personCategoryCode="Technician"/></personnel>\n</reqPersons>`;
+   case 'supportEquip': return `<reqSupportEquips><supportEquipDescrGroup>\n${(cirIds.length?cirIds:['supequi-000?']).map(id=>{ const c=cirItem(id); return `  <supportEquipDescr id="${id}">\n    <name>${c?c.name:''}</name>\n    <identNumber><manufacturerCode>A1234</manufacturerCode><partAndSerialNumber><partNumber>${c?c.pn:(b.part_number||'')}</partNumber></partAndSerialNumber></identNumber>\n    <reqQuantity>1</reqQuantity>\n  </supportEquipDescr>`; }).join('\n')}\n</supportEquipDescrGroup></reqSupportEquips>`;
+   case 'supply': return `<reqSupplies><supplyDescrGroup>\n${cirIds.map(id=>{ const c=cirItem(id); return `  <supplyDescr id="${id}"><name>${c?c.name:''}</name>…</supplyDescr>`; }).join('\n')}\n</supplyDescrGroup></reqSupplies>`;
+   case 'spare': return `<reqSpares><spareDescrGroup>\n${cirIds.map(id=>{ const c=cirItem(id); return `  <spareDescr id="${id}"><name>${c?c.name:''}</name>…</spareDescr>`; }).join('\n')}\n</spareDescrGroup></reqSpares>`;
+   case 'sectionStart': return `<!-- ${S.lang==='es'?'inicio de un módulo de datos nuevo':'start of a new data module'}: ${b.data_module||''} -->`;
+   case 'ignore': return `<!-- ${S.lang==='es'?'no se convierte':'not converted'} -->`;
+   default: return `<para>${x}</para>`;
+  }
+}
+function hl(src){ return src.replace(/(&lt;!--[\s\S]*?--&gt;)|(&lt;\/?)([\w:.-]+)((?:\s+[\w:.-]+=&quot;[^&]*?&quot;)*)(\s*\/?&gt;)/g, (m,com,open,name,attrs,close)=>{
+    if(com) return `<span class="xc">${com}</span>`;
+    const a = (attrs||'').replace(/([\w:.-]+)=(&quot;.*?&quot;)/g,'<span class="xa">$1</span>=<span class="xv">$2</span>');
+    return `<span class="xt">${open}${name}</span>${a}<span class="xt">${close}</span>`; }); }
+
+/* ================= CIR actually used ================= */
+function usedCIR(){ const d=D(); const ids=new Set(); d.blocks.forEach(b=>{ if(isPend(b)) return; if(b.data_module===null && DN()==='3') return; (b.cir_refs||(b.cir_ref?[b.cir_ref]:[])).forEach(i=>ids.add(i)); }); return ids; }
+function patchedXML(name){ // reflect CIR changes made in the review in the generated XML
+  let x = L().demos[DN()].xml[name]; const d=D();
+  d.blocks.forEach(b=>{ if(b.origCir && b.cir_ref && b.origCir!==b.cir_ref){ const a=cirItem(b.origCir), z=cirItem(b.cir_ref); if(!a||!z) return; x = x.split(a.id).join(z.id); if(a.name&&z.name) x=x.split(a.name).join(z.name); if(a.pn&&z.pn) x=x.split(a.pn).join(z.pn); } });
+  return x; }
+
+/* ================= XML ================= */
+function xmlFiles(){ const x = L().demos[DN()].xml; const names = Object.keys(x); if(DN()!=='3') return names; const pm = names.filter(n=>n.startsWith('PMC')); const order = [...new Set(D().sections.map(s=>names.find(n=>n.startsWith(s.dmc))).filter(Boolean))]; return order.concat(pm); }
+function vXml(w){
+  const d = D(), files = xmlFiles();
+  if(!d.xmlFile || !files.includes(d.xmlFile)) d.xmlFile = files[0];
+  const src = patchedXML(d.xmlFile); const pend = d.blocks.filter(isPend).length;
+  const ids = usedCIR();
+  const groups = {tools:[],spares:[],supplies:[],warnings:[],cautions:[]}; [...ids].sort().forEach(i=>{ const c=cirItem(i); if(c) groups[c.kind].push(c); });
+  const usedIn = id => new Set(D().blocks.filter(b=>!isPend(b)&&(b.cir_refs||(b.cir_ref?[b.cir_ref]:[])).includes(id)).map(b=>b.data_module)).size;
+  const all = files.map(f=>L().demos[DN()].xml[f]).join('\n');
+  const applicTexts = [...new Set((all.match(/<displayText>\s*<simplePara>([^<]+)<\/simplePara>/g)||[]).map(m=>m.replace(/<[^>]+>/g,'').trim()))];
+  const cirNames = {tools:t('cirTools'),spares:t('cirSpares'),supplies:t('cirSupplies'),warnings:t('cirWarnings'),cautions:t('cirCautions')};
+  w.innerHTML = hintHTML('xml') + `<div class="page full"><div class="head"><div><h2>${t('xmlT')}</h2><p>${esc(t('xmlP'))}</p></div><div class="counters"><span class="pill ok">${files.length} XML</span><span class="pill info">S1000D 4.2</span></div></div>
+   ${pend?`<div class="banner warn">${t('xmlPend')} <span class="pill warn">${pend} ${t('pending')}</span></div>`:''}
+   <div class="xmlwrap"><section class="pane">${files.length>1?`<div class="filetabs">${files.map(f=>`<button data-f="${f}" aria-pressed="${f===d.xmlFile}">${esc(f.replace(/_001-00_.*$/,'').replace('DMC-ACROSS-A-',''))}</button>`).join('')}</div>`:''}
+     <div class="ph"><h3 class="mono" style="font-size:12px;font-weight:500;overflow-wrap:anywhere">${esc(d.xmlFile)}</h3></div><div class="pb"><pre class="xml">${hl(esc(src))}</pre></div></section>
+    <div class="side"><div class="card"><div class="ch"><h3>${t('cirUsed')}</h3><span class="pill info">${ids.size}</span></div><div class="cb uselist">
+      ${Object.entries(groups).filter(([k,v])=>v.length).map(([k,v])=>`<div style="font-size:12px;font-weight:600;color:var(--muted);margin-top:4px">${esc(cirNames[k])}</div>${v.map(c=>`<div class="u"><code>${c.id}</code><span>${esc((c.name||c.text).slice(0,90))}${c.pn?` <span class="muted">· ${c.pn}</span>`:''}${DN()==='3'?` <span class="muted">· ${usedIn(c.id)} DM</span>`:''}</span></div>`).join('')}`).join('') || `<span class="muted">${t('noneUsed')}</span>`}
+    </div></div>
+    <div class="card"><div class="ch"><h3>${t('applicUsed')}</h3></div><div class="cb uselist">
+      ${DATA.products.map(p=>`<div class="u"><code>${p.id}</code><span><b>A-Cross ${p.version}</b> · version = ${p.version}</span></div>`).join('')}
+      ${applicTexts.length?`<div style="font-size:12px;font-weight:600;color:var(--muted);margin-top:6px">displayText</div>${applicTexts.slice(0,6).map(a=>`<div class="u"><code>applic</code><span>${esc(a)}</span></div>`).join('')}`:''}
+      <div class="muted" style="font-size:12px">ACT: <span class="mono">DMC-ACROSS-A-D00-00-00-00AA-00WA-D</span></div></div></div></div></div>
+   <div class="footbar"><button class="btn primary" id="b-next">${t('steps').validate} ${IC.arrowR}</button></div></div>`;
+  w.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{ d.xmlFile=b.dataset.f; vXml(w); });
+  w.querySelector('#b-next').onclick = advance;
+}
+
+/* ================= validation ================= */
+function cirBad(b){ if(b.detected_type!=='warning'||!b.cir_ref) return false; const g=matchCIR(b.text,'warning'); return !!g && g!==b.cir_ref; }
+function cirErrs(d){ return d.blocks.filter(cirBad).map(b=>({id:b.id, text:b.text, rule:'SCH-ACX-014', msg:t('errCir')(b.cir_ref)})); }
+function vValidate(w){
+  const d = D(), files = xmlFiles(), xmls = L().demos[DN()].xml; const nSch = 46;
+  const last = d.runs[d.runs.length-1]; const vs = d.valState; const errs = last ? last.errs : [];
+  const box = (label, res) => { const st = vs==='run'?'run':!last?'':res.ok?'ok':'bad'; return `<div class="chk ${st}"><b>${label}</b><span class="res">${vs==='run'?`<span class="muted">${t('running')}…</span>`:!last?'<span class="muted">—</span>':res.ok?`<span class="pill ok">${t('passed')}</span> ${esc(res.txt)}`:`<span class="pill bad">${t('failed')}</span> ${esc(res.txt)}`}</span><span class="muted mono" style="font-size:11.5px;overflow-wrap:anywhere">${esc(res.det)}</span></div>`; };
+  const schemas = [...new Set(files.map(f=>{ const m=xmls[f].match(/xsi:noNamespaceSchemaLocation="([^"]+)"/); return m?m[1].split('/').pop():''; }).filter(Boolean))].join(', ');
+  w.innerHTML = hintHTML('validate') + `<div class="page"><div class="head"><div><h2>${t('valT')}</h2><p>${esc(t('valP'))}</p></div><button class="btn primary" id="b-run" ${vs==='run'?'disabled':''}>${last?t('rerun'):t('runVal')}</button></div>
+   <div class="checks">${box(t('xsd'),{ok:true,txt:t('xsdOk')(files.length),det:schemas})}${box(t('brex'),{ok:true,txt:t('brexOk')(DATA.brex.length),det:'DMC-ACROSS-A-D00-00-00-00AA-022A-D'})}${box(t('sch'),{ok:!errs.length,txt:errs.length?`${errs.length} ${t('errorsW')}`:t('schOk')(nSch),det:'S1000D 4.2 + A-Cross'})}</div>
+   ${last && errs.length?`<div class="card"><div class="ch"><h3>${t('errs')}</h3><button class="btn small" id="b-back">${IC.arrowL}${t('backReview')}</button></div><div class="cb errs">${errs.map(e=>`<div class="err"><span class="mono">${e.rule}</span><span><b class="mono">${e.id}</b> · ${esc(e.msg)}<br><span class="muted" style="font-size:12px">${esc(e.text.slice(0,90))}</span></span><button class="btn small" data-goto="${e.id}">${t('goBlock')}</button></div>`).join('')}</div></div>`:''}
+   ${last && !errs.length?`<div class="banner ok">${IC.check}<b>${t('allPass')}.</b> ${t('brexRules')}: ${DATA.brex.map(r=>r.id.replace('BRDP-ACX-','')).join(' · ')}</div>`:''}
+   ${d.runs.length?`<div class="card"><div class="ch"><h3>${t('runs')}</h3></div><div class="tw"><table class="grid"><thead><tr><th>${t('run')}</th><th>XSD</th><th>BREX</th><th>Schematron</th></tr></thead><tbody>${d.runs.map((r,i)=>`<tr><td>#${i+1} · ${r.time}</td><td><span class="pill ok">0</span></td><td><span class="pill ok">0</span></td><td><span class="pill ${r.errs.length?'bad':'ok'}">${r.errs.length}</span></td></tr>`).join('')}</tbody></table></div></div>`:''}
+   <div class="footbar"><button class="btn primary" id="b-next" ${last&&!errs.length?'':'disabled'}>${t('steps').publish} ${IC.arrowR}</button></div></div>`;
+  w.querySelector('#b-run').onclick = () => { d.valState='run'; vValidate(w); setTimeout(()=>{ const errs = cirErrs(d).concat(d.blocks.filter(isPend).map(b=>({id:b.id, text:b.text, rule: b.expected&&b.expected.type==='warning'?'SCH-ACX-012':b.expected&&/step/.test(b.expected.type)?'SCH-ACX-021':'SCH-ACX-030', msg: b.expected&&b.expected.type==='warning'?t('errWarn'):b.expected&&/step/.test(b.expected.type)?t('errStep'):t('errSeg')})));
+      d.runs.push({time: nowT(), errs}); d.valState='done'; if(!errs.length) setStatus('stValid'); if(S.step==='validate') vValidate(w); }, 1800); };
+  const bb = w.querySelector('#b-back'); if(bb) bb.onclick = () => go('review');
+  w.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>{ d.sel=b.dataset.goto; d.filter='pend'; const blk=d.blocks.find(x=>x.id===d.sel); if(DN()==='3'&&blk&&blk.data_module) d.curDM=blk.data_module; go('review'); });
+  w.querySelector('#b-next').onclick = advance;
+}
+
+/* ================= publication ================= */
+function vPublish(w){
+  const d = D(), dm = L().demos[DN()], pages = dm.pub_pages; if(d.pubPage>=pages.length) d.pubPage=0;
+  w.innerHTML = hintHTML('publish') + `<div class="page full"><div class="head"><div><h2>${t('pubT')}</h2><p>${esc(t('pubP'))}</p></div>
+     <div class="counters">${d.published===true?`<span class="pill plain">${t('pageOf')(d.pubPage+1,pages.length)}</span><a class="btn small" href="${dm.pub_pdf}" target="_blank" rel="noopener">${IC.ext}${t('openPdf')}</a>`:''}<button class="btn primary" id="b-pub" ${d.published?'disabled':''}>${d.published==='run'?t('publishing')+'…':t('publish')}</button></div></div>
+   ${d.published===true?`<div class="pubv"><div class="pubmain"><img src="${pages[d.pubPage]}" alt="${t('pageOf')(d.pubPage+1,pages.length)}"></div>
+     <div class="thumbs" aria-label="Pages">${pages.map((p,i)=>`<button data-p="${i}" aria-pressed="${i===d.pubPage}"><img src="${p}" alt="${i+1}" loading="lazy"><span>${i+1}</span></button>`).join('')}</div></div>
+     <div class="footbar"><span class="mono muted" style="font-size:12px;overflow-wrap:anywhere">${esc(dm.pub_pdf.replace('pdf/',''))}</span><button class="btn primary" id="b-next">${t('steps').report} ${IC.arrowR}</button></div>`
+   : d.published==='run' ? `<div class="card"><div class="cb stages"><div class="stage run"><span class="ic"></span><div><b>${t('publishing')}</b><small>XSL-FO · S1000D 4.2 · ALTEN</small></div><span></span></div></div></div>` : ''}</div>`;
+  w.querySelector('#b-pub').onclick = () => { d.published='run'; vPublish(w); setTimeout(()=>{ d.published=true; setStatus('stPub'); if(S.step==='publish') vPublish(w); }, 1600); };
+  w.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{ d.pubPage=+b.dataset.p; vPublish(w); });
+  const n = w.querySelector('#b-next'); if(n) n.onclick = advance;
+}
+
+/* ================= report ================= */
+function vReport(w){
+  const d = D(), j = J(), files = xmlFiles(); const bl = d.blocks; const total = j.blocks.length;
+  const autoPct = j.summary.auto_detection_percent; const human = bl.filter(b=>b.human).length; const aiS = aiStats(d); const pend = bl.filter(isPend).length;
+  const ids = usedCIR(); const nDM = files.filter(f=>f.startsWith('DMC')).length;
+  const lastRun = d.runs[d.runs.length-1]; const valOk = lastRun && !lastRun.errs.length;
+  const errHist = []; d.runs.forEach((r,i)=>r.errs.forEach(e=>{ if(!errHist.find(x=>x.id===e.id)) errHist.push(Object.assign({run:i+1},e)); }));
+  const rows = bl.filter(b => d.repFilter==='all' || b.human || b.ai); const okN = total - j.summary.needs_review;
+  w.innerHTML = hintHTML('report') + `<div class="page"><div class="head"><div><h2>${t('repT')}</h2><p>${esc(t('repP'))}</p></div><span class="mono muted" style="font-size:12px">${esc(j.document)} → ${esc(DN()==='3'?j.target.publication:j.target.dmc)}</span></div>
+   <div class="kpis">
+     <div class="kpi"><b>${total}</b><span>${t('kBlocks')}</span></div>
+     <div class="kpi"><b>${autoPct.toLocaleString(S.lang)} %</b><span>${t('kAuto')} (${okN}/${total})</span><div class="stack" aria-hidden="true"><i style="width:${autoPct}%;background:var(--ok)"></i><i style="width:${100-autoPct}%;background:var(--warn)"></i></div></div>
+     <div class="kpi"><b>${human}</b><span>${t('kHuman')}</span></div>${(S.ai.sot||aiS.acc||aiS.rej)?`<div class="kpi"><b>${aiS.acc}</b><span>${t('kAi')}</span><span class="muted" style="font-size:11.5px">${t('kAiProps')}: ${t('kAiSub')(aiS.acc,aiS.rej,aiS.judged)}</span></div>`:''}<div class="kpi"><b>${ids.size}</b><span>${t('kCir')}</span></div>
+     <div class="kpi"><b>${nDM}${DN()==='3'?' + PM':''}</b><span>${t('kDms')}</span></div>
+     <div class="kpi"><b style="color:${valOk?'var(--ok)':'var(--bad)'}">${valOk?t('passed'):pend?pend+' '+t('pending'):'—'}</b><span>${t('kVal')} · XSD · BREX · Schematron</span></div></div>
+   <div class="card"><div class="ch"><h3>${t('errHist')}</h3></div><div class="cb">${errHist.length?`<div class="errs">${errHist.map(e=>{ const b=bl.find(x=>x.id===e.id); const fx = b && !isPend(b) && !cirBad(b); return `<div class="err" style="border-left-color:${fx?'var(--ok)':'var(--bad)'}"><span class="mono">${e.rule}</span><span><b class="mono">${e.id}</b> · ${esc(e.msg)}</span><span class="pill ${fx?'ok':'bad'}">${fx?t('fixed'):t('pending')} · #${e.run}</span></div>`; }).join('')}</div>`:`<span class="muted">${t('noErrs')}</span>`}</div></div>
+   <div class="card"><div class="ch"><h3>${t('trace')}</h3><div class="seg" role="group"><button data-rf="all" aria-pressed="${d.repFilter==='all'}">${t('all2')} (${bl.length})</button><button data-rf="h" aria-pressed="${d.repFilter==='h'}">${t('onlyHuman')} (${human+aiS.acc})</button></div></div>
+     <div class="tw" style="max-height:420px;overflow:auto"><table class="grid"><thead><tr><th>ID</th><th>${t('page')}</th><th>${t('source')}</th><th>${t('type')}</th><th>${t('element')}</th>${DN()==='3'?`<th>DM</th>`:''}<th>${t('status')}</th></tr></thead><tbody>
+     ${rows.map(b=>{ const ty=TYPES[b.detected_type]||TYPES.para; return `<tr><td class="mono">${b.id}</td><td style="font-variant-numeric:tabular-nums">${b.page}</td><td style="min-width:220px">${esc(b.text.slice(0,80))}${b.text.length>80?'…':''}</td><td><i class="sw" style="background:${CVAR(ty.c)}"></i>${esc(tn(b.detected_type))}</td><td class="mono" style="font-size:11.5px">${esc(ty.e)}</td>${DN()==='3'?`<td class="mono" style="font-size:11px">${esc((b.data_module||'-').replace('DMC-ACROSS-A-',''))}</td>`:''}<td>${b.ai==='accepted'?`<span class="pill aipill">${t('aiSt')}</span>`:b.human?`<span class="pill info">${t('human')}</span>`:isPend(b)?`<span class="pill warn">${t('pending')}</span>`:`<span class="pill ok">${t('auto')}</span>`}</td></tr>`;}).join('')}
+     </tbody></table></div></div>
+   <div class="footbar"><button class="btn primary" id="b-fin">${t('finish')}</button></div></div>`;
+  w.querySelectorAll('[data-rf]').forEach(b=>b.onclick=()=>{ d.repFilter=b.dataset.rf; vReport(w); });
+  w.querySelector('#b-fin').onclick = () => { d.reached = stepsFor(DN()).length; S.view='tasks'; S.cur=null; render(); };
+}
+
+/* ================= assistant ================= */
+function chatHTML(){
+  const sug = (t('sug')[S.view==='task'&&S.cur?DN():'gen'])||t('sug').gen;
+  return `<aside class="chat" aria-label="${t('asT')}"><div class="chh"><span class="iconbtn" aria-hidden="true">${IC.chat}</span><div style="flex:1;min-width:0"><b>${t('asT')}</b><small>${t('asSub')}</small><label class="sotmini"><input type="checkbox" id="as-sot" ${S.ai.sot?'checked':''}> <b>${t('sot')}</b> · <span style="color:${S.ai.sot?'var(--ok)':'var(--muted)'}">${S.ai.sot?t('asSot'):t('asNoSot')}</span></label></div><button class="iconbtn" id="as-x" aria-label="${t('close')}">${IC.x}</button></div>
+   <div class="msgs" id="as-m">${[{who:'bot',html:esc(t('asHello'))}].concat(S.chat.msgs).map(msgHTML).join('')}${S.chat.busy?`<div class="msg bot"><span class="typing"><i></i><i></i><i></i></span></div>`:''}</div>
+   <div class="cin"><div class="chips">${sug.map(s=>`<button data-q="${esc(s)}">${esc(s)}</button>`).join('')}</div>
+   <form id="as-f"><input id="as-i" placeholder="${esc(t('asPh'))}" autocomplete="off" aria-label="${esc(t('asPh'))}"><button class="btn primary" aria-label="${t('asSend')}">${IC.send}</button></form></div></aside>`;
+}
+function msgHTML(m, i){ return `<div class="msg ${m.who}">${m.html}${m.acts&&m.acts.length?`<div class="acts">${m.acts.map((a,k)=>`<button class="btn small ${a.primary?'primary':''}" data-act="${i-1}:${k}">${esc(a.label)}</button>`).join('')}</div>`:''}</div>`; }
+function bindChat(){
+  const m = document.getElementById('as-m'); m.scrollTop = m.scrollHeight;
+  document.getElementById('as-x').onclick = () => { S.chat.open=false; render(); };
+  const ss=document.getElementById('as-sot'); if(ss) ss.onchange=()=>{ S.ai.sot=ss.checked; refreshChat(); renderWork(); };
+  document.querySelectorAll('.chips [data-q]').forEach(b=>b.onclick=()=>ask(b.dataset.q));
+  document.getElementById('as-f').onsubmit = e => { e.preventDefault(); const v=document.getElementById('as-i').value.trim(); if(v) ask(v); };
+  document.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{ const [mi,ai]=b.dataset.act.split(':').map(Number); const a=S.chat.msgs[mi]&&S.chat.msgs[mi].acts[ai]; if(a) a.run(); });
+}
+function refreshChat(){ const old=document.querySelector('.chat'); if(!old) return; const tmp=document.createElement('div'); tmp.innerHTML=chatHTML(); old.replaceWith(tmp.firstElementChild); bindChat(); }
+function ask(q){ S.chat.msgs.push({who:'me', html:esc(q)}); S.chat.busy=true; refreshChat(); setTimeout(()=>{ S.chat.busy=false; S.chat.msgs.push(answer(q)); refreshChat(); }, 750); }
+const STOP = new Set('que qué cual cuál cuales es son el la los las de del en un una y o a por para con this the a an of in on is are which what find search busca buscar me dame hay en este esta esto usa use uses does do for to from it its'.split(' '));
+function tokens(s){ return norm(s).split(/[^a-z0-9-]+/).filter(x=>x && x.length>2 && !STOP.has(x)); }
+function searchCIR(q, kindOnly){
+  const c = L().cir; const qt = tokens(q); const qn = norm(q); const out=[];
+  ['tools','spares','supplies','warnings','cautions'].forEach(k=>{ if(kindOnly && k!==kindOnly) return; c[k].forEach(x=>{ let sc=0;
+    if(qn.includes(norm(x.id))) sc+=10; if(x.pn && qn.includes(norm(x.pn))) sc+=10;
+    const words = tokens((x.name||'')+' '+(x.text||'')); qt.forEach(w=>{ if(words.includes(w)) sc+=1; else if(w.length>4 && words.some(z=>z.startsWith(w.slice(0,5)))) sc+=0.5; });
+    if(sc>=1) out.push(Object.assign({kind:k, sc}, x)); }); });
+  return out.sort((a,b)=>b.sc-a.sc);
+}
+function kindHint(q){ const n=norm(q); if(/herramient|tool|equip/.test(n)) return 'tools'; if(/consumib|supply|supplies|liquid|fluid|grasa|grease/.test(n)&&!/advert|warn/.test(n)) return 'supplies'; if(/pieza|repuesto|spare|part/.test(n)) return 'spares'; if(/advert|warning/.test(n)) return 'warnings'; if(/precauc|caution/.test(n)) return 'cautions'; return null; }
+function selBlock(){ if(!(S.view==='task'&&S.cur&&S.step==='review')) return null; const d=D(); return d.blocks.find(b=>b.id===d.sel)||null; }
+function compatible(b, kind){ if(!b) return false; const ty=b.detected_type; if(kind==='warnings') return ['para','warning','note'].includes(ty); if(kind==='cautions') return ['para','caution','note'].includes(ty); return cirKindOfType(ty)===kind; }
+function applyItem(b, item){ const d=D();
+  if(item.kind==='warnings'||item.kind==='cautions'){ const ty=item.kind==='warnings'?'warning':'caution'; b.detected_type=ty; b.style=TYPES[ty].s; b.s1000d_element=TYPES[ty].e; b.cir_ref=item.id; }
+  else if(b.cir_refs){ if(!b.cir_refs.includes(item.id)) b.cir_refs=b.cir_refs.concat(item.id); } else b.cir_ref=item.id;
+  if(isPend(b)) b.status='ok'; b.human=true; b.confidence=1; if(REVIEW_API && S.step==='review') REVIEW_API.refresh(); }
+function answer(q){
+  const n = norm(q); const lgc = L(); const inTask = S.view==='task' && S.cur;
+  if(/resuelv|resolve|propon|propose/.test(n)){ if(!S.ai.sot) return {who:'bot', html:esc(t('asNeedSot'))}; if(!inTask) return {who:'bot', html:esc(t('asSolveNone'))};
+    const p = D().blocks.filter(b=>isPend(b)&&!b.aiProp); if(!p.length) return {who:'bot', html:esc(t('asSolveNone'))};
+    p.forEach(b=>{ b.aiProp=aiProposalFor(b); }); if(REVIEW_API && S.step==='review') REVIEW_API.refresh();
+    return {who:'bot', html:esc(t('asSolve')(p.length))+`<div style="display:flex;flex-direction:column;gap:4px">${p.slice(0,8).map(b=>`<div class="it"><code>${b.id}</code><span>${esc(tn(b.detected_type))} → <b>${esc(tn(b.aiProp.type))}</b>${b.aiProp.cir?' · '+b.aiProp.cir:''}</span></div>`).join('')}</div>`,
+      acts:[{label:t('asFirst'), primary:true, run:()=>{ const d=D(); d.sel=p[0].id; if(S.step!=='review') go('review'); else if(REVIEW_API) REVIEW_API.select(p[0].id); }}]}; }
+  if(/pendient|pending/.test(n) && inTask){ const p = D().blocks.filter(isPend);
+    return {who:'bot', html:esc(t('asPend')(p.length))+(p.length?`<div style="display:flex;flex-direction:column;gap:4px">${p.slice(0,8).map(b=>`<div class="it"><code>${b.id}</code><span>${esc(b.text.slice(0,70))}</span></div>`).join('')}</div>`:''),
+      acts:p.slice(0,4).map(b=>({label:t('asGo')(b.id), run:()=>{ const d=D(); d.sel=b.id; d.filter='pend'; if(DN()==='3'&&b.data_module) d.curDM=b.data_module; if(S.step!=='review') go('review'); else renderWork(); }}))}; }
+  if(/brex|regla|rule/.test(n)) return {who:'bot', html:esc(t('asBrex'))+`<div style="display:flex;flex-direction:column;gap:4px">${DATA.brex.map(r=>`<div class="it"><code>${r.id.replace('BRDP-','')}</code><span>${esc(r.text[S.lang])}</span></div>`).join('')}</div>`};
+  if(/solo|only|aplicab|applic/.test(n) && /gt|\be\b|aplicab|applic|version/.test(n)){ const sp = lgc.cir.spares.filter(x=>x.applic.length===1);
+    return {who:'bot', html:esc(t('asApplicT'))+`<div style="display:flex;flex-direction:column;gap:4px">${sp.map(x=>`<div class="it"><code>${x.id}</code><span>${esc(x.name)} · <b>${x.applic[0]}</b></span></div>`).join('')}</div>`}; }
+  if(/modulo de datos|data module|info code|dmc|dmrl/.test(n)){ const qt=tokens(q).filter(w=>!/modulo|module|datos|data|info|code|dmc|dmrl/.test(w)); const rows=lgc.dmrl.filter(r=>{ const z=tokens(r.tech+' '+r.info); return qt.filter(w=>z.some(y=>y.startsWith(w.slice(0,5)))).length>=1; }).slice(0,5);
+    if(rows.length) return {who:'bot', html:esc(t('asDmrl'))+`<div style="display:flex;flex-direction:column;gap:4px">${rows.map(r=>`<div class="it"><code>${r.dmc.slice(-6,-3)}</code><span>${esc(r.tech)} – ${esc(r.info)}<br><span class="mono muted" style="font-size:11px">${esc(r.dmc)}</span></span></div>`).join('')}</div>`}; }
+  // supplies/tools used by a data module of the current task ("which supplies does the bleeding use?")
+  const kh = kindHint(q);
+  if(inTask && kh && DN()==='3'){ const qt=tokens(q); const s = D().sections.find(sc=>{ const z=tokens(sc.section+' '+sc.tech_name+' '+sc.info_name); return qt.some(w=>z.some(y=>y.startsWith(w.slice(0,5)))); });
+    if(s){ const ids=new Set(); D().blocks.filter(b=>b.data_module===s.dmc).forEach(b=>(b.cir_refs||(b.cir_ref?[b.cir_ref]:[])).forEach(i=>{ const it=cirItem(i); if(it&&it.kind===kh) ids.add(i); }));
+      if(ids.size) return {who:'bot', html:esc(t('asFound')(ids.size))+` <span class="muted">(${esc(s.section)})</span><div style="display:flex;flex-direction:column;gap:4px">${[...ids].map(i=>{ const x=cirItem(i); return `<div class="it"><code>${i}</code><span>${esc(x.name||x.text)}${x.pn?` · <span class="mono">${x.pn}</span>`:''}</span></div>`; }).join('')}</div>`}; } }
+  // the CIR item used by this DM (demo 1 warning)
+  if(inTask && /usa|use|uses/.test(n) && kh){ const ids=[...usedCIR()].map(cirItem).filter(x=>x&&x.kind===kh); if(ids.length) return {who:'bot', html:esc(t('asFound')(ids.length))+`<div style="display:flex;flex-direction:column;gap:4px">${ids.map(x=>`<div class="it"><code>${x.id}</code><span>${esc(x.name||x.text)}</span></div>`).join('')}</div>`}; }
+  let res = searchCIR(q, kh); if(!res.length && kh) res = searchCIR(q);
+  if(res.length){ const top=res.slice(0,3); const b = selBlock();
+    return {who:'bot', html:esc(t('asFound')(top.length))+`<div style="display:flex;flex-direction:column;gap:4px">${top.map(x=>`<div class="it"><code>${x.id}</code><span>${esc(clip(x.name||x.text,140))}${x.pn?` · <span class="mono">${x.pn}</span>`:''}</span></div>`).join('')}</div>`+(b?`<span class="muted" style="font-size:12px">${t('asSel')}: <b class="mono">${b.id}</b></span>`:''),
+      acts: b ? top.filter(x=>compatible(b,x.kind)).map((x,k)=>({label:t('asApply')(x.id), primary:k===0, run:()=>{ applyItem(b,x); S.chat.msgs.push({who:'bot', html:esc(t('asApplied')(x.id,b.id))}); refreshChat(); toast(t('cirChanged')(x.id)); }})) : []}; }
+  const b = selBlock(); if(b && /bloque|block|esto|this/.test(n)){ const ty=TYPES[b.detected_type]||TYPES.para; return {who:'bot', html:esc(t('asBlock')(b.id, tn(b.detected_type), ty.e))}; }
+  return {who:'bot', html:esc(t('asNo'))};
+}
+
+render();
+})();
+
+</script>
+
+</body></html>
