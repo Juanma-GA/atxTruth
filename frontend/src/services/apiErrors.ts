@@ -39,11 +39,36 @@ export async function apiErrorFromResponse(response: Response): Promise<ApiError
   return new ApiError(response.status, response.status >= 500 ? 'server.internal' : `http.${response.status}`);
 }
 
+/**
+ * Makes error parameters readable (HR21): lists are joined, language codes and field states are
+ * translated. Codes of data (S1.1.1, sector) stay as they are: they are identifiers the user knows.
+ */
+export function formatParams(t: TFunction, params: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(params)) {
+    if (key === 'languages' && Array.isArray(value)) {
+      out[key] = value.map((lang) => t(`languages.short.${String(lang)}`, { defaultValue: String(lang) })).join(', ');
+    } else if (key === 'state' && typeof value === 'string') {
+      out[key] = t(`fieldState.${value}`);
+    } else if (Array.isArray(value)) {
+      out[key] = value.join(', ');
+    } else {
+      out[key] = value;
+    }
+  }
+  return out;
+}
+
+/** Translates an error code with its parameters; an unknown code gets a generic sentence. */
+export function codeMessage(t: TFunction, code: string, params: Record<string, unknown> = {}): string {
+  const key = `errors.${code}`;
+  const formatted = formatParams(t, { ref: '—', ...params });
+  return i18n.exists(key) ? t(key, formatted) : t('errors.unknown', formatted);
+}
+
 /** The sentence to show the user for an error, always through i18n (HR15). */
 export function errorMessage(t: TFunction, error: unknown): string {
   if (!(error instanceof ApiError)) return t('errors.unexpected');
   if (error.isNetwork) return t('errors.network');
-  const key = `errors.${error.code}`;
-  const params = { ref: '—', ...error.params };
-  return i18n.exists(key) ? t(key, params) : t('errors.unknown', params);
+  return codeMessage(t, error.code, error.params);
 }

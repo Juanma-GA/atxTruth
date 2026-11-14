@@ -19,6 +19,9 @@ import { AuditPage } from '@/pages/settings/AuditPage';
 import { ConfigurationPage } from '@/pages/settings/ConfigurationPage';
 import { SettingsLayout } from '@/pages/settings/SettingsLayout';
 import { UsersPage } from '@/pages/settings/UsersPage';
+import { InitialDataPage } from '@/pages/settings/InitialDataPage';
+import { ListDetailPage } from '@/pages/lists/ListDetailPage';
+import { ListsPage } from '@/pages/lists/ListsPage';
 import { onSessionExpired, refreshSession } from '@/services/api';
 import { errorMessage } from '@/services/apiErrors';
 import { queryKeys } from '@/services/queryKeys';
@@ -65,12 +68,15 @@ function AuthenticatedApp({ me, config, language }: { me: Me; config: PublicConf
     <Routes>
       <Route element={<AppShell me={me} config={config} language={language} />}>
         <Route index element={<HomePage me={me} />} />
+        <Route path="lists" element={<ListsPage me={me} />} />
+        <Route path="lists/:listId" element={<ListDetailPage me={me} />} />
         <Route path="settings" element={<SettingsLayout me={me} config={config} />}>
           <Route index element={<Navigate to="account" replace />} />
           <Route path="account" element={<AccountPage me={me} config={config} language={language} />} />
           {isAdmin ? <Route path="configuration" element={<ConfigurationPage />} /> : null}
           {tabs.includes('users') ? <Route path="users" element={<UsersPage me={me} />} /> : null}
           {isAdmin ? <Route path="audit" element={<AuditPage />} /> : null}
+          {isAdmin ? <Route path="initial-data" element={<InitialDataPage />} /> : null}
           <Route path="*" element={<Navigate to="/settings/account" replace />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

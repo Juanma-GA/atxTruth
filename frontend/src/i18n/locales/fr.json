@@ -1,96 +1,338 @@
 {
-  "app": { "tagline": "Source de vérité de Customer Services" },
+  "app": {
+    "tagline": "Source de vérité de Customer Services"
+  },
   "common": {
-    "save": "Enregistrer", "cancel": "Annuler", "close": "Fermer", "confirm": "Confirmer", "loading": "Chargement…",
-    "retry": "Réessayer", "copy": "Copier", "copied": "Copié", "saving": "Enregistrement…", "saved": "Enregistré",
-    "actions": "Actions", "previous": "Précédent", "next": "Suivant", "pageOf": "Page {{page}} sur {{pages}}",
-    "totalRows": "{{count}} lignes", "none": "—", "on": "Oui", "off": "Non", "required": "Obligatoire"
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "loading": "Chargement…",
+    "retry": "Réessayer",
+    "copy": "Copier",
+    "copied": "Copié",
+    "saving": "Enregistrement…",
+    "saved": "Enregistré",
+    "actions": "Actions",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "pageOf": "Page {{page}} sur {{pages}}",
+    "totalRows": "{{count}} lignes",
+    "none": "—",
+    "on": "Oui",
+    "off": "Non",
+    "required": "Obligatoire",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "restore": "Restaurer",
+    "yes": "Oui",
+    "no": "Non",
+    "back": "Retour",
+    "create": "Créer"
   },
   "languages": {
-    "en": "Anglais", "es": "Espagnol", "fr": "Français",
-    "short": { "en": "EN", "es": "ES", "fr": "FR" }
+    "en": "Anglais",
+    "es": "Espagnol",
+    "fr": "Français",
+    "short": {
+      "en": "EN",
+      "es": "ES",
+      "fr": "FR"
+    }
   },
-  "theme": { "label": "Thème", "system": "Système", "light": "Clair", "dark": "Sombre" },
-  "roles": { "admin": "Administrateur", "editor": "Éditeur", "viewer": "Lecteur" },
+  "theme": {
+    "label": "Thème",
+    "system": "Système",
+    "light": "Clair",
+    "dark": "Sombre"
+  },
+  "roles": {
+    "admin": "Administrateur",
+    "editor": "Éditeur",
+    "viewer": "Lecteur"
+  },
   "shell": {
-    "breadcrumb": "Fil d'Ariane", "mainNav": "Navigation principale", "language": "Langue de l'interface",
-    "userMenu": "Menu utilisateur", "signOut": "Se déconnecter", "changePassword": "Changer le mot de passe",
-    "skipToContent": "Aller au contenu", "logoAlt": "ALTEN", "signedInAs": "Connecté en tant que",
-    "signedOut": "Vous êtes déconnecté.", "sessionExpired": "Votre session est terminée. Reconnectez-vous."
+    "breadcrumb": "Fil d'Ariane",
+    "mainNav": "Navigation principale",
+    "language": "Langue de l'interface",
+    "userMenu": "Menu utilisateur",
+    "signOut": "Se déconnecter",
+    "changePassword": "Changer le mot de passe",
+    "skipToContent": "Aller au contenu",
+    "logoAlt": "ALTEN",
+    "signedInAs": "Connecté en tant que",
+    "signedOut": "Vous êtes déconnecté.",
+    "sessionExpired": "Votre session est terminée. Reconnectez-vous."
   },
-  "nav": { "home": "Accueil", "settings": "Paramètres" },
+  "nav": {
+    "home": "Accueil",
+    "settings": "Paramètres",
+    "lists": "Listes"
+  },
   "login": {
-    "title": "Connexion", "subtitle": "Utilisez votre compte atxTruth.", "email": "E-mail", "password": "Mot de passe",
-    "submit": "Se connecter", "submitting": "Connexion…", "ssoNotice": "La connexion est gérée par le fournisseur d'identité de votre organisation."
+    "title": "Connexion",
+    "subtitle": "Utilisez votre compte atxTruth.",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "submitting": "Connexion…",
+    "ssoNotice": "La connexion est gérée par le fournisseur d'identité de votre organisation."
   },
   "changePassword": {
-    "title": "Changer le mot de passe", "forcedIntro": "Vous vous êtes connecté avec un mot de passe temporaire. Choisissez-en un nouveau pour continuer.",
+    "title": "Changer le mot de passe",
+    "forcedIntro": "Vous vous êtes connecté avec un mot de passe temporaire. Choisissez-en un nouveau pour continuer.",
     "intro": "Les autres sessions de ce compte seront fermées.",
-    "current": "Mot de passe actuel", "new": "Nouveau mot de passe", "confirm": "Répétez le nouveau mot de passe",
-    "submit": "Changer le mot de passe", "mismatch": "Les deux nouveaux mots de passe sont différents.",
-    "minLength": "Au moins {{min}} caractères.", "success": "Mot de passe changé."
+    "current": "Mot de passe actuel",
+    "new": "Nouveau mot de passe",
+    "confirm": "Répétez le nouveau mot de passe",
+    "submit": "Changer le mot de passe",
+    "mismatch": "Les deux nouveaux mots de passe sont différents.",
+    "minLength": "Au moins {{min}} caractères.",
+    "success": "Mot de passe changé."
   },
   "home": {
-    "title": "Accueil", "description": "Catalogue de services et références de projet de Customer Services, générés en diapositives, HTML, Markdown et Excel sans IA.",
-    "welcome": "Bonjour, {{name}}", "roleLine": "Vous êtes connecté en tant que {{role}}.",
-    "statusTitle": "Ce qui est disponible", "statusBody": "Cette première version contient la base de l'application : comptes et rôles, paramètres, journal d'audit et interface en anglais, espagnol et français. Les références et le catalogue arrivent dans les prochaines livraisons.",
-    "accountTitle": "Votre compte", "openSettings": "Ouvrir les paramètres"
+    "title": "Accueil",
+    "description": "Catalogue de services et références de projet de Customer Services, générés en diapositives, HTML, Markdown et Excel sans IA.",
+    "welcome": "Bonjour, {{name}}",
+    "roleLine": "Vous êtes connecté en tant que {{role}}.",
+    "statusTitle": "Ce qui est disponible",
+    "statusBody": "Cette première version contient la base de l'application : comptes et rôles, paramètres, journal d'audit et interface en anglais, espagnol et français. Les références et le catalogue arrivent dans les prochaines livraisons.",
+    "accountTitle": "Votre compte",
+    "openSettings": "Ouvrir les paramètres"
   },
   "settings": {
-    "title": "Paramètres", "description": "Votre compte et, pour les administrateurs, la configuration de l'application, les utilisateurs et le journal d'audit.",
-    "tabs": { "account": "Mon compte", "configuration": "Configuration", "users": "Utilisateurs", "audit": "Journal d'audit" }
+    "title": "Paramètres",
+    "description": "Votre compte et, pour les administrateurs, la configuration de l'application, les utilisateurs et le journal d'audit.",
+    "tabs": {
+      "account": "Mon compte",
+      "configuration": "Configuration",
+      "users": "Utilisateurs",
+      "audit": "Journal d'audit",
+      "initialData": "Données initiales"
+    }
   },
   "account": {
-    "title": "Mon compte", "description": "Ces préférences sont enregistrées avec votre compte et vous suivent sur n'importe quel ordinateur.",
-    "profile": "Profil", "displayName": "Nom affiché", "email": "E-mail", "role": "Rôle",
-    "preferences": "Préférences", "language": "Langue de l'interface", "theme": "Thème", "saved": "Préférence enregistrée."
+    "title": "Mon compte",
+    "description": "Ces préférences sont enregistrées avec votre compte et vous suivent sur n'importe quel ordinateur.",
+    "profile": "Profil",
+    "displayName": "Nom affiché",
+    "email": "E-mail",
+    "role": "Rôle",
+    "preferences": "Préférences",
+    "language": "Langue de l'interface",
+    "theme": "Thème",
+    "saved": "Préférence enregistrée."
   },
   "config": {
-    "title": "Configuration", "description": "Paramètres fonctionnels de l'application. Chaque changement s'applique immédiatement et est enregistré dans le journal d'audit.",
-    "categories": { "general": "Général", "security": "Sécurité", "interface": "Interface", "content": "Contenu" },
-    "restoreDefault": "Rétablir la valeur par défaut", "defaultValue": "Par défaut : {{value}}", "saved": "Paramètre enregistré.",
-    "infraTitle": "Infrastructure", "infraDescription": "Défini par l'IT dans l'environnement du serveur. En lecture seule ici ; les secrets sont masqués.",
+    "title": "Configuration",
+    "description": "Paramètres fonctionnels de l'application. Chaque changement s'applique immédiatement et est enregistré dans le journal d'audit.",
+    "categories": {
+      "general": "Général",
+      "security": "Sécurité",
+      "interface": "Interface",
+      "content": "Contenu"
+    },
+    "restoreDefault": "Rétablir la valeur par défaut",
+    "defaultValue": "Par défaut : {{value}}",
+    "saved": "Paramètre enregistré.",
+    "infraTitle": "Infrastructure",
+    "infraDescription": "Défini par l'IT dans l'environnement du serveur. En lecture seule ici ; les secrets sont masqués.",
     "secret": "Secret",
-    "units": { "hours": "heures", "minutes": "minutes", "rows": "lignes", "megabytes": "Mo", "characters": "caractères" },
+    "units": {
+      "hours": "heures",
+      "minutes": "minutes",
+      "rows": "lignes",
+      "megabytes": "Mo",
+      "characters": "caractères"
+    },
     "invalid": "Valeur non valide"
   },
   "users": {
-    "title": "Utilisateurs", "description": "Comptes autorisés à se connecter. Les nouveaux utilisateurs reçoivent un mot de passe temporaire et doivent le changer à la première connexion.",
-    "create": "Nouvel utilisateur", "email": "E-mail", "displayName": "Nom", "role": "Rôle", "status": "Statut",
-    "active": "Actif", "deactivated": "Désactivé", "pendingPassword": "Doit changer son mot de passe",
-    "lastLogin": "Dernière connexion", "never": "Jamais", "showDeactivated": "Afficher les utilisateurs désactivés",
-    "deactivate": "Désactiver", "restore": "Réactiver", "resetPassword": "Réinitialiser le mot de passe",
-    "deletePermanently": "Supprimer définitivement", "you": "vous",
-    "createTitle": "Nouvel utilisateur", "createSubmit": "Créer l'utilisateur",
-    "tempTitle": "Mot de passe temporaire", "tempIntro": "Transmettez ce mot de passe à {{email}}. Il n'est affiché qu'une fois ; l'utilisateur devra le changer à la première connexion.",
-    "deleteTitle": "Supprimer définitivement l'utilisateur", "deleteBody": "Cela supprime {{email}} définitivement. Le journal d'audit conserve la trace de ses actions. Saisissez l'e-mail pour confirmer.",
-    "typeEmail": "E-mail de l'utilisateur", "deleted": "Utilisateur supprimé définitivement.", "deactivatedToast": "Utilisateur désactivé.",
-    "restoredToast": "Utilisateur réactivé.", "roleChanged": "Rôle modifié.", "created": "Utilisateur créé.", "empty": "Aucun utilisateur."
+    "title": "Utilisateurs",
+    "description": "Comptes autorisés à se connecter. Les nouveaux utilisateurs reçoivent un mot de passe temporaire et doivent le changer à la première connexion.",
+    "create": "Nouvel utilisateur",
+    "email": "E-mail",
+    "displayName": "Nom",
+    "role": "Rôle",
+    "status": "Statut",
+    "active": "Actif",
+    "deactivated": "Désactivé",
+    "pendingPassword": "Doit changer son mot de passe",
+    "lastLogin": "Dernière connexion",
+    "never": "Jamais",
+    "showDeactivated": "Afficher les utilisateurs désactivés",
+    "deactivate": "Désactiver",
+    "restore": "Réactiver",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "deletePermanently": "Supprimer définitivement",
+    "you": "vous",
+    "createTitle": "Nouvel utilisateur",
+    "createSubmit": "Créer l'utilisateur",
+    "tempTitle": "Mot de passe temporaire",
+    "tempIntro": "Transmettez ce mot de passe à {{email}}. Il n'est affiché qu'une fois ; l'utilisateur devra le changer à la première connexion.",
+    "deleteTitle": "Supprimer définitivement l'utilisateur",
+    "deleteBody": "Cela supprime {{email}} définitivement. Le journal d'audit conserve la trace de ses actions. Saisissez l'e-mail pour confirmer.",
+    "typeEmail": "E-mail de l'utilisateur",
+    "deleted": "Utilisateur supprimé définitivement.",
+    "deactivatedToast": "Utilisateur désactivé.",
+    "restoredToast": "Utilisateur réactivé.",
+    "roleChanged": "Rôle modifié.",
+    "created": "Utilisateur créé.",
+    "empty": "Aucun utilisateur."
   },
   "audit": {
-    "title": "Journal d'audit", "description": "Qui a fait quoi et quand. Les mots de passe et les jetons ne sont jamais enregistrés.",
-    "when": "Quand", "who": "Qui", "action": "Action", "target": "Sur", "changes": "Modifications", "system": "Système",
-    "filterLabel": "Afficher", "empty": "Aucun événement.",
-    "filter": { "all": "Tous les événements", "auth": "Connexions et sessions", "user": "Utilisateurs", "settings": "Paramètres", "account": "Préférences du compte" },
-    "actions": {
-      "auth": { "login": "Connexion", "login_failed": "Échec de connexion", "logout": "Déconnexion", "password_changed": "Mot de passe changé", "refresh_reuse_detected": "Jeton de session réutilisé : toutes les sessions fermées" },
-      "user": { "created": "Utilisateur créé", "updated": "Utilisateur modifié", "deactivated": "Utilisateur désactivé", "restored": "Utilisateur réactivé", "password_reset": "Mot de passe réinitialisé", "deleted_permanently": "Utilisateur supprimé définitivement" },
-      "settings": { "updated": "Paramètre modifié", "reset": "Paramètre rétabli par défaut" },
-      "account": { "updated": "Préférences modifiées" }
+    "title": "Journal d'audit",
+    "description": "Qui a fait quoi et quand. Les mots de passe et les jetons ne sont jamais enregistrés.",
+    "when": "Quand",
+    "who": "Qui",
+    "action": "Action",
+    "target": "Sur",
+    "changes": "Modifications",
+    "system": "Système",
+    "filterLabel": "Afficher",
+    "empty": "Aucun événement.",
+    "filter": {
+      "all": "Tous les événements",
+      "auth": "Connexions et sessions",
+      "user": "Utilisateurs",
+      "settings": "Paramètres",
+      "account": "Préférences du compte",
+      "value_list": "Listes de valeurs",
+      "value_list_item": "Éléments de listes",
+      "catalogue": "Catalogue"
     },
-    "fields": { "value": "Valeur", "display_name": "Nom", "preferred_language": "Langue", "theme": "Thème", "role": "Rôle", "email": "E-mail", "deleted_at": "Désactivé" }
+    "actions": {
+      "auth": {
+        "login": "Connexion",
+        "login_failed": "Échec de connexion",
+        "logout": "Déconnexion",
+        "password_changed": "Mot de passe changé",
+        "refresh_reuse_detected": "Jeton de session réutilisé : toutes les sessions fermées"
+      },
+      "user": {
+        "created": "Utilisateur créé",
+        "updated": "Utilisateur modifié",
+        "deactivated": "Utilisateur désactivé",
+        "restored": "Utilisateur réactivé",
+        "password_reset": "Mot de passe réinitialisé",
+        "deleted_permanently": "Utilisateur supprimé définitivement"
+      },
+      "settings": {
+        "updated": "Paramètre modifié",
+        "reset": "Paramètre rétabli par défaut"
+      },
+      "account": {
+        "updated": "Préférences modifiées"
+      },
+      "value_list": {
+        "created": "Liste créée",
+        "updated": "Liste modifiée",
+        "deleted": "Liste supprimée",
+        "restored": "Liste restaurée",
+        "reordered": "Éléments réordonnés"
+      },
+      "value_list_item": {
+        "created": "Élément créé",
+        "updated": "Élément modifié",
+        "deleted": "Élément supprimé",
+        "restored": "Élément restauré"
+      },
+      "block": {
+        "created": "Bloc créé",
+        "updated": "Bloc modifié",
+        "deleted": "Bloc supprimé",
+        "restored": "Bloc restauré",
+        "code_changed": "Code du bloc modifié",
+        "moved": "Bloc déplacé"
+      },
+      "family": {
+        "created": "Famille créée",
+        "updated": "Famille modifiée",
+        "deleted": "Famille supprimée",
+        "restored": "Famille restaurée",
+        "code_changed": "Code de la famille modifié",
+        "moved": "Famille déplacée vers un autre bloc"
+      },
+      "service": {
+        "created": "Service créé",
+        "updated": "Service modifié",
+        "deleted": "Service supprimé",
+        "restored": "Service restauré",
+        "code_changed": "Code du service modifié",
+        "moved": "Service déplacé vers une autre famille"
+      },
+      "solution": {
+        "created": "Solution créée",
+        "updated": "Solution modifiée",
+        "deleted": "Solution supprimée",
+        "restored": "Solution restaurée",
+        "code_changed": "Code de la solution modifié",
+        "moved": "Solution déplacée"
+      },
+      "adjacent": {
+        "created": "Activité adjacente créée",
+        "updated": "Activité adjacente modifiée",
+        "deleted": "Activité adjacente supprimée",
+        "restored": "Activité adjacente restaurée",
+        "code_changed": "Code de l'activité adjacente modifié",
+        "moved": "Activité adjacente déplacée"
+      }
+    },
+    "fields": {
+      "value": "Valeur",
+      "display_name": "Nom",
+      "preferred_language": "Langue",
+      "theme": "Thème",
+      "role": "Rôle",
+      "email": "E-mail",
+      "deleted_at": "Désactivé",
+      "code": "Code",
+      "name": "Nom",
+      "label": "Libellé",
+      "description": "Description",
+      "sort_order": "Ordre",
+      "is_active": "Actif",
+      "is_system": "Système",
+      "order": "Ordre",
+      "owner": "Responsable",
+      "status": "Statut",
+      "source_ref": "Origine",
+      "solution_types": "Types de solution",
+      "block_id": "Bloc",
+      "family_id": "Famille",
+      "activity": "Activité"
+    },
+    "source": {
+      "ui": "Application",
+      "excel": "Excel : {{file}}",
+      "script": "Script"
+    },
+    "sourceLabel": "Origine"
   },
   "translatable": {
-    "missing": "Pas de traduction {{lang}}", "master": "Langue maître (obligatoire)", "optional": "Facultatif",
-    "tabsLabel": "Langues", "required": "Le texte en anglais est obligatoire.", "fieldInLanguage": "{{field}} ({{lang}})"
+    "missing": "Pas de traduction {{lang}}",
+    "master": "Langue maître (obligatoire)",
+    "optional": "Facultatif",
+    "tabsLabel": "Langues",
+    "required": "Le texte en anglais est obligatoire.",
+    "fieldInLanguage": "{{field}} ({{lang}})"
   },
   "errors": {
     "network": "Le serveur ne répond pas. Vérifiez la connexion et réessayez.",
     "unknown": "Une erreur s'est produite. Référence : {{ref}}",
     "unexpected": "Une erreur s'est produite.",
-    "http": { "404": "Introuvable.", "405": "Opération non autorisée.", "429": "Trop de requêtes. Patientez un instant." },
-    "server": { "internal": "Une erreur s'est produite sur le serveur. Référence : {{ref}}" },
-    "validation": { "failed": "Certains champs ne sont pas valides." },
+    "http": {
+      "404": "Introuvable.",
+      "405": "Opération non autorisée.",
+      "429": "Trop de requêtes. Patientez un instant.",
+      "413": "Le fichier est trop volumineux."
+    },
+    "server": {
+      "internal": "Une erreur s'est produite sur le serveur. Référence : {{ref}}"
+    },
+    "validation": {
+      "failed": "Certains champs ne sont pas valides."
+    },
     "auth": {
       "invalid_credentials": "E-mail ou mot de passe incorrect.",
       "too_many_attempts": "Trop de tentatives échouées. Réessayez dans {{minutes}} minutes.",
@@ -105,19 +347,215 @@
       "origin_not_allowed": "Requête provenant d'un site non autorisé."
     },
     "users": {
-      "not_found": "Cet utilisateur n'existe pas.", "email_taken": "Un utilisateur avec cet e-mail existe déjà.",
+      "not_found": "Cet utilisateur n'existe pas.",
+      "email_taken": "Un utilisateur avec cet e-mail existe déjà.",
       "last_admin": "Il doit rester au moins un administrateur actif.",
       "cannot_change_own_role": "Vous ne pouvez pas changer votre propre rôle.",
       "cannot_deactivate_self": "Vous ne pouvez pas désactiver votre propre compte.",
-      "inactive": "L'utilisateur est désactivé.", "must_deactivate_first": "Désactivez l'utilisateur avant de le supprimer.",
+      "inactive": "L'utilisateur est désactivé.",
+      "must_deactivate_first": "Désactivez l'utilisateur avant de le supprimer.",
       "confirmation_mismatch": "L'e-mail saisi ne correspond pas."
     },
     "settings": {
-      "not_found": "Ce paramètre n'existe pas.", "invalid_type": "La valeur n'est pas du bon type.",
-      "too_small": "Doit être au moins {{min}}.", "too_large": "Doit être au plus {{max}}.",
-      "too_short": "Doit comporter au moins {{min_length}} caractères.", "too_long": "Doit comporter au plus {{max_length}} caractères.",
-      "invalid_option": "Choisissez une des options.", "unknown_field": "Champ inconnu.", "missing_field": "Il manque un champ.",
+      "not_found": "Ce paramètre n'existe pas.",
+      "invalid_type": "La valeur n'est pas du bon type.",
+      "too_small": "Doit être au moins {{min}}.",
+      "too_large": "Doit être au plus {{max}}.",
+      "too_short": "Doit comporter au moins {{min_length}} caractères.",
+      "too_long": "Doit comporter au plus {{max_length}} caractères.",
+      "invalid_option": "Choisissez une des options.",
+      "unknown_field": "Champ inconnu.",
+      "missing_field": "Il manque un champ.",
       "unsupported_type": "Type de paramètre non pris en charge."
+    },
+    "value_lists": {
+      "not_found": "Cette liste n'existe pas.",
+      "code_taken": "Une liste avec le code {{code}} existe déjà.",
+      "system_list": "{{code}} est une liste système : elle ne peut être ni supprimée ni changer de code.",
+      "invalid_code": "« {{code}} » n'est pas un code valide : utilisez des minuscules, des chiffres et des tirets bas.",
+      "invalid_item_code": "« {{code}} » n'est pas un code d'élément valide : utilisez des minuscules, des chiffres et des tirets bas.",
+      "item_not_found": "Cet élément n'existe pas.",
+      "item_code_taken": "La liste a déjà un élément avec le code {{code}}.",
+      "item_in_use": "{{code}} est utilisé par {{count}} enregistrements : désactivez-le au lieu de le supprimer.",
+      "reorder_mismatch": "La liste a changé entre-temps : rechargez-la et réordonnez à nouveau.",
+      "deleted": "La liste est supprimée : restaurez-la d'abord.",
+      "item_deleted": "L'élément est supprimé : restaurez-le d'abord."
+    },
+    "catalogue": {
+      "unknown_kind": "Élément du catalogue inconnu.",
+      "not_found": "Cet élément du catalogue n'existe pas.",
+      "edition_not_found": "L'édition du catalogue {{edition}} n'existe pas.",
+      "invalid_code": "« {{code}} » n'est pas un code valide (lettres, chiffres, points et tirets).",
+      "code_taken": "Le code {{code}} est déjà utilisé dans cette édition.",
+      "parent_not_found": "L'élément parent n'existe pas dans cette édition.",
+      "parent_required": "Choisissez l'élément parent.",
+      "invalid_status": "Statut non valide.",
+      "invalid_solution_type": "Les types de solution vont de {{min}} à {{max}}.",
+      "code_change_needs_confirmation": "Confirmez le changement de code de {{code}}.",
+      "deleted": "L'élément est supprimé : restaurez-le d'abord.",
+      "has_children": "{{code}} a encore des éléments actifs : {{children}}. Déplacez-les ou supprimez-les d'abord.",
+      "field_not_allowed": "Ces champs ne s'appliquent pas ici : {{fields}}."
+    },
+    "excel": {
+      "too_large": "Le fichier dépasse {{max_mb}} Mo.",
+      "not_xlsx": "Ce n'est pas un fichier Excel .xlsx.",
+      "unreadable": "Le fichier est endommagé ou illisible.",
+      "wrong_domain": "Ce fichier n'est pas un export de {{expected}} (il contient « {{found}} »).",
+      "newer_format": "Le fichier utilise un format plus récent (version {{version}}) ; cette application lit jusqu'à la version {{supported}}.",
+      "empty_sheet": "La feuille {{sheet}} est vide.",
+      "missing_key_column": "La feuille {{sheet}} n'a pas de colonne « {{column}} ».",
+      "no_known_sheet": "Le fichier n'a aucune des feuilles attendues ({{expected}}).",
+      "unexpected_layout": "La colonne {{column}} devrait être « {{expected}} » mais est « {{found}} » : ce n'est pas le modèle attendu.",
+      "missing_sheet": "La feuille {{sheet}} n'est pas dans le fichier : rien n'y change.",
+      "unknown_edition": "L'édition du catalogue {{edition}} n'existe pas.",
+      "has_errors": "Le fichier contient des erreurs : rien n'a été appliqué.",
+      "unknown_domain": "Type d'import inconnu.",
+      "required": "Cette valeur est obligatoire.",
+      "duplicate_key": "{{key}} apparaît deux fois (la première à la ligne {{first_row}}).",
+      "master_language_required": "Le texte anglais est obligatoire.",
+      "too_long": "Trop long ({{max_length}} caractères au maximum).",
+      "invalid_integer": "« {{value}} » n'est pas un nombre entier.",
+      "invalid_integer_list": "« {{value}} » n'est pas une liste de nombres (p. ex. 1/3).",
+      "invalid_boolean": "« {{value}} » doit être Yes ou No.",
+      "invalid_option": "« {{value}} » n'est pas l'une des valeurs : {{options}}.",
+      "too_small": "{{value}} est inférieur au minimum ({{min}}).",
+      "too_large_value": "{{value}} dépasse le maximum ({{max}}).",
+      "invalid_action": "« {{value}} » n'est pas une action valide : laissez vide ou écrivez delete.",
+      "unknown_reference": "{{value}} n'existe pas dans {{sheet}}.",
+      "unknown_list_item": "{{value}} n'est pas un élément de la liste {{list}}.",
+      "has_children": "Suppression impossible : {{sheet}} contient encore {{children}}.",
+      "invalid_slug": "« {{value}} » n'est pas un code valide : utilisez des minuscules, des chiffres et des tirets bas.",
+      "invalid_code": "« {{value}} » n'est pas un code valide (lettres, chiffres, points et tirets).",
+      "inconsistent_family": "La famille {{code}} a des valeurs différentes dans le fichier ({{values}}) : corrigez le fichier, aucune n'a été choisie.",
+      "delete_unknown": "{{key}} est marqué pour suppression mais n'existe pas : ignoré.",
+      "readonly_ignored": "Cette colonne est en lecture seule : la modification est ignorée.",
+      "translation_missing": "Sans traduction : {{languages}}.",
+      "special_value": "« {{value}} » reconnu comme « {{state}} » : laissé vide.",
+      "unknown_column": "Colonne inconnue ignorée.",
+      "no_meta": "Le fichier n'a pas de feuille _meta : accepté car ses en-têtes correspondent."
+    }
+  },
+  "lists": {
+    "title": "Listes de valeurs",
+    "description": "Valeurs proposées par les champs de l'application (secteurs, IQP, statuts de revue…). Les codes sont stables : renommer un libellé ne les change jamais.",
+    "newList": "Nouvelle liste",
+    "editList": "Modifier la liste",
+    "deleteList": "Supprimer la liste",
+    "code": "Code",
+    "name": "Nom",
+    "description_label": "Description",
+    "items": "Éléments",
+    "activeItems": "Éléments actifs",
+    "system": "Système",
+    "systemHint": "Utilisée par des champs de l'application : elle ne peut être ni supprimée ni changer de code.",
+    "showDeleted": "Afficher les supprimés",
+    "deleted": "Supprimé",
+    "newItem": "Nouvel élément",
+    "editItem": "Modifier l'élément",
+    "label": "Libellé",
+    "order": "Ordre",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "moveUp": "Monter {{label}}",
+    "moveDown": "Descendre {{label}}",
+    "dragHandle": "Glisser pour réordonner {{label}}",
+    "listCreated": "Liste créée.",
+    "listSaved": "Liste enregistrée.",
+    "listDeleted": "Liste supprimée.",
+    "itemCreated": "Élément créé.",
+    "itemDeleted": "Élément supprimé.",
+    "itemRestored": "Élément restauré.",
+    "codeHint": "Minuscules, chiffres et tirets bas (p. ex. aerospace).",
+    "itemCodeHint": "Laissez-le vide pour le dériver du libellé anglais.",
+    "codeChangeWarning": "Changer le code rompt la correspondance avec les fichiers Excel exportés auparavant.",
+    "confirmDeleteItemTitle": "Supprimer l'élément",
+    "confirmDeleteItemBody": "Supprimer « {{label}} » ? Il va à la corbeille et peut être restauré. S'il est utilisé, désactivez-le plutôt.",
+    "confirmDeleteListTitle": "Supprimer la liste",
+    "confirmDeleteListBody": "Supprimer la liste « {{name}} » et masquer ses éléments ? Elle peut être restaurée depuis les listes supprimées.",
+    "allLists": "Toutes les listes",
+    "emptyItems": "Cette liste n'a pas encore d'éléments.",
+    "emptyLists": "Il n'y a pas encore de listes.",
+    "readOnly": "Seuls les administrateurs peuvent modifier les listes.",
+    "notFound": "Cette liste n'existe pas."
+  },
+  "excel": {
+    "export": "Exporter vers Excel",
+    "import": "Importer depuis Excel",
+    "exported": "Fichier Excel téléchargé.",
+    "importTitle": "Importer {{what}} depuis Excel",
+    "chooseFile": "Fichier Excel (.xlsx)",
+    "chooseHint": "Utilisez un fichier exporté depuis cet écran. Rien n'est écrit tant que vous n'appuyez pas sur Appliquer.",
+    "analyze": "Analyser",
+    "analyzing": "Analyse…",
+    "apply": "Appliquer",
+    "applying": "Application…",
+    "applied": "Import appliqué : {{create}} créations, {{update}} modifications, {{delete}} suppressions.",
+    "notApplied": "Rien n'a été appliqué : corrigez les erreurs du fichier et analysez-le à nouveau.",
+    "nothingToApply": "Le fichier n'apporte aucune modification.",
+    "anotherFile": "Choisir un autre fichier",
+    "reportTitle": "Analyse de {{file}}",
+    "fileErrors": "Le fichier ne peut pas être importé",
+    "summary": {
+      "create": "Créations",
+      "update": "Modifications",
+      "delete": "Suppressions",
+      "unchanged": "Inchangées",
+      "errors": "Erreurs",
+      "warnings": "Avertissements",
+      "not_in_file": "Absentes du fichier",
+      "special_values": "Valeurs spéciales"
+    },
+    "filter": {
+      "label": "Afficher",
+      "all": "Toutes les lignes à examiner",
+      "errors": "Erreurs",
+      "create": "Créations",
+      "update": "Modifications",
+      "delete": "Suppressions",
+      "warnings": "Avertissements",
+      "unchanged": "Inchangées"
+    },
+    "columns": {
+      "sheet": "Feuille",
+      "row": "Ligne",
+      "key": "Code",
+      "action": "Changement",
+      "details": "Détail"
+    },
+    "actions": {
+      "create": "Création",
+      "update": "Modification",
+      "delete": "Suppression",
+      "unchanged": "Inchangée",
+      "error": "Erreur"
+    },
+    "notInFile": "{{count}} lignes sont dans l'application mais pas dans le fichier. Elles sont conservées : rien n'est supprimé par omission.",
+    "specialTitle": "Valeurs spéciales reconnues (non créées comme données)",
+    "specialCount": "{{state}} dans {{column}} : {{count}}",
+    "noRows": "Aucune ligne à afficher avec ce filtre.",
+    "change": "{{before}} → {{after}}",
+    "emptyValue": "(vide)",
+    "domains": {
+      "lists": "listes de valeurs",
+      "taxonomy": "catalogue",
+      "initial_load": "données initiales"
+    }
+  },
+  "initialData": {
+    "title": "Données initiales",
+    "description": "Charge les listes de valeurs et la taxonomie du catalogue V0 depuis la feuille Lists du CS_Reference_Template. Elle passe par la même analyse et le même rapport que tout import ; la relancer ne change rien.",
+    "button": "Charger depuis CS_Reference_Template (feuille Lists)"
+  },
+  "fieldState": {
+    "to_complete": "À compléter",
+    "not_applicable": "Sans objet",
+    "none": "Aucune",
+    "unmapped": "Non rattaché"
+  },
+  "catalogue": {
+    "status": {
+      "catalogue": "Catalogue",
+      "proposed": "Proposé"
     }
   }
 }

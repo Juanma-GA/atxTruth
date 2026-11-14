@@ -1,3 +1,6 @@
+import { readdirSync, readFileSync, statSync } from 'node:fs';
+import path from 'node:path';
+
 import { describe, expect, it } from 'vitest';
 
 import en from '@/i18n/locales/en.json';
@@ -37,18 +40,26 @@ describe('translations (HR15)', () => {
     expect(mismatched).toEqual([]);
   });
 
-  it('translates every backend error code the API can return', () => {
-    // Codes raised in backend/app (AppError(...)) — kept in sync by this list and the backend test suite.
-    const codes = [
-      'auth.invalid_credentials', 'auth.too_many_attempts', 'auth.session_expired', 'auth.not_authenticated',
-      'auth.forbidden', 'auth.password_change_required', 'auth.current_password_incorrect',
-      'auth.password_too_short', 'auth.password_too_long', 'auth.password_unchanged', 'auth.origin_not_allowed',
-      'users.not_found', 'users.email_taken', 'users.last_admin', 'users.cannot_change_own_role',
-      'users.cannot_deactivate_self', 'users.inactive', 'users.must_deactivate_first', 'users.confirmation_mismatch',
-      'settings.not_found', 'settings.invalid_type', 'settings.too_small', 'settings.too_large', 'settings.too_short',
-      'settings.too_long', 'settings.invalid_option', 'settings.unknown_field', 'settings.missing_field',
-      'settings.unsupported_type', 'validation.failed', 'server.internal',
-    ];
-    expect(codes.filter((c) => !locales.en.has(`errors.${c}`))).toEqual([]);
+  it('translates every error code the backend can return (read from the Python sources)', () => {
+    const backend = path.resolve(import.meta.dirname, '../../../backend/app');
+    const files: string[] = [];
+    const walk = (dir: string) => {
+      for (const name of readdirSync(dir)) {
+        const full = path.join(dir, name);
+        if (statSync(full).isDirectory()) walk(full);
+        else if (name.endsWith('.py')) files.push(full);
+      }
+    };
+    walk(backend);
+    const codes = new Set<string>();
+    const patterns = [/AppError\(\s*\d+,\s*"([a-z_.]+)"/g, /Issue\(\s*"([a-z_.]+)"/g, /ExcelFileError\(\s*"([a-z_.]+)"/g, /SettingViolation\(\s*"([a-z_.]+)"/g, /fail\("([a-z_.]+)"/g];
+    for (const file of files) {
+      const source = readFileSync(file, 'utf8');
+      for (const pattern of patterns) for (const match of source.matchAll(pattern)) codes.add(match[1] ?? '');
+    }
+    expect(codes.size).toBeGreaterThan(80);
+    for (const lang of ['en', 'es', 'fr'] as const) {
+      expect([...codes].filter((c) => !locales[lang].has(`errors.${c}`))).toEqual([]);
+    }
   });
 });

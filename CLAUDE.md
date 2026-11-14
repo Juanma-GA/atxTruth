@@ -53,14 +53,17 @@ Se trabaja directamente en `main` (desviación D6 de AACF G5): nunca se hace pus
 2. **Identificadores estables.** Toda entidad de negocio tiene un código legible y estable (`REF-0049`, `S2.1.3`) además del UUID. Importaciones y exportaciones se casan por el código.
 3. **Borrado lógico** en todo (`deleted_at`, `deleted_by`) con papelera para restaurar. El borrado definitivo pide confirmación explícita (escribir el identificador) y queda auditado (HR9).
 4. **UI optimista** en toda edición (HR20): se refleja al momento, se guarda en segundo plano y, si el servidor rechaza, vuelve atrás y dice por qué (patrón: `onMutate`/`onError` de TanStack Query, ver `frontend/src/hooks/useUsers.ts`). Excepciones solo con resultado generado por el servidor, comentadas en el código.
-5. **Excel de ida y vuelta**: toda entidad gestionada se exporta a `.xlsx` y se reimporta con cambios. Formato estable con hoja `_meta` (versión del formato, fecha, edición de catálogo); una columna por idioma en los campos traducibles (`Title [EN]`, `Title [ES]`, `Title [FR]`); importación en dos fases (Analizar → informe de altas, cambios, bajas y errores fila a fila; Aplicar en una transacción), idempotente por código estable y que **nunca borra por omisión**. Infraestructura común en E1.
+5. **Excel de ida y vuelta** (motor genérico en `backend/app/services/excel/`, desde E1): toda entidad gestionada se exporta a `.xlsx` y se reimporta con cambios. Una entidad nueva **no toca el motor**: declara su `SheetSpec` (hoja, clave estable, columnas con tipo: texto, entero, lista de enteros, booleano, referencia, enum, ítem de lista; traducibles → `Name [EN]/[ES]/[FR]`; solo lectura; valores especiales) dentro de un `DomainSpec`, y un manejador con `load/create/update/delete/export` que llama a sus servicios (ver `excel/domains/lists.py` y `taxonomy.py`). El motor da: `_meta` (formato, dominio, versión, edición, fecha, usuario), desplegables, cabecera fija, autofiltro, columna `_action` (`delete` = borrado lógico), exportación determinista en orden natural, Analizar (no escribe; informe por hoja y fila: altas, cambios campo a campo, borrados, sin cambios, errores y avisos, "no está en el fichero") y Aplicar (re-analiza en la misma transacción; un error = 409 y nada escrito; auditoría con origen `excel` y nombre del fichero). Reglas: idempotente, **nunca borra por omisión**, una columna ausente no se toca, un padre con hijos no se borra. Límite de tamaño en el ajuste `uploads.max_excel_mb`; lectura con openpyxl en solo lectura + defusedxml, sin enlaces externos, fórmulas por su valor guardado.
 6. **Listas de valores editables**: sectores, estados de revisión, modelos de entrega… son datos que un admin crea y modifica, no constantes de código (E1).
-7. **Generación determinista**: misma entrada, mismo fichero; tests contra ficheros de referencia (E4).
-8. **Contenido traducible**: los textos de negocio que se publican son `TranslatableText` — JSONB `{"en", "es", "fr"}`. EN es maestro y obligatorio; ES y FR opcionales. Backend: `app/schemas/translatable.py` (`TranslatableText`, columna `TranslatableTextType`). Frontend: `src/types/translatable.ts`, `TranslatedText` (muestra el idioma de la interfaz y, si falta, el EN **con el aviso** "Sin traducción al FR"; nunca inglés sin avisar, HR7) y `TranslatableTextEditor` (pestañas EN/ES/FR con marca de traducción que falta).
-9. **Errores**: el backend responde `{"error": {"code", "params"}}` (`AppError`); el frontend traduce `errors.<code>` (`services/apiErrors.ts`). Nunca un texto del servidor ni un token crudo en pantalla. Un código nuevo se añade en los tres idiomas (el test de i18n lo exige).
-10. **Capas del backend**: rutas finas en `app/api/routes/`; lógica en `app/services/`; acceso a datos **solo** en `app/repositories/`. Nunca `from __future__ import annotations` en rutas. Pydantic de entrada con `extra="forbid"` (`StrictModel`).
-11. **Diseño**: colores, tipografías, radios y medidas salen de `frontend/design.tokens.json` (DTCG, OKLCH) compilado por Style Dictionary a variables CSS y al tema de Tailwind (sin paleta por defecto). Ningún componente escribe un color a mano. Componentes shadcn en `src/components/ui/`.
-12. **Roles**: `admin`, `editor`, `viewer`, comprobados en el servidor en cada endpoint (`require_roles`, `require_admin`, `require_editor` en `app/auth/deps.py`). La UI solo oculta; la API decide.
+7. **Estados de campo (`FieldState`)**: "To complete" o celda vacía → `to_complete`; "N/A" → `not_applicable`; "None"/"No packaged solution" → `none`; "To check" de la columna de adyacentes → `unmapped`. No son ítems ni entidades ni errores: los importadores los reconocen y los cuentan en el informe (`backend/app/core/field_state.py`, `frontend/src/types/fieldState.ts`, textos en `fieldState.*`). El "To check" de `yes_no_check` y `scope` sí es un ítem. Cómo los guarda cada campo de la referencia se decide en E2.
+8. **Uso de los ítems de lista**: un ítem en uso se desactiva, no se borra; el punto único es `ITEM_USAGE_CHECKERS` en `backend/app/services/value_lists.py` (E2 registra ahí las referencias).
+9. **Orden natural** de códigos (`app/core/codes.natural_key`): S1.2 antes que S1.10; lo propuesto (`P-F2.6`) va justo detrás de su número.
+10. **Generación determinista**: misma entrada, mismo fichero; tests contra ficheros de referencia (E4).
+11. **Contenido traducible**: los textos de negocio que se publican son `TranslatableText` — JSONB `{"en", "es", "fr"}`. EN es maestro y obligatorio; ES y FR opcionales. Backend: `app/schemas/translatable.py` (`TranslatableText`, columna `TranslatableTextType`). Frontend: `src/types/translatable.ts`, `TranslatedText` (muestra el idioma de la interfaz y, si falta, el EN **con el aviso** "Sin traducción al FR"; nunca inglés sin avisar, HR7) y `TranslatableTextEditor` (pestañas EN/ES/FR con marca de traducción que falta).
+12. **Errores**: el backend responde `{"error": {"code", "params"}}` (`AppError`); el frontend traduce `errors.<code>` (`services/apiErrors.ts`). Nunca un texto del servidor ni un token crudo en pantalla. Un código nuevo se añade en los tres idiomas: el test de i18n lee los códigos del código Python (`AppError`, `Issue`, `ExcelFileError`…) y falla si falta alguno.
+13. **Capas del backend**: rutas finas en `app/api/routes/`; lógica en `app/services/`; acceso a datos **solo** en `app/repositories/`. Nunca `from __future__ import annotations` en rutas. Pydantic de entrada con `extra="forbid"` (`StrictModel`).
+14. **Diseño**: colores, tipografías, radios y medidas salen de `frontend/design.tokens.json` (DTCG, OKLCH) compilado por Style Dictionary a variables CSS y al tema de Tailwind (sin paleta por defecto). Ningún componente escribe un color a mano. Componentes shadcn en `src/components/ui/`.
+15. **Roles**: `admin`, `editor`, `viewer`, comprobados en el servidor en cada endpoint (`require_roles`, `require_admin`, `require_editor` en `app/auth/deps.py`). La UI solo oculta; la API decide.
 
 ## Ficheros clave
 
@@ -74,6 +77,12 @@ Se trabaja directamente en `main` (desviación D6 de AACF G5): nunca se hace pus
 | `backend/app/services/{auth,users,settings,audit}.py` | Lógica de negocio |
 | `backend/app/repositories/` | Único acceso a datos |
 | `backend/alembic/versions/0001_base.py` | Tablas base y siembra de ajustes |
+| `backend/alembic/versions/0002_lists_taxonomy.py` | Listas, taxonomía (edición V0), origen en la auditoría, ajuste del tamaño de Excel |
+| `backend/app/services/value_lists.py`, `catalogue.py` | Listas de valores y taxonomía (operaciones sin commit, con `AuditContext`) |
+| `backend/app/services/excel/` | Motor de Excel (`spec`, `workbook`, `engine`, `report`), dominios y adaptador `initial_load.py` |
+| `backend/scripts/import_reference_lists.py` | Carga inicial desde la hoja Lists (desarrollo) |
+| `frontend/src/components/excel/` | Exportar/Importar e informe de Analizar/Aplicar (reutilizable) |
+| `frontend/src/pages/lists/` | Listas de valores |
 | `backend/tests/conftest.py`, `_testdb.py` | Base de tests propia, migrada y limpia por test |
 | `frontend/design.tokens.json`, `style-dictionary.config.mjs` | Tokens → `src/styles/generated/tokens.css` (generado, no se versiona) |
 | `frontend/src/App.tsx` | Arranque de sesión, idioma/tema, rutas |
@@ -86,8 +95,9 @@ Se trabaja directamente en `main` (desviación D6 de AACF G5): nunca se hace pus
 
 ## Lo que NO está implementado todavía
 
-- Ninguna entidad de negocio: taxonomía, listas de valores, referencias, catálogo, plantillas, generadores, importación/exportación de Excel (E1–E9).
+- Referencias (E2–E3), contenido comercial del catálogo y su Excel CCX (E7), plantillas y generadores (E4–E9).
+- UI del catálogo (árbol, panel de detalle) y borrador de traducciones: parte 2 de E1 (el backend y el Excel de la taxonomía ya están).
 - OIDC/SSO real y MFA (lo hace IT; ver `docs/sso-para-it.md`), despliegue en el servidor de IT y controles de datos confidenciales (F1, D4).
-- Papelera genérica (solo existe la desactivación/reactivación de usuarios).
+- Papelera como pantalla propia: los borrados lógicos se ven y se restauran desde cada pantalla ("Mostrar borrados").
 - Storybook del design system.
 - Cualquier llamada a un LLM o el servidor MCP (F2).

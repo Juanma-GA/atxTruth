@@ -1,96 +1,338 @@
 {
-  "app": { "tagline": "Source of truth de Customer Services" },
+  "app": {
+    "tagline": "Source of truth de Customer Services"
+  },
   "common": {
-    "save": "Guardar", "cancel": "Cancelar", "close": "Cerrar", "confirm": "Confirmar", "loading": "Cargando…",
-    "retry": "Reintentar", "copy": "Copiar", "copied": "Copiado", "saving": "Guardando…", "saved": "Guardado",
-    "actions": "Acciones", "previous": "Anterior", "next": "Siguiente", "pageOf": "Página {{page}} de {{pages}}",
-    "totalRows": "{{count}} filas", "none": "—", "on": "Sí", "off": "No", "required": "Obligatorio"
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "confirm": "Confirmar",
+    "loading": "Cargando…",
+    "retry": "Reintentar",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "saving": "Guardando…",
+    "saved": "Guardado",
+    "actions": "Acciones",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "pageOf": "Página {{page}} de {{pages}}",
+    "totalRows": "{{count}} filas",
+    "none": "—",
+    "on": "Sí",
+    "off": "No",
+    "required": "Obligatorio",
+    "edit": "Editar",
+    "delete": "Borrar",
+    "restore": "Restaurar",
+    "yes": "Sí",
+    "no": "No",
+    "back": "Volver",
+    "create": "Crear"
   },
   "languages": {
-    "en": "Inglés", "es": "Español", "fr": "Francés",
-    "short": { "en": "EN", "es": "ES", "fr": "FR" }
+    "en": "Inglés",
+    "es": "Español",
+    "fr": "Francés",
+    "short": {
+      "en": "EN",
+      "es": "ES",
+      "fr": "FR"
+    }
   },
-  "theme": { "label": "Tema", "system": "Sistema", "light": "Claro", "dark": "Oscuro" },
-  "roles": { "admin": "Administrador", "editor": "Editor", "viewer": "Lector" },
+  "theme": {
+    "label": "Tema",
+    "system": "Sistema",
+    "light": "Claro",
+    "dark": "Oscuro"
+  },
+  "roles": {
+    "admin": "Administrador",
+    "editor": "Editor",
+    "viewer": "Lector"
+  },
   "shell": {
-    "breadcrumb": "Migas de pan", "mainNav": "Navegación principal", "language": "Idioma de la interfaz",
-    "userMenu": "Menú de usuario", "signOut": "Cerrar sesión", "changePassword": "Cambiar contraseña",
-    "skipToContent": "Saltar al contenido", "logoAlt": "ALTEN", "signedInAs": "Has entrado como",
-    "signedOut": "Has cerrado la sesión.", "sessionExpired": "Tu sesión ha terminado. Vuelve a entrar."
+    "breadcrumb": "Migas de pan",
+    "mainNav": "Navegación principal",
+    "language": "Idioma de la interfaz",
+    "userMenu": "Menú de usuario",
+    "signOut": "Cerrar sesión",
+    "changePassword": "Cambiar contraseña",
+    "skipToContent": "Saltar al contenido",
+    "logoAlt": "ALTEN",
+    "signedInAs": "Has entrado como",
+    "signedOut": "Has cerrado la sesión.",
+    "sessionExpired": "Tu sesión ha terminado. Vuelve a entrar."
   },
-  "nav": { "home": "Inicio", "settings": "Ajustes" },
+  "nav": {
+    "home": "Inicio",
+    "settings": "Ajustes",
+    "lists": "Listas"
+  },
   "login": {
-    "title": "Entrar", "subtitle": "Usa tu cuenta de atxTruth.", "email": "Email", "password": "Contraseña",
-    "submit": "Entrar", "submitting": "Entrando…", "ssoNotice": "El acceso lo gestiona el proveedor de identidad de tu organización."
+    "title": "Entrar",
+    "subtitle": "Usa tu cuenta de atxTruth.",
+    "email": "Email",
+    "password": "Contraseña",
+    "submit": "Entrar",
+    "submitting": "Entrando…",
+    "ssoNotice": "El acceso lo gestiona el proveedor de identidad de tu organización."
   },
   "changePassword": {
-    "title": "Cambiar contraseña", "forcedIntro": "Has entrado con una contraseña temporal. Elige una nueva para continuar.",
+    "title": "Cambiar contraseña",
+    "forcedIntro": "Has entrado con una contraseña temporal. Elige una nueva para continuar.",
     "intro": "Se cerrarán las demás sesiones de esta cuenta.",
-    "current": "Contraseña actual", "new": "Contraseña nueva", "confirm": "Repite la contraseña nueva",
-    "submit": "Cambiar contraseña", "mismatch": "Las dos contraseñas nuevas no coinciden.",
-    "minLength": "Al menos {{min}} caracteres.", "success": "Contraseña cambiada."
+    "current": "Contraseña actual",
+    "new": "Contraseña nueva",
+    "confirm": "Repite la contraseña nueva",
+    "submit": "Cambiar contraseña",
+    "mismatch": "Las dos contraseñas nuevas no coinciden.",
+    "minLength": "Al menos {{min}} caracteres.",
+    "success": "Contraseña cambiada."
   },
   "home": {
-    "title": "Inicio", "description": "Catálogo de servicios y referencias de proyecto de Customer Services, generados como slides, HTML, Markdown y Excel sin IA.",
-    "welcome": "Hola, {{name}}", "roleLine": "Has entrado como {{role}}.",
-    "statusTitle": "Qué hay disponible", "statusBody": "Esta primera versión contiene la base de la aplicación: cuentas y roles, ajustes, auditoría y la interfaz en inglés, español y francés. Las referencias y el catálogo llegan en las próximas entregas.",
-    "accountTitle": "Tu cuenta", "openSettings": "Abrir ajustes"
+    "title": "Inicio",
+    "description": "Catálogo de servicios y referencias de proyecto de Customer Services, generados como slides, HTML, Markdown y Excel sin IA.",
+    "welcome": "Hola, {{name}}",
+    "roleLine": "Has entrado como {{role}}.",
+    "statusTitle": "Qué hay disponible",
+    "statusBody": "Esta primera versión contiene la base de la aplicación: cuentas y roles, ajustes, auditoría y la interfaz en inglés, español y francés. Las referencias y el catálogo llegan en las próximas entregas.",
+    "accountTitle": "Tu cuenta",
+    "openSettings": "Abrir ajustes"
   },
   "settings": {
-    "title": "Ajustes", "description": "Tu cuenta y, para administradores, la configuración de la aplicación, los usuarios y la auditoría.",
-    "tabs": { "account": "Mi cuenta", "configuration": "Configuración", "users": "Usuarios", "audit": "Auditoría" }
+    "title": "Ajustes",
+    "description": "Tu cuenta y, para administradores, la configuración de la aplicación, los usuarios y la auditoría.",
+    "tabs": {
+      "account": "Mi cuenta",
+      "configuration": "Configuración",
+      "users": "Usuarios",
+      "audit": "Auditoría",
+      "initialData": "Datos iniciales"
+    }
   },
   "account": {
-    "title": "Mi cuenta", "description": "Estas preferencias se guardan en tu cuenta y te siguen en cualquier ordenador.",
-    "profile": "Perfil", "displayName": "Nombre visible", "email": "Email", "role": "Rol",
-    "preferences": "Preferencias", "language": "Idioma de la interfaz", "theme": "Tema", "saved": "Preferencia guardada."
+    "title": "Mi cuenta",
+    "description": "Estas preferencias se guardan en tu cuenta y te siguen en cualquier ordenador.",
+    "profile": "Perfil",
+    "displayName": "Nombre visible",
+    "email": "Email",
+    "role": "Rol",
+    "preferences": "Preferencias",
+    "language": "Idioma de la interfaz",
+    "theme": "Tema",
+    "saved": "Preferencia guardada."
   },
   "config": {
-    "title": "Configuración", "description": "Ajustes funcionales de la aplicación. Cada cambio se aplica al momento y queda en la auditoría.",
-    "categories": { "general": "General", "security": "Seguridad", "interface": "Interfaz", "content": "Contenido" },
-    "restoreDefault": "Restaurar valor por defecto", "defaultValue": "Por defecto: {{value}}", "saved": "Ajuste guardado.",
-    "infraTitle": "Infraestructura", "infraDescription": "Lo fija IT en el entorno del servidor. Aquí es solo lectura y los secretos van enmascarados.",
+    "title": "Configuración",
+    "description": "Ajustes funcionales de la aplicación. Cada cambio se aplica al momento y queda en la auditoría.",
+    "categories": {
+      "general": "General",
+      "security": "Seguridad",
+      "interface": "Interfaz",
+      "content": "Contenido"
+    },
+    "restoreDefault": "Restaurar valor por defecto",
+    "defaultValue": "Por defecto: {{value}}",
+    "saved": "Ajuste guardado.",
+    "infraTitle": "Infraestructura",
+    "infraDescription": "Lo fija IT en el entorno del servidor. Aquí es solo lectura y los secretos van enmascarados.",
     "secret": "Secreto",
-    "units": { "hours": "horas", "minutes": "minutos", "rows": "filas", "megabytes": "MB", "characters": "caracteres" },
+    "units": {
+      "hours": "horas",
+      "minutes": "minutos",
+      "rows": "filas",
+      "megabytes": "MB",
+      "characters": "caracteres"
+    },
     "invalid": "Valor no válido"
   },
   "users": {
-    "title": "Usuarios", "description": "Cuentas que pueden entrar. Los usuarios nuevos reciben una contraseña temporal y deben cambiarla al entrar por primera vez.",
-    "create": "Nuevo usuario", "email": "Email", "displayName": "Nombre", "role": "Rol", "status": "Estado",
-    "active": "Activo", "deactivated": "Desactivado", "pendingPassword": "Debe cambiar la contraseña",
-    "lastLogin": "Último acceso", "never": "Nunca", "showDeactivated": "Mostrar usuarios desactivados",
-    "deactivate": "Desactivar", "restore": "Reactivar", "resetPassword": "Restablecer contraseña",
-    "deletePermanently": "Borrar definitivamente", "you": "tú",
-    "createTitle": "Nuevo usuario", "createSubmit": "Crear usuario",
-    "tempTitle": "Contraseña temporal", "tempIntro": "Da esta contraseña a {{email}}. Solo se muestra una vez; el usuario tendrá que cambiarla al entrar por primera vez.",
-    "deleteTitle": "Borrar usuario definitivamente", "deleteBody": "Esto elimina a {{email}} para siempre. La auditoría conserva el registro de lo que hizo. Escribe el email para confirmar.",
-    "typeEmail": "Email del usuario", "deleted": "Usuario borrado definitivamente.", "deactivatedToast": "Usuario desactivado.",
-    "restoredToast": "Usuario reactivado.", "roleChanged": "Rol cambiado.", "created": "Usuario creado.", "empty": "No hay usuarios."
+    "title": "Usuarios",
+    "description": "Cuentas que pueden entrar. Los usuarios nuevos reciben una contraseña temporal y deben cambiarla al entrar por primera vez.",
+    "create": "Nuevo usuario",
+    "email": "Email",
+    "displayName": "Nombre",
+    "role": "Rol",
+    "status": "Estado",
+    "active": "Activo",
+    "deactivated": "Desactivado",
+    "pendingPassword": "Debe cambiar la contraseña",
+    "lastLogin": "Último acceso",
+    "never": "Nunca",
+    "showDeactivated": "Mostrar usuarios desactivados",
+    "deactivate": "Desactivar",
+    "restore": "Reactivar",
+    "resetPassword": "Restablecer contraseña",
+    "deletePermanently": "Borrar definitivamente",
+    "you": "tú",
+    "createTitle": "Nuevo usuario",
+    "createSubmit": "Crear usuario",
+    "tempTitle": "Contraseña temporal",
+    "tempIntro": "Da esta contraseña a {{email}}. Solo se muestra una vez; el usuario tendrá que cambiarla al entrar por primera vez.",
+    "deleteTitle": "Borrar usuario definitivamente",
+    "deleteBody": "Esto elimina a {{email}} para siempre. La auditoría conserva el registro de lo que hizo. Escribe el email para confirmar.",
+    "typeEmail": "Email del usuario",
+    "deleted": "Usuario borrado definitivamente.",
+    "deactivatedToast": "Usuario desactivado.",
+    "restoredToast": "Usuario reactivado.",
+    "roleChanged": "Rol cambiado.",
+    "created": "Usuario creado.",
+    "empty": "No hay usuarios."
   },
   "audit": {
-    "title": "Auditoría", "description": "Quién hizo qué y cuándo. Nunca se registran contraseñas ni tokens.",
-    "when": "Cuándo", "who": "Quién", "action": "Acción", "target": "Sobre", "changes": "Cambios", "system": "Sistema",
-    "filterLabel": "Mostrar", "empty": "No hay eventos.",
-    "filter": { "all": "Todos los eventos", "auth": "Accesos y sesiones", "user": "Usuarios", "settings": "Ajustes", "account": "Preferencias de cuenta" },
-    "actions": {
-      "auth": { "login": "Entró", "login_failed": "Acceso fallido", "logout": "Cerró sesión", "password_changed": "Cambió la contraseña", "refresh_reuse_detected": "Token de sesión reutilizado: se cerraron todas las sesiones" },
-      "user": { "created": "Creó un usuario", "updated": "Modificó un usuario", "deactivated": "Desactivó un usuario", "restored": "Reactivó un usuario", "password_reset": "Restableció la contraseña", "deleted_permanently": "Borró un usuario definitivamente" },
-      "settings": { "updated": "Cambió un ajuste", "reset": "Restauró el valor por defecto de un ajuste" },
-      "account": { "updated": "Cambió sus preferencias" }
+    "title": "Auditoría",
+    "description": "Quién hizo qué y cuándo. Nunca se registran contraseñas ni tokens.",
+    "when": "Cuándo",
+    "who": "Quién",
+    "action": "Acción",
+    "target": "Sobre",
+    "changes": "Cambios",
+    "system": "Sistema",
+    "filterLabel": "Mostrar",
+    "empty": "No hay eventos.",
+    "filter": {
+      "all": "Todos los eventos",
+      "auth": "Accesos y sesiones",
+      "user": "Usuarios",
+      "settings": "Ajustes",
+      "account": "Preferencias de cuenta",
+      "value_list": "Listas de valores",
+      "value_list_item": "Ítems de listas",
+      "catalogue": "Catálogo"
     },
-    "fields": { "value": "Valor", "display_name": "Nombre", "preferred_language": "Idioma", "theme": "Tema", "role": "Rol", "email": "Email", "deleted_at": "Desactivado" }
+    "actions": {
+      "auth": {
+        "login": "Entró",
+        "login_failed": "Acceso fallido",
+        "logout": "Cerró sesión",
+        "password_changed": "Cambió la contraseña",
+        "refresh_reuse_detected": "Token de sesión reutilizado: se cerraron todas las sesiones"
+      },
+      "user": {
+        "created": "Creó un usuario",
+        "updated": "Modificó un usuario",
+        "deactivated": "Desactivó un usuario",
+        "restored": "Reactivó un usuario",
+        "password_reset": "Restableció la contraseña",
+        "deleted_permanently": "Borró un usuario definitivamente"
+      },
+      "settings": {
+        "updated": "Cambió un ajuste",
+        "reset": "Restauró el valor por defecto de un ajuste"
+      },
+      "account": {
+        "updated": "Cambió sus preferencias"
+      },
+      "value_list": {
+        "created": "Creó una lista",
+        "updated": "Modificó una lista",
+        "deleted": "Borró una lista",
+        "restored": "Restauró una lista",
+        "reordered": "Reordenó los ítems"
+      },
+      "value_list_item": {
+        "created": "Creó un ítem",
+        "updated": "Modificó un ítem",
+        "deleted": "Borró un ítem",
+        "restored": "Restauró un ítem"
+      },
+      "block": {
+        "created": "Creó un bloque",
+        "updated": "Modificó un bloque",
+        "deleted": "Borró un bloque",
+        "restored": "Restauró un bloque",
+        "code_changed": "Cambió el código de un bloque",
+        "moved": "Movió un bloque"
+      },
+      "family": {
+        "created": "Creó una familia",
+        "updated": "Modificó una familia",
+        "deleted": "Borró una familia",
+        "restored": "Restauró una familia",
+        "code_changed": "Cambió el código de una familia",
+        "moved": "Movió una familia a otro bloque"
+      },
+      "service": {
+        "created": "Creó un servicio",
+        "updated": "Modificó un servicio",
+        "deleted": "Borró un servicio",
+        "restored": "Restauró un servicio",
+        "code_changed": "Cambió el código de un servicio",
+        "moved": "Movió un servicio a otra familia"
+      },
+      "solution": {
+        "created": "Creó una solución",
+        "updated": "Modificó una solución",
+        "deleted": "Borró una solución",
+        "restored": "Restauró una solución",
+        "code_changed": "Cambió el código de una solución",
+        "moved": "Movió una solución"
+      },
+      "adjacent": {
+        "created": "Creó una actividad adyacente",
+        "updated": "Modificó una actividad adyacente",
+        "deleted": "Borró una actividad adyacente",
+        "restored": "Restauró una actividad adyacente",
+        "code_changed": "Cambió el código de una actividad adyacente",
+        "moved": "Movió una actividad adyacente"
+      }
+    },
+    "fields": {
+      "value": "Valor",
+      "display_name": "Nombre",
+      "preferred_language": "Idioma",
+      "theme": "Tema",
+      "role": "Rol",
+      "email": "Email",
+      "deleted_at": "Desactivado",
+      "code": "Código",
+      "name": "Nombre",
+      "label": "Etiqueta",
+      "description": "Descripción",
+      "sort_order": "Orden",
+      "is_active": "Activo",
+      "is_system": "Sistema",
+      "order": "Orden",
+      "owner": "Responsable",
+      "status": "Estado",
+      "source_ref": "Origen",
+      "solution_types": "Tipos de solución",
+      "block_id": "Bloque",
+      "family_id": "Familia",
+      "activity": "Actividad"
+    },
+    "source": {
+      "ui": "Aplicación",
+      "excel": "Excel: {{file}}",
+      "script": "Script"
+    },
+    "sourceLabel": "Origen"
   },
   "translatable": {
-    "missing": "Sin traducción al {{lang}}", "master": "Idioma maestro (obligatorio)", "optional": "Opcional",
-    "tabsLabel": "Idiomas", "required": "El texto en inglés es obligatorio.", "fieldInLanguage": "{{field}} ({{lang}})"
+    "missing": "Sin traducción al {{lang}}",
+    "master": "Idioma maestro (obligatorio)",
+    "optional": "Opcional",
+    "tabsLabel": "Idiomas",
+    "required": "El texto en inglés es obligatorio.",
+    "fieldInLanguage": "{{field}} ({{lang}})"
   },
   "errors": {
     "network": "El servidor no responde. Comprueba la conexión y vuelve a intentarlo.",
     "unknown": "Algo ha fallado. Referencia: {{ref}}",
     "unexpected": "Algo ha fallado.",
-    "http": { "404": "No encontrado.", "405": "Operación no permitida.", "429": "Demasiadas peticiones. Espera un momento." },
-    "server": { "internal": "Algo ha fallado en el servidor. Referencia: {{ref}}" },
-    "validation": { "failed": "Hay campos que no son válidos." },
+    "http": {
+      "404": "No encontrado.",
+      "405": "Operación no permitida.",
+      "429": "Demasiadas peticiones. Espera un momento.",
+      "413": "El fichero es demasiado grande."
+    },
+    "server": {
+      "internal": "Algo ha fallado en el servidor. Referencia: {{ref}}"
+    },
+    "validation": {
+      "failed": "Hay campos que no son válidos."
+    },
     "auth": {
       "invalid_credentials": "Email o contraseña incorrectos.",
       "too_many_attempts": "Demasiados intentos fallidos. Vuelve a probar dentro de {{minutes}} minutos.",
@@ -105,19 +347,215 @@
       "origin_not_allowed": "Petición desde un sitio no permitido."
     },
     "users": {
-      "not_found": "Ese usuario no existe.", "email_taken": "Ya hay un usuario con ese email.",
+      "not_found": "Ese usuario no existe.",
+      "email_taken": "Ya hay un usuario con ese email.",
       "last_admin": "Tiene que quedar al menos un administrador activo.",
       "cannot_change_own_role": "No puedes cambiar tu propio rol.",
       "cannot_deactivate_self": "No puedes desactivar tu propia cuenta.",
-      "inactive": "El usuario está desactivado.", "must_deactivate_first": "Desactiva el usuario antes de borrarlo.",
+      "inactive": "El usuario está desactivado.",
+      "must_deactivate_first": "Desactiva el usuario antes de borrarlo.",
       "confirmation_mismatch": "El email escrito no coincide."
     },
     "settings": {
-      "not_found": "Ese ajuste no existe.", "invalid_type": "El valor no es del tipo correcto.",
-      "too_small": "Tiene que ser al menos {{min}}.", "too_large": "Tiene que ser como mucho {{max}}.",
-      "too_short": "Tiene que tener al menos {{min_length}} caracteres.", "too_long": "Tiene que tener como mucho {{max_length}} caracteres.",
-      "invalid_option": "Elige una de las opciones.", "unknown_field": "Campo desconocido.", "missing_field": "Falta un campo.",
+      "not_found": "Ese ajuste no existe.",
+      "invalid_type": "El valor no es del tipo correcto.",
+      "too_small": "Tiene que ser al menos {{min}}.",
+      "too_large": "Tiene que ser como mucho {{max}}.",
+      "too_short": "Tiene que tener al menos {{min_length}} caracteres.",
+      "too_long": "Tiene que tener como mucho {{max_length}} caracteres.",
+      "invalid_option": "Elige una de las opciones.",
+      "unknown_field": "Campo desconocido.",
+      "missing_field": "Falta un campo.",
       "unsupported_type": "Tipo de ajuste no admitido."
+    },
+    "value_lists": {
+      "not_found": "Esa lista no existe.",
+      "code_taken": "Ya hay una lista con el código {{code}}.",
+      "system_list": "{{code}} es una lista de sistema: no se puede borrar ni cambiar de código.",
+      "invalid_code": "«{{code}}» no es un código válido: usa minúsculas, dígitos y guiones bajos.",
+      "invalid_item_code": "«{{code}}» no es un código de ítem válido: usa minúsculas, dígitos y guiones bajos.",
+      "item_not_found": "Ese ítem no existe.",
+      "item_code_taken": "La lista ya tiene un ítem con el código {{code}}.",
+      "item_in_use": "{{code}} lo usan {{count}} registros: desactívalo en vez de borrarlo.",
+      "reorder_mismatch": "La lista ha cambiado mientras tanto: recárgala y vuelve a ordenar.",
+      "deleted": "La lista está borrada: restáurala primero.",
+      "item_deleted": "El ítem está borrado: restáuralo primero."
+    },
+    "catalogue": {
+      "unknown_kind": "Elemento del catálogo desconocido.",
+      "not_found": "Ese elemento del catálogo no existe.",
+      "edition_not_found": "La edición del catálogo {{edition}} no existe.",
+      "invalid_code": "«{{code}}» no es un código válido (letras, dígitos, puntos y guiones).",
+      "code_taken": "El código {{code}} ya se usa en esta edición.",
+      "parent_not_found": "El elemento padre no existe en esta edición.",
+      "parent_required": "Elige el elemento padre.",
+      "invalid_status": "Estado no válido.",
+      "invalid_solution_type": "Los tipos de solución van del {{min}} al {{max}}.",
+      "code_change_needs_confirmation": "Confirma el cambio de código de {{code}}.",
+      "deleted": "El elemento está borrado: restáuralo primero.",
+      "has_children": "{{code}} todavía tiene elementos activos: {{children}}. Muévelos o bórralos antes.",
+      "field_not_allowed": "Estos campos no se aplican aquí: {{fields}}."
+    },
+    "excel": {
+      "too_large": "El fichero supera {{max_mb}} MB.",
+      "not_xlsx": "No es un fichero Excel .xlsx.",
+      "unreadable": "El fichero está dañado o no se puede leer.",
+      "wrong_domain": "Este fichero no es una exportación de {{expected}} (contiene «{{found}}»).",
+      "newer_format": "El fichero usa un formato más nuevo (versión {{version}}); esta aplicación lee hasta la versión {{supported}}.",
+      "empty_sheet": "La hoja {{sheet}} está vacía.",
+      "missing_key_column": "La hoja {{sheet}} no tiene la columna «{{column}}».",
+      "no_known_sheet": "El fichero no tiene ninguna de las hojas esperadas ({{expected}}).",
+      "unexpected_layout": "La columna {{column}} debería ser «{{expected}}» y es «{{found}}»: no es la plantilla esperada.",
+      "missing_sheet": "La hoja {{sheet}} no está en el fichero: no cambia nada de ella.",
+      "unknown_edition": "La edición del catálogo {{edition}} no existe.",
+      "has_errors": "El fichero tiene errores: no se ha aplicado nada.",
+      "unknown_domain": "Tipo de importación desconocido.",
+      "required": "Este valor es obligatorio.",
+      "duplicate_key": "{{key}} aparece dos veces (la primera en la fila {{first_row}}).",
+      "master_language_required": "El texto en inglés es obligatorio.",
+      "too_long": "Demasiado largo (como mucho {{max_length}} caracteres).",
+      "invalid_integer": "«{{value}}» no es un número entero.",
+      "invalid_integer_list": "«{{value}}» no es una lista de números (p. ej. 1/3).",
+      "invalid_boolean": "«{{value}}» tiene que ser Yes o No.",
+      "invalid_option": "«{{value}}» no es ninguno de: {{options}}.",
+      "too_small": "{{value}} está por debajo del mínimo ({{min}}).",
+      "too_large_value": "{{value}} supera el máximo ({{max}}).",
+      "invalid_action": "«{{value}}» no es una acción válida: déjala vacía o escribe delete.",
+      "unknown_reference": "{{value}} no existe en {{sheet}}.",
+      "unknown_list_item": "{{value}} no es un ítem de la lista {{list}}.",
+      "has_children": "No se puede borrar: {{sheet}} todavía tiene {{children}}.",
+      "invalid_slug": "«{{value}}» no es un código válido: usa minúsculas, dígitos y guiones bajos.",
+      "invalid_code": "«{{value}}» no es un código válido (letras, dígitos, puntos y guiones).",
+      "inconsistent_family": "La familia {{code}} tiene valores distintos en el fichero ({{values}}): corrige el fichero; no se ha elegido ninguno.",
+      "delete_unknown": "{{key}} está marcado para borrar pero no existe: se ignora.",
+      "readonly_ignored": "Esta columna es solo de consulta: el cambio se ignora.",
+      "translation_missing": "Sin traducción: {{languages}}.",
+      "special_value": "«{{value}}» reconocido como «{{state}}»: se deja vacío.",
+      "unknown_column": "Columna desconocida ignorada.",
+      "no_meta": "El fichero no tiene hoja _meta: se acepta porque sus cabeceras coinciden."
+    }
+  },
+  "lists": {
+    "title": "Listas de valores",
+    "description": "Valores que ofrecen los campos de la aplicación (sectores, IQP, estados de revisión…). Los códigos son estables: cambiar una etiqueta nunca los cambia.",
+    "newList": "Nueva lista",
+    "editList": "Editar lista",
+    "deleteList": "Borrar lista",
+    "code": "Código",
+    "name": "Nombre",
+    "description_label": "Descripción",
+    "items": "Ítems",
+    "activeItems": "Ítems activos",
+    "system": "Sistema",
+    "systemHint": "La usan campos de la aplicación: no se puede borrar ni cambiar de código.",
+    "showDeleted": "Mostrar borrados",
+    "deleted": "Borrado",
+    "newItem": "Nuevo ítem",
+    "editItem": "Editar ítem",
+    "label": "Etiqueta",
+    "order": "Orden",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "moveUp": "Subir {{label}}",
+    "moveDown": "Bajar {{label}}",
+    "dragHandle": "Arrastra para reordenar {{label}}",
+    "listCreated": "Lista creada.",
+    "listSaved": "Lista guardada.",
+    "listDeleted": "Lista borrada.",
+    "itemCreated": "Ítem creado.",
+    "itemDeleted": "Ítem borrado.",
+    "itemRestored": "Ítem restaurado.",
+    "codeHint": "Minúsculas, dígitos y guiones bajos (p. ej. aerospace).",
+    "itemCodeHint": "Déjalo vacío para que se derive de la etiqueta en inglés.",
+    "codeChangeWarning": "Cambiar el código rompe la correspondencia con los Excel exportados antes.",
+    "confirmDeleteItemTitle": "Borrar ítem",
+    "confirmDeleteItemBody": "¿Borrar «{{label}}»? Va a la papelera y se puede restaurar. Si está en uso, desactívalo en su lugar.",
+    "confirmDeleteListTitle": "Borrar lista",
+    "confirmDeleteListBody": "¿Borrar la lista «{{name}}» y ocultar sus ítems? Se puede restaurar desde las listas borradas.",
+    "allLists": "Todas las listas",
+    "emptyItems": "Esta lista aún no tiene ítems.",
+    "emptyLists": "Todavía no hay listas.",
+    "readOnly": "Solo los administradores pueden cambiar las listas.",
+    "notFound": "Esta lista no existe."
+  },
+  "excel": {
+    "export": "Exportar a Excel",
+    "import": "Importar desde Excel",
+    "exported": "Excel descargado.",
+    "importTitle": "Importar {{what}} desde Excel",
+    "chooseFile": "Fichero Excel (.xlsx)",
+    "chooseHint": "Usa un fichero exportado desde esta pantalla. No se escribe nada hasta que pulses Aplicar.",
+    "analyze": "Analizar",
+    "analyzing": "Analizando…",
+    "apply": "Aplicar",
+    "applying": "Aplicando…",
+    "applied": "Importación aplicada: {{create}} altas, {{update}} cambios, {{delete}} borrados.",
+    "notApplied": "No se ha aplicado nada: corrige los errores del fichero y vuelve a analizarlo.",
+    "nothingToApply": "El fichero no trae cambios.",
+    "anotherFile": "Elegir otro fichero",
+    "reportTitle": "Análisis de {{file}}",
+    "fileErrors": "El fichero no se puede importar",
+    "summary": {
+      "create": "Altas",
+      "update": "Cambios",
+      "delete": "Borrados",
+      "unchanged": "Sin cambios",
+      "errors": "Errores",
+      "warnings": "Avisos",
+      "not_in_file": "No están en el fichero",
+      "special_values": "Valores especiales"
+    },
+    "filter": {
+      "label": "Mostrar",
+      "all": "Todas las filas con algo que ver",
+      "errors": "Errores",
+      "create": "Altas",
+      "update": "Cambios",
+      "delete": "Borrados",
+      "warnings": "Avisos",
+      "unchanged": "Sin cambios"
+    },
+    "columns": {
+      "sheet": "Hoja",
+      "row": "Fila",
+      "key": "Código",
+      "action": "Cambio",
+      "details": "Detalle"
+    },
+    "actions": {
+      "create": "Alta",
+      "update": "Cambio",
+      "delete": "Borrado",
+      "unchanged": "Sin cambios",
+      "error": "Error"
+    },
+    "notInFile": "{{count}} filas están en la aplicación pero no en el fichero. Se conservan: nada se borra por omisión.",
+    "specialTitle": "Valores especiales reconocidos (no se crean como datos)",
+    "specialCount": "{{state}} en {{column}}: {{count}}",
+    "noRows": "No hay filas que mostrar con este filtro.",
+    "change": "{{before}} → {{after}}",
+    "emptyValue": "(vacío)",
+    "domains": {
+      "lists": "listas de valores",
+      "taxonomy": "catálogo",
+      "initial_load": "datos iniciales"
+    }
+  },
+  "initialData": {
+    "title": "Datos iniciales",
+    "description": "Carga las listas de valores y la taxonomía del catálogo V0 desde la hoja Lists del CS_Reference_Template. Pasa por el mismo análisis e informe que cualquier importación; repetirla no cambia nada.",
+    "button": "Cargar desde CS_Reference_Template (hoja Lists)"
+  },
+  "fieldState": {
+    "to_complete": "Por completar",
+    "not_applicable": "No aplica",
+    "none": "Ninguna",
+    "unmapped": "Sin correspondencia"
+  },
+  "catalogue": {
+    "status": {
+      "catalogue": "Catálogo",
+      "proposed": "Propuesto"
     }
   }
 }

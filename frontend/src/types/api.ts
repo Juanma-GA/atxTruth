@@ -98,6 +98,8 @@ export interface AuditEvent {
   target_label: string | null;
   before: Record<string, unknown> | null;
   after: Record<string, unknown> | null;
+  source: string;
+  source_detail: string | null;
 }
 
 export interface AuditPage {

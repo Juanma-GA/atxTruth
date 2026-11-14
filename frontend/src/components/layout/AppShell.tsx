@@ -1,10 +1,11 @@
-import { Home, Settings } from 'lucide-react';
+import { Home, ListChecks, Settings } from 'lucide-react';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { useUpdateMe } from '@/hooks/useMe';
 import type { Language } from '@/i18n';
+import { SETTINGS_TAB_LABELS } from '@/lib/navigation';
 import type { ThemePreference } from '@/lib/theme';
 import type { Me, PublicConfig } from '@/types/api';
 
@@ -24,14 +25,17 @@ function useCrumbs(): Crumb[] {
   if (pathname.startsWith('/settings')) {
     const section = pathname.split('/')[2];
     const crumbs: Crumb[] = [{ label: t('nav.settings'), to: '/settings' }];
-    if (section) crumbs.push({ label: t(`settings.tabs.${section}`) });
+    const labelKey = section ? SETTINGS_TAB_LABELS[section] : undefined;
+    if (labelKey) crumbs.push({ label: t(labelKey) });
     return crumbs;
   }
+  if (pathname.startsWith('/lists')) return [{ label: t('nav.lists'), to: pathname === '/lists' ? undefined : '/lists' }];
   return [{ label: t('nav.home') }];
 }
 
 const navItems = [
   { to: '/', key: 'nav.home', icon: Home, end: true },
+  { to: '/lists', key: 'nav.lists', icon: ListChecks, end: false },
   { to: '/settings', key: 'nav.settings', icon: Settings, end: false },
 ] as const;
 

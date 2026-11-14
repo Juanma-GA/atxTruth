@@ -14,7 +14,7 @@ router = APIRouter(prefix="/api/audit", tags=["audit"])
 async def list_events(
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=25, ge=1, le=200),
-    action: str | None = Query(default=None, max_length=64),
+    action: str | None = Query(default=None, max_length=200),
     _admin: CurrentUser = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ) -> AuditPage:

@@ -91,8 +91,19 @@ try {
   await page.getByRole('navigation', { name: 'Main navigation' }).waitFor();
   check('admin signs in and sees the shell', await page.getByRole('link', { name: 'Home', exact: true }).isVisible());
   check('ALTEN logo in the top bar', await page.getByRole('img', { name: 'ALTEN' }).isVisible());
-  const railLinks = await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link').allTextContents();
-  check('rail shows only what exists (Home, Settings)', JSON.stringify(railLinks) === JSON.stringify(['Home', 'Settings']), railLinks.join(', '));
+  // The rail only shows what exists: every entry opens a real page (later deliveries add entries).
+  const rail = page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link');
+  const railLinks = await rail.allTextContents();
+  const hrefs = await rail.evaluateAll((links) => links.map((a) => a.getAttribute('href')));
+  let allReal = railLinks.includes('Home') && railLinks.includes('Settings');
+  for (const href of hrefs) {
+    await page.goto(`${WEB}${href}`);
+    await page.locator('main h1').first().waitFor();
+    allReal &&= new URL(page.url()).pathname.startsWith(href === '/' ? '/' : href);
+  }
+  await page.goto(`${WEB}/`);
+  await page.locator('main h1').first().waitFor();
+  check('rail entries all open a real page', allReal, railLinks.join(', '));
   await shot(page, 'shell-light');
   await axe(page, 'home light');
 

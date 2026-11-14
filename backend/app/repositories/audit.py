@@ -3,7 +3,7 @@
 from collections.abc import Sequence
 from datetime import datetime
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import AuditEvent
@@ -18,8 +18,9 @@ async def page(
 ) -> tuple[Sequence[AuditEvent], int]:
     query = select(AuditEvent)
     count_query = select(func.count()).select_from(AuditEvent)
-    if action_prefix:
-        condition = AuditEvent.action.startswith(action_prefix, autoescape=True)
+    prefixes = [p for p in (action_prefix or "").split(",") if p]
+    if prefixes:
+        condition = or_(*(AuditEvent.action.startswith(p, autoescape=True) for p in prefixes))
         query = query.where(condition)
         count_query = count_query.where(condition)
     result = await db.execute(query.order_by(AuditEvent.occurred_at.desc(), AuditEvent.id).offset(offset).limit(limit))

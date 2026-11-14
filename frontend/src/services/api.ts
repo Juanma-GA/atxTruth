@@ -42,7 +42,10 @@ async function send(path: string, init: RequestInit, retry: boolean): Promise<Re
   const token = useAuthStore.getState().accessToken;
   const headers = new Headers(init.headers);
   if (token) headers.set('Authorization', `Bearer ${token}`);
-  if (init.body !== undefined && !headers.has('Content-Type')) headers.set('Content-Type', 'application/json');
+  // FormData sets its own multipart boundary: never force JSON on it.
+  if (init.body !== undefined && !(init.body instanceof FormData) && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
   let response: Response;
   try {
     response = await fetch(path, { ...init, headers, credentials: 'same-origin' });
@@ -64,8 +67,34 @@ export async function request<T>(path: string, init: RequestInit = {}): Promise<
   return (await response.json()) as T;
 }
 
+function filenameFrom(response: Response, fallback: string): string {
+  const header = response.headers.get('Content-Disposition') ?? '';
+  const match = /filename="([^"]+)"/.exec(header);
+  return match?.[1] ?? fallback;
+}
+
 export const api = {
   get: <T>(path: string) => request<T>(path),
+  put: <T>(path: string, body: unknown) => request<T>(path, { method: 'PUT', body: JSON.stringify(body) }),
+  delete: <T>(path: string) => request<T>(path, { method: 'DELETE' }),
+  upload: <T>(path: string, file: File) => {
+    const form = new FormData();
+    form.append('file', file);
+    return request<T>(path, { method: 'POST', body: form });
+  },
+  /** Downloads a file with the session (not a plain link: the access token is a header). */
+  download: async (path: string, fallbackName: string): Promise<void> => {
+    const response = await send(path, {}, true);
+    if (!response.ok) throw await apiErrorFromResponse(response);
+    const url = URL.createObjectURL(await response.blob());
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filenameFrom(response, fallbackName);
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  },
   post: <T>(path: string, body?: unknown) =>
     request<T>(path, { method: 'POST', body: body === undefined ? undefined : JSON.stringify(body) }),
   patch: <T>(path: string, body: unknown) => request<T>(path, { method: 'PATCH', body: JSON.stringify(body) }),

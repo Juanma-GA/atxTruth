@@ -31,3 +31,16 @@ revisor no las tome por fallos. Fecha de las decisiones D1–D6: **13/11/2026** 
 - **Excepciones a HR20 (UI optimista)**, documentadas en el código: crear usuario y restablecer contraseña (el id y la contraseña temporal los genera el servidor) y cambiar contraseña (depende de que el servidor compruebe la actual).
 - **CSP de producción** con `style-src 'unsafe-inline'`: sonner y Radix insertan estilos en tiempo de ejecución. Los scripts siguen limitados a `'self'`.
 - **Storybook** (contrato visual del design system) no se monta en E0; la comprobación de accesibilidad (axe, WCAG 2.2 AA) va en `verify-e0`.
+
+## Decisiones técnicas de E1 (14/11/2026)
+
+- **Un `.xlsx` por dominio** (listas; taxonomía de una edición). El criterio de aceptación que mezcla un cambio de taxonomía y uno de listas "en un Excel" se verifica con los dos ficheros: 2 cambios en cada uno, 4 en total.
+- **El adaptador de carga inicial solo fija lo que trae la plantilla** (códigos, etiquetas EN, padres, estado y origen): repetirlo no pisa traducciones ES/FR, orden de ítems, activo ni owners puestos después en la app. Por eso las columnas ausentes de un fichero no se tocan, también en la importación normal.
+- **Una familia descrita de dos formas** en la plantilla es un **error** que bloquea la carga (HR7: no se elige); en el fichero v0.6 no ocurre.
+- **Bloque del servicio**: no se guarda; en el Excel de servicios va una columna de solo lectura "Block (from family)" para leerlo, y si se cambia se ignora con aviso.
+- **`edition_id`** se guarda en cada tabla de la taxonomía (unicidad del código por edición); el servicio comprueba que padre e hijo son de la misma edición.
+- **Orden natural**: S1.2 antes que S1.10; `P-F2.6` (propuesto) justo detrás de `F2.6`, no al principio.
+- **Crear e importar no son optimistas** (HR20, resultado del servidor): crear lista o ítem (id y código derivado), Analizar/Aplicar (calculado desde el fichero).
+- **Dependencias nuevas** (≥30 días): openpyxl, defusedxml (lectura segura del XML), python-multipart (subida de ficheros); en desarrollo, Pillow (favicons), detect-secrets (escaneo propio) y types-openpyxl.
+- **npm 10 falla** al añadir paquetes a este árbol (`edgesOut`): se usa `npx npm@11.6 install`; `npm ci` funciona con npm 10.
+- **Escaneo de secretos** propio (`scripts/secret_scan.py`): compara por fichero, tipo y hash, sin números de línea, y nunca reescribe la baseline.

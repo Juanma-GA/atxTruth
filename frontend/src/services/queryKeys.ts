@@ -6,5 +6,12 @@ export const queryKeys = {
   infrastructure: ['settings', 'infrastructure'] as const,
   users: (includeDeleted: boolean) => ['users', { includeDeleted }] as const,
   usersAll: ['users'] as const,
+  valueLists: (includeDeleted: boolean) => ['valueLists', { includeDeleted }] as const,
+  valueListsAll: ['valueLists'] as const,
+  valueList: (id: string, includeDeleted: boolean) => ['valueList', id, { includeDeleted }] as const,
+  valueListAll: (id: string) => ['valueList', id] as const,
+  catalogueTree: (edition: string, includeDeleted: boolean) => ['catalogue', edition, { includeDeleted }] as const,
+  catalogueAll: ['catalogue'] as const,
+  catalogueHistory: (kind: string, id: string) => ['catalogueHistory', kind, id] as const,
   audit: (page: number, pageSize: number, action: string) => ['audit', { page, pageSize, action }] as const,
 };

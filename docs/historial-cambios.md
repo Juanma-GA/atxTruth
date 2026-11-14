@@ -22,3 +22,16 @@ Una entrada corta por encargo: qué, por qué, commit y tests. Las entradas nuev
 - **Por qué**: Juanma desarrolla en Windows con Python 3.13.
 - **Comprobado**: los lockfiles no cambian: `pip download --require-hashes --platform win_amd64 --python-version 3.13 --only-binary=:all:` resuelve los dos (`requirements.lock.txt` y `requirements-dev.lock.txt`), y con 3.13 en Linux pasan los 60 tests de pytest y mypy estricto.
 - **Tests**: `npm run check` en verde; CI del push con las dos versiones.
+
+## E1 — parte 1: arreglos previos, listas, Excel de ida y vuelta y carga inicial (14/11/2026)
+
+- **Qué**:
+  - Arreglos previos, cada uno en su commit: favicons cuadrados con el símbolo de ALTEN (`scripts/generate_favicons.py`, `3d5c7bd`); vitest 4 y style-dictionary 5, sin avisos críticos ni altos (`d313c63`); escaneo de secretos que solo falla por secretos nuevos (`39e7783`).
+  - Listas de valores: modelo, API y UI con reordenación, activo, papelera y permisos.
+  - Taxonomía V0 en el backend: modelo, API, borrado protegido, cambio de código confirmado e historial.
+  - Motor genérico de Excel de ida y vuelta.
+  - Adaptador de la hoja Lists (UI en Ajustes → Datos iniciales y script).
+  - `FieldState`, y origen de cada cambio (App o Excel con el nombre del fichero) en la auditoría.
+- **Por qué**: encargo E1. Se entrega por partes; la parte 2 trae la UI del catálogo, el borrador de traducciones, `verify-e1` y la revisión.
+- **Commits**: `fc41701` (backend) y el commit de esta entrada (frontend y documentación).
+- **Tests**: `npm run check` en verde (pytest 101, vitest 28). Carga inicial: 7 listas (49 ítems), 6 bloques, 33 familias (1 propuesta), 86 servicios (3 propuestos), 8 soluciones, 7 adyacentes y 17 valores especiales; repetida, 0 cambios.

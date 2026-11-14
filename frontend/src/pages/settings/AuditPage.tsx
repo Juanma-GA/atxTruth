@@ -11,17 +11,22 @@ import { useAudit } from '@/hooks/useAudit';
 import { useClientConfig } from '@/hooks/useConfig';
 import { useSettings } from '@/hooks/useSettings';
 import { TranslatedText } from '@/components/translatable/TranslatedText';
+import { isLanguage } from '@/i18n';
 import { humanizeToken } from '@/lib/humanize';
 import { errorMessage } from '@/services/apiErrors';
 import type { AuditEvent } from '@/types/api';
 
-const FILTERS = ['', 'auth.', 'user.', 'settings.', 'account.'] as const;
+const CATALOGUE = 'block.,family.,service.,solution.,adjacent.';
+const FILTERS = ['', 'auth.', 'user.', 'settings.', 'account.', 'value_list.', 'value_list_item.', CATALOGUE] as const;
 const FILTER_KEYS: Record<(typeof FILTERS)[number], string> = {
   '': 'all',
   'auth.': 'auth',
   'user.': 'user',
   'settings.': 'settings',
   'account.': 'account',
+  'value_list.': 'value_list',
+  'value_list_item.': 'value_list_item',
+  [CATALOGUE]: 'catalogue',
 };
 
 function useFormatValue() {
@@ -32,9 +37,15 @@ function useFormatValue() {
     if (field === 'theme' && typeof value === 'string') return t(`theme.${value}`);
     if (field === 'preferred_language' && typeof value === 'string') return t(`languages.${value}`);
     if (field === 'deleted_at' && typeof value === 'string') return new Date(value).toLocaleString(i18n.language);
+    if (field === 'status' && typeof value === 'string') return t(`catalogue.status.${value}`, { defaultValue: humanizeToken(value) });
+    if (typeof value === 'boolean') return value ? t('common.yes') : t('common.no');
+    if (Array.isArray(value)) return value.map(String).join(field === 'solution_types' ? '/' : ', ');
     if (typeof value === 'object') {
       return Object.entries(value as Record<string, unknown>)
-        .map(([k, v]) => `${humanizeToken(k)}: ${String(v)}`)
+        .map(([k, v]) => {
+          const name = isLanguage(k) ? t(`languages.short.${k}`) : i18n.exists(`audit.fields.${k}`) ? t(`audit.fields.${k}`) : humanizeToken(k);
+          return `${name}: ${typeof v === 'boolean' ? (v ? t('common.yes') : t('common.no')) : String(v)}`;
+        })
         .join(', ');
     }
     return String(value);
@@ -120,18 +131,19 @@ export function AuditPage(): React.JSX.Element {
                 <Th scope="col">{t('audit.action')}</Th>
                 <Th scope="col">{t('audit.target')}</Th>
                 <Th scope="col">{t('audit.changes')}</Th>
+                <Th scope="col">{t('audit.sourceLabel')}</Th>
               </tr>
             </thead>
             <tbody>
               {audit.isPending ? (
                 <tr>
-                  <Td colSpan={5} className="text-muted">
+                  <Td colSpan={6} className="text-muted">
                     {t('common.loading')}
                   </Td>
                 </tr>
               ) : (audit.data?.items.length ?? 0) === 0 ? (
                 <tr>
-                  <Td colSpan={5} className="text-muted">
+                  <Td colSpan={6} className="text-muted">
                     {t('audit.empty')}
                   </Td>
                 </tr>
@@ -144,6 +156,11 @@ export function AuditPage(): React.JSX.Element {
                     <Td>{target(event)}</Td>
                     <Td>
                       <Changes event={event} />
+                    </Td>
+                    <Td className="text-[12.5px] text-muted">
+                      {event.source === 'excel'
+                        ? t('audit.source.excel', { file: event.source_detail ?? '' })
+                        : t(`audit.source.${event.source}`, { defaultValue: humanizeToken(event.source) })}
                     </Td>
                   </tr>
                 ))
