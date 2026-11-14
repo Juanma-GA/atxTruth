@@ -15,3 +15,10 @@ Una entrada corta por encargo: qué, por qué, commit y tests. Las entradas nuev
 - **Qué**: PR #1 fusionado y rama `feature/e0-andamiaje` borrada; desde ahora CC hace commit y push a `main` sin ramas ni PR. Registrado como D6 en `docs/decisiones.md`; reglas de cierre del `CLAUDE.md` actualizadas ("check en verde → commit → push a main").
 - **Por qué**: decisión de Juanma; la protección es `npm run check` en verde antes de cada push y el CI en cada push.
 - **Tests**: `npm run check` en verde antes del push; CI del push a `main`.
+
+## Python 3.13 en el CI (14/11/2026)
+
+- **Qué**: matriz del CI con Python 3.12 y 3.13 (`.github/workflows/ci.yml`, `fail-fast: false`); el README dice que vale 3.12 o 3.13, con `python -m venv .venv` cuando en Windows no hay lanzador `py`.
+- **Por qué**: Juanma desarrolla en Windows con Python 3.13.
+- **Comprobado**: los lockfiles no cambian: `pip download --require-hashes --platform win_amd64 --python-version 3.13 --only-binary=:all:` resuelve los dos (`requirements.lock.txt` y `requirements-dev.lock.txt`), y con 3.13 en Linux pasan los 60 tests de pytest y mypy estricto.
+- **Tests**: `npm run check` en verde; CI del push con las dos versiones.

@@ -14,7 +14,7 @@ el aspecto del mockup. Las referencias y el catálogo llegan en los encargos sig
 ## Requisitos
 
 - Node.js 22 y npm.
-- Python 3.12.
+- Python 3.12 o 3.13 (los lockfiles valen para las dos, en Windows y en Linux; el CI prueba ambas).
 - PostgreSQL 16: con Docker (`docker compose up -d db`) o instalado en la máquina.
 
 ## Arrancar en local
@@ -32,22 +32,24 @@ y una base `atxtruth` suya (o cambia `DATABASE_URL` en `backend/.env`).
 
 ### 2. Backend
 
-Linux / macOS:
+Linux / macOS (con `python3.12` o `python3.13`, la que tengas):
 
 ```bash
 cd backend
-python3.12 -m venv .venv
+python3.13 -m venv .venv
 .venv/bin/pip install --require-hashes -r requirements-dev.lock.txt
 cp .env.example .env
 .venv/bin/python scripts/generate_jwt_keys.py
 .venv/bin/alembic upgrade head
 ```
 
-Windows (PowerShell):
+Windows (PowerShell). Con el lanzador `py`, elige la versión (`py -3.13` o `py -3.12`); si no tienes
+`py` (por ejemplo, Python de la Microsoft Store), usa `python -m venv .venv` y comprueba antes con
+`python --version` que es 3.12 o 3.13:
 
 ```powershell
 cd backend
-py -3.12 -m venv .venv
+py -3.13 -m venv .venv          # o: py -3.12 -m venv .venv   ·   sin lanzador: python -m venv .venv
 .venv\Scripts\pip install --require-hashes -r requirements-dev.lock.txt
 Copy-Item .env.example .env
 .venv\Scripts\python scripts\generate_jwt_keys.py
