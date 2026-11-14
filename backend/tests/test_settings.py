@@ -118,7 +118,8 @@ async def test_infrastructure_is_masked(client: httpx.AsyncClient, admin_headers
 
 
 def test_mask_url_password() -> None:
-    assert _mask_url_password("postgresql://u:secret@h:5432/db") == "postgresql://u:••••••••@h:5432/db"
+    url = "postgresql://u:secret@h:5432/db"  # pragma: allowlist secret
+    assert _mask_url_password(url) == "postgresql://u:••••••••@h:5432/db"
     assert _mask_url_password("postgresql://h/db") == "postgresql://h/db"
 
 

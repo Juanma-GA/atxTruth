@@ -20,7 +20,7 @@ const ADMIN_EMAIL = process.env.VERIFY_ADMIN_EMAIL ?? process.env.INITIAL_ADMIN_
 const ADMIN_PASSWORD = process.env.VERIFY_ADMIN_PASSWORD ?? process.env.INITIAL_ADMIN_PASSWORD;
 const SHOTS = path.join(ARTIFACTS, 'verify-e0');
 const RUN = Date.now().toString(36);
-const NEW_PASSWORD = `Verify-${RUN}-Pass!9`;
+const NEW_PASSWORD = `Verify-${RUN}-Pass!9`; // pragma: allowlist secret
 const PAGE_SIZE_KEY = 'ui.table_page_size';
 
 const results = [];

@@ -45,7 +45,7 @@ jobs:
           npm ci
           npm ci --prefix frontend
       - name: Secret scan (AACF G2)
-        run: backend/.venv/bin/pre-commit run detect-secrets --all-files
+        run: backend/.venv/bin/python scripts/secret_scan.py
       - name: Environment, keys, migrations, test database
         working-directory: backend
         run: |

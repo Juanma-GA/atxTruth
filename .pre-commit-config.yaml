@@ -2,14 +2,13 @@
 #   backend/.venv: pip install --require-hashes -r backend/requirements-dev.lock.txt  (includes pre-commit)
 #   pre-commit install
 repos:
-  - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.5.0
-    hooks:
-      - id: detect-secrets
-        args: ["--baseline", ".secrets.baseline"]
-        exclude: (package-lock\.json|requirements.*\.lock\.txt|^aacf/|^sources/)
   - repo: local
     hooks:
+      - id: secret-scan
+        name: secret scan (new secrets only, line numbers ignored)
+        entry: node scripts/backend.mjs secret-scan
+        language: system
+        pass_filenames: false
       - id: forbidden-patterns
         name: forbidden patterns (HR1, HR15, colours, __future__ in routes, Windows safety)
         entry: node scripts/check-forbidden.mjs

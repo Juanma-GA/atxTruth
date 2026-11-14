@@ -28,7 +28,7 @@ const py = (args) => ({ cmd: python.cmd, args, cwd: BACKEND });
 
 const steps = [
   { name: 'forbidden patterns', fn: () => findForbidden() },
-  { name: 'secret scan (detect-secrets)', cmd: python.cmd, args: ['-m', 'pre_commit', 'run', 'detect-secrets', '--all-files'], cwd: ROOT },
+  { name: 'secret scan (new secrets only)', cmd: python.cmd, args: ['scripts/secret_scan.py'], cwd: ROOT },
   { name: 'design tokens', ...fe(['style-dictionary.config.mjs']) },
   { name: 'eslint', ...fe([bin('eslint', 'bin', 'eslint.js'), '.', '--max-warnings', '0']) },
   { name: 'ruff check', ...py(['-m', 'ruff', 'check', '.']) },

@@ -64,7 +64,7 @@ from app.db.base import get_sessionmaker  # noqa: E402
 from app.main import create_app  # noqa: E402
 from app.models import User  # noqa: E402
 
-DEFAULT_PASSWORD = "CorrectHorse123!"
+DEFAULT_PASSWORD = "CorrectHorse123!"  # pragma: allowlist secret
 
 
 @pytest.fixture(autouse=True)

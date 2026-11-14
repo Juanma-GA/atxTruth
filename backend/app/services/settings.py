@@ -23,7 +23,7 @@ class SettingKey:
     DEFAULT_LANGUAGE = "i18n.default_language"
     SESSION_HOURS = "session.duration_hours"
     LOGIN_RATE_LIMIT = "auth.login_rate_limit"
-    PASSWORD_MIN_LENGTH = "auth.password_min_length"  # noqa: S105 - a setting key
+    PASSWORD_MIN_LENGTH = "auth.password_min_length"  # noqa: S105 - a setting key  # pragma: allowlist secret
     TABLE_PAGE_SIZE = "ui.table_page_size"
     MAX_IMAGE_MB = "uploads.max_image_mb"
 

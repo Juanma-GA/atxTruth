@@ -59,14 +59,14 @@ Copy-Item .env.example .env
 Admin inicial (y, solo en desarrollo, un editor y un viewer de ejemplo):
 
 ```bash
-INITIAL_ADMIN_EMAIL=admin@example.com INITIAL_ADMIN_PASSWORD='elige-una-de-12+' .venv/bin/python scripts/create_admin_user.py
-DEV_SEED_PASSWORD='elige-otra-de-12+' .venv/bin/python scripts/seed_dev_data.py
+INITIAL_ADMIN_EMAIL=admin@example.com INITIAL_ADMIN_PASSWORD='elige-una-de-12+' .venv/bin/python scripts/create_admin_user.py  # pragma: allowlist secret
+DEV_SEED_PASSWORD='elige-otra-de-12+' .venv/bin/python scripts/seed_dev_data.py  # pragma: allowlist secret
 ```
 
 ```powershell
-$env:INITIAL_ADMIN_EMAIL="admin@example.com"; $env:INITIAL_ADMIN_PASSWORD="elige-una-de-12+"
+$env:INITIAL_ADMIN_EMAIL="admin@example.com"; $env:INITIAL_ADMIN_PASSWORD="elige-una-de-12+"  # pragma: allowlist secret
 .venv\Scripts\python scripts\create_admin_user.py
-$env:DEV_SEED_PASSWORD="elige-otra-de-12+"; .venv\Scripts\python scripts\seed_dev_data.py
+$env:DEV_SEED_PASSWORD="elige-otra-de-12+"; .venv\Scripts\python scripts\seed_dev_data.py  # pragma: allowlist secret
 ```
 
 ### 3. Frontend y herramientas de raíz

@@ -34,8 +34,9 @@ async def test_login_sets_secure_httponly_strict_cookie_and_audits(client: httpx
 
 async def test_bad_credentials_same_answer_and_audited(client: httpx.AsyncClient) -> None:
     await make_user("ana@example.com")
-    wrong = await client.post("/api/auth/login", json={"email": "ana@example.com", "password": "nope"})
-    unknown = await client.post("/api/auth/login", json={"email": "ghost@example.com", "password": "nope"})
+    bad_password = "nope"  # pragma: allowlist secret
+    wrong = await client.post("/api/auth/login", json={"email": "ana@example.com", "password": bad_password})
+    unknown = await client.post("/api/auth/login", json={"email": "ghost@example.com", "password": bad_password})
     assert wrong.status_code == unknown.status_code == 401
     assert wrong.json() == unknown.json() == {"error": {"code": "auth.invalid_credentials", "params": {}}}
     assert await audit_actions("ana@example.com") == ["auth.login_failed"]
@@ -181,14 +182,14 @@ async def test_forced_password_change(client: httpx.AsyncClient) -> None:
 
     short = await client.post(
         "/api/auth/change-password",
-        json={"current_password": DEFAULT_PASSWORD, "new_password": "short"},
+        json={"current_password": DEFAULT_PASSWORD, "new_password": "short"},  # pragma: allowlist secret
         headers=headers,
     )
     assert short.status_code == 422
     assert short.json()["error"] == {"code": "auth.password_too_short", "params": {"min": 12}}
     wrong = await client.post(
         "/api/auth/change-password",
-        json={"current_password": "wrong", "new_password": "AnotherLongPass1"},
+        json={"current_password": "wrong", "new_password": "AnotherLongPass1"},  # pragma: allowlist secret
         headers=headers,
     )
     assert wrong.status_code == 403
@@ -200,7 +201,7 @@ async def test_forced_password_change(client: httpx.AsyncClient) -> None:
     assert same.json()["error"]["code"] == "auth.password_unchanged"
     ok = await client.post(
         "/api/auth/change-password",
-        json={"current_password": DEFAULT_PASSWORD, "new_password": "AnotherLongPass1"},
+        json={"current_password": DEFAULT_PASSWORD, "new_password": "AnotherLongPass1"},  # pragma: allowlist secret
         headers=headers,
     )
     assert ok.status_code == 204
@@ -217,7 +218,7 @@ async def test_password_change_ends_other_sessions(client: httpx.AsyncClient) ->
     mine = client.cookies.get(COOKIE)
     await client.post(
         "/api/auth/change-password",
-        json={"current_password": DEFAULT_PASSWORD, "new_password": "AnotherLongPass1"},
+        json={"current_password": DEFAULT_PASSWORD, "new_password": "AnotherLongPass1"},  # pragma: allowlist secret
         headers=headers,
     )
     _use_cookie(client, other_session)
@@ -250,6 +251,7 @@ async def test_rate_limit_holds_under_concurrent_attempts(client: httpx.AsyncCli
 
 async def test_passwords_are_not_stripped(client: httpx.AsyncClient) -> None:
     await make_user("ana@example.com", password=" spaced pass 1 ")
-    bad = await client.post("/api/auth/login", json={"email": "ana@example.com", "password": "spaced pass 1"})
+    stripped = "spaced pass 1"  # pragma: allowlist secret
+    bad = await client.post("/api/auth/login", json={"email": "ana@example.com", "password": stripped})
     assert bad.status_code == 401
     await login(client, "ana@example.com", " spaced pass 1 ")
