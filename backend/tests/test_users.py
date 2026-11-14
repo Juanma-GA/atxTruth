@@ -6,12 +6,6 @@ from app.db.base import get_sessionmaker
 from tests.conftest import audit_actions, login, make_user
 
 
-@pytest.fixture
-async def admin_headers(client: httpx.AsyncClient) -> dict[str, str]:
-    await make_user("admin@example.com", "admin")
-    return await login(client, "admin@example.com")
-
-
 @pytest.mark.parametrize("role", ["viewer", "editor"])
 async def test_only_admin_manages_users(client: httpx.AsyncClient, role: str) -> None:
     await make_user("someone@example.com", role)

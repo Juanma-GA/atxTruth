@@ -11,12 +11,6 @@ from app.services.settings import SettingViolation, _mask_url_password, validate
 from tests.conftest import login, make_user
 
 
-@pytest.fixture
-async def admin_headers(client: httpx.AsyncClient) -> dict[str, str]:
-    await make_user("admin@example.com", "admin")
-    return await login(client, "admin@example.com")
-
-
 async def test_viewer_cannot_read_or_change_settings(client: httpx.AsyncClient) -> None:
     await make_user("viewer@example.com", "viewer")
     headers = await login(client, "viewer@example.com")

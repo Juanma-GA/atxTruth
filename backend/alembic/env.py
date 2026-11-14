@@ -5,9 +5,9 @@ from alembic import context
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import create_async_engine
 
+import app.models  # noqa: F401  (register every table)
 from app.core.config import get_settings
 from app.db.base import Base
-from app.models import AppSetting, AuditEvent, RefreshToken, User  # noqa: F401  (register tables)
 
 config = context.config
 if config.config_file_name is not None and config.attributes.get("configure_logger", True):

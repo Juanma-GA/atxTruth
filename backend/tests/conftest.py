@@ -65,6 +65,7 @@ from app.main import create_app  # noqa: E402
 from app.models import User  # noqa: E402
 
 DEFAULT_PASSWORD = "CorrectHorse123!"  # pragma: allowlist secret
+REFERENCE_TEMPLATE = BACKEND_DIR.parent / "sources" / "excel" / "CS_Reference_Template_v0.6.xlsx"
 
 
 @pytest.fixture(autouse=True)
@@ -72,6 +73,17 @@ async def clean_db() -> AsyncIterator[None]:
     async with get_sessionmaker()() as db:
         # Not TRUNCATE ... CASCADE: app_settings references users and must keep its rows.
         await db.execute(text("UPDATE app_settings SET value = default_value, updated_by = NULL"))
+        for table in (
+            "services",
+            "families",
+            "blocks",
+            "solutions",
+            "adjacent_activities",
+            "value_list_items",
+            "value_lists",
+        ):
+            await db.execute(text(f"DELETE FROM {table}"))  # noqa: S608 - fixed table names
+        await db.execute(text("DELETE FROM catalogue_editions WHERE code <> 'V0'"))
         await db.execute(text("DELETE FROM audit_events"))
         await db.execute(text("DELETE FROM refresh_tokens"))
         await db.execute(text("DELETE FROM users"))
@@ -129,3 +141,24 @@ async def audit_actions(target_label: str | None = None) -> list[str]:
             params["label"] = target_label
         rows = await session.execute(text(query + " ORDER BY occurred_at"), params)
         return [row[0] for row in rows]
+
+
+@pytest.fixture
+async def admin_headers(client: httpx.AsyncClient) -> dict[str, str]:
+    await make_user("admin@example.com", "admin")
+    return await login(client, "admin@example.com")
+
+
+async def upload(
+    http: httpx.AsyncClient, url: str, content: bytes, headers: dict[str, str], name: str = "data.xlsx"
+) -> httpx.Response:
+    files = {"file": (name, content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")}
+    return await http.post(url, files=files, headers=headers)
+
+
+async def initial_load(http: httpx.AsyncClient, headers: dict[str, str]) -> dict[str, object]:
+    response = await upload(
+        http, "/api/initial-load/apply", REFERENCE_TEMPLATE.read_bytes(), headers, REFERENCE_TEMPLATE.name
+    )
+    assert response.status_code == 200, response.text
+    return dict(response.json())

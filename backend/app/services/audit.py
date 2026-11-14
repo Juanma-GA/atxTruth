@@ -36,6 +36,8 @@ def record(
     before: dict[str, Any] | None = None,
     after: dict[str, Any] | None = None,
     request: Request | None = None,
+    source: str = "ui",
+    source_detail: str | None = None,
 ) -> None:
     audit_repo.add(
         db,
@@ -49,5 +51,49 @@ def record(
             before=_clean(before),
             after=_clean(after),
             ip=client_ip(request),
+            source=source,
+            source_detail=source_detail,
         ),
     )
+
+
+class AuditContext:
+    """Who is changing data and from where: passed down to every business operation."""
+
+    def __init__(
+        self,
+        actor: CurrentUser | None,
+        *,
+        request: Request | None = None,
+        source: str = "ui",
+        source_detail: str | None = None,
+    ) -> None:
+        self.actor = actor
+        self.request = request
+        self.source = source
+        self.source_detail = source_detail
+
+    def record(
+        self,
+        db: AsyncSession,
+        *,
+        action: str,
+        target_type: str,
+        target_id: str | None,
+        target_label: str | None,
+        before: dict[str, Any] | None = None,
+        after: dict[str, Any] | None = None,
+    ) -> None:
+        record(
+            db,
+            actor=self.actor,
+            action=action,
+            target_type=target_type,
+            target_id=target_id,
+            target_label=target_label,
+            before=before,
+            after=after,
+            request=self.request,
+            source=self.source,
+            source_detail=self.source_detail,
+        )

@@ -15,6 +15,8 @@ class AuditEventOut(ResponseModel):
     target_label: str | None
     before: dict[str, Any] | None
     after: dict[str, Any] | None
+    source: str
+    source_detail: str | None
 
 
 class AuditPage(ResponseModel):

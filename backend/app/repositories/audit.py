@@ -44,3 +44,13 @@ async def latest(db: AsyncSession, *, action: str, target_label: str) -> datetim
     )
     value: datetime | None = result.scalar_one()
     return value
+
+
+async def for_target(db: AsyncSession, *, target_type: str, target_id: str) -> Sequence[AuditEvent]:
+    """Every event about one record, newest first (its history)."""
+    query = (
+        select(AuditEvent)
+        .where(AuditEvent.target_type == target_type, AuditEvent.target_id == target_id)
+        .order_by(AuditEvent.occurred_at.desc(), AuditEvent.id)
+    )
+    return (await db.execute(query)).scalars().all()

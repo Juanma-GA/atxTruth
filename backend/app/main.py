@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import audit, auth, health, settings, users
+from app.api.routes import audit, auth, catalogue, excel, health, settings, users, value_lists
 from app.auth.provider import build_auth_provider
 from app.core.config import get_settings
 from app.core.errors import register_error_handlers
@@ -35,6 +35,10 @@ def create_app() -> FastAPI:
     app.include_router(auth.router)
     app.include_router(settings.router)
     app.include_router(audit.router)
+    app.include_router(value_lists.router)
+    app.include_router(value_lists.items_router)
+    app.include_router(catalogue.router)
+    app.include_router(excel.router)
     if infra.auth_mode == "local":
         app.include_router(auth.local_router)
         app.include_router(users.router)

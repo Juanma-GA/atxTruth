@@ -20,6 +20,7 @@ class AuditEvent(Base):
     __table_args__ = (
         Index("ix_audit_events_action_label_time", "action", "target_label", "occurred_at"),
         Index("ix_audit_events_occurred_at", "occurred_at"),
+        Index("ix_audit_events_target", "target_type", "target_id"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -33,3 +34,6 @@ class AuditEvent(Base):
     before: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     after: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     ip: Mapped[str | None] = mapped_column(String(64))
+    # Where the change came from: "ui" (default), "excel" (with the file name) or "script".
+    source: Mapped[str] = mapped_column(String(16), default="ui", server_default="ui")
+    source_detail: Mapped[str | None] = mapped_column(String(255))

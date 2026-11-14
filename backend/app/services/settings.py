@@ -26,6 +26,7 @@ class SettingKey:
     PASSWORD_MIN_LENGTH = "auth.password_min_length"  # noqa: S105 - a setting key  # pragma: allowlist secret
     TABLE_PAGE_SIZE = "ui.table_page_size"
     MAX_IMAGE_MB = "uploads.max_image_mb"
+    MAX_EXCEL_MB = "uploads.max_excel_mb"
 
 
 class SettingMissingError(RuntimeError):
