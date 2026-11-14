@@ -23,7 +23,7 @@ npm run dev:backend                           # uvicorn :8000 (sin --reload: rei
 npm run dev:frontend                          # vite :5173, proxy /api → :8000
 ```
 
-- Backend: dependencias fijadas con hashes (`backend/requirements[-dev].lock.txt`, de `pyproject.toml` con `uv pip compile --universal --generate-hashes --python-version 3.12`; valen para Python 3.12 y 3.13, en Linux y Windows, y el CI prueba las dos versiones). Frontend y raíz: `npm ci` con `package-lock.json`. Antes de añadir un paquete, comprobar que existe, está mantenido y tiene ≥30 días (`npm install --before=…`, `uv … --exclude-newer …`).
+- Backend: dependencias fijadas con hashes (`backend/requirements[-dev].lock.txt`, de `pyproject.toml` con `uv pip compile --universal --generate-hashes --python-version 3.12`; valen para Python 3.12 y 3.13, en Linux y Windows, y el CI prueba las dos versiones). Frontend y raíz: `npm ci` con `package-lock.json`. Para **añadir o subir** paquetes usar `npx -y npm@11.6 install --before=<hoy-30d> …`: npm 10 falla con `Cannot read properties of null (reading 'edgesOut')` al resolver este árbol. Antes de añadir un paquete, comprobar que existe, está mantenido y tiene ≥30 días (`npm install --before=…`, `uv … --exclude-newer …`).
 - Claves JWT en `backend/keys/` (no en git): `python scripts/generate_jwt_keys.py`.
 - Usuarios de desarrollo: admin con `scripts/create_admin_user.py` (`INITIAL_ADMIN_EMAIL`/`INITIAL_ADMIN_PASSWORD`); editor y viewer de ejemplo con `scripts/seed_dev_data.py` (`DEV_SEED_PASSWORD`). Datos siempre sintéticos.
 
